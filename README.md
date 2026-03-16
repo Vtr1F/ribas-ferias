@@ -15,4 +15,5 @@
 
 ### Group Members
 
-Victor Fonseca 20221246
+ 
+Joao Cruz 20191212
