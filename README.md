@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Ribas Ferias
 
 ## Vacation Control System
@@ -13,7 +13,7 @@ Sprint 5:
 Victor Fonseca 20221246
 André Silva 20241264
 Diogo Vieira 20190592
-=======
+
 # ribas-ferias
 
 
