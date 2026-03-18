@@ -9,7 +9,7 @@ pub struct UserPrivate { // For DB
     pub birthday: String,
     pub phone: String,
     pub role: Role,
-    pub superior: u64,
+    pub leader: u64,
     pub created_at: String,
 }
 
@@ -29,6 +29,6 @@ pub struct UserPublic {
     pub birthday: String,
     pub phone: String,
     pub role: Role,
-    pub superior: u64,
+    pub leader: u64,
 }
 

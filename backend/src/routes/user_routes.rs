@@ -1,4 +1,4 @@
-use axum::{routing::{get, post, delete, put}, Router};
+use axum::{routing::{get}, Router};
 
 use crate::handlers::{user_handler};
 
