@@ -15,3 +15,13 @@ André Silva 20241264
 Alexandre Rodrigues 20221233
 Diogo Vieira 20190592
 Joao Cruz 20191212
+
+Changelog
+
+
+17/03
+Backend API Receives and Process Requests (No DB)
+Database Tables created
+
+19/03
+Backend Uses JWT tokens for authentication and session control
