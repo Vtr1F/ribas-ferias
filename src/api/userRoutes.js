@@ -4,11 +4,22 @@ import { apiClient } from './apiClient';
 export const user_routes = {
   
   getAllUsers: () => {
-    return apiClient.get(`/users`,`POST`); 
+    return apiClient.request(`/user`,`GET`); 
   },
 
+  addUser: (data) => {
+    return apiClient.request(`/user`,`POST`,data); 
+  },
   
-  getUser: (id) => {
-    return apiClient.get(`/users/${id}`,`POST`);
+  fetchUser: (id) => {
+    return apiClient.request(`/user/${id}`,`GET`);
+  },
+
+  alterUser: (id,data) => {
+    return apiClient.request(`/user/${id}`,`PUT`,data);
+  },
+
+  removeUser: (id) => {
+    return apiClient.request(`/user/${id}`,`DELETE`);
   }
 };
