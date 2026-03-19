@@ -1,8 +1,9 @@
 use axum::{routing::{get}, Router};
 
 use crate::handlers::{user_handler};
+use crate::state::AppState;
 
-pub fn routes() -> Router<()> { // Added <()>
+pub fn routes() -> Router<AppState> { // Added <()>
     Router::new()
         .route("/", get(user_handler::list_users)
             .post(user_handler::add_user))

@@ -1,46 +1,5 @@
 DATA BASE
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    nome TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    role TEXT CHECK (role IN ('admin', 'responsavel', 'colaborador')),
-    superior_id INTEGER REFERENCES users(id), -- Auto-relacionamento
-    dias_ferias_disponiveis INTEGER DEFAULT 22,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-CREATE TABLE requests (
-    id SERIAL PRIMARY KEY,
-    colaborador_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    superior_id INTEGER REFERENCES users(id),
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    total_dias INTEGER,
-    estado TEXT DEFAULT 'pendente' CHECK (estado IN ('pendente', 'completo')),
-    data_submissao TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+
 INSERT INTO users (nome, email, password_hash, role, dias_ferias_disponiveis)
 VALUES ('Admin Ribas', 'admin@ribas.com', '123', 'admin', 22);
 
-CREATE TABLE notifications (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    mensagem TEXT NOT NULL,
-    lida BOOLEAN DEFAULT FALSE,
-    link_pedido INTEGER REFERENCES requests(id) ON DELETE SET NULL, -- Opcional: clica e vai ao pedido
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-CREATE TABLE audit_log (
-    id SERIAL PRIMARY KEY,
-    admin_id INTEGER REFERENCES users(id),
-    request_id INTEGER REFERENCES requests(id) ON DELETE SET NULL,
-    acao TEXT NOT NULL, -- Ex: 'APROVOU_FERIAS'
-    detalhes JSONB, -- Podes guardar o estado antigo e o novo aqui
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-CREATE TABLE company_settings (
-    id SERIAL PRIMARY KEY,
-    chave TEXT UNIQUE NOT NULL, -- Ex: 'dias_padrao'
-    valor TEXT NOT NULL,       -- Ex: '22'
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);

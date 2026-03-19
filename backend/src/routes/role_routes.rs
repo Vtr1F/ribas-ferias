@@ -1,8 +1,9 @@
 use axum::{routing::{get}, Router};
+use crate::state::AppState;
 
-use crate::handlers::role_handler;
+use crate::handlers::role_handler::fetch_roles;
 
-pub fn routes() -> Router<()> { 
+pub fn routes() -> Router<AppState> { 
     Router::new()
-        .route("/", get(role_handler::fetch_roles))
+        .route("/", get(fetch_roles))
 }

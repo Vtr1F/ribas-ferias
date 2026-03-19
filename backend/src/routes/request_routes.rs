@@ -1,8 +1,9 @@
 use axum::{routing::{get}, Router};
 
 use crate::handlers::request_handler::{self, fetch_request, fetch_team_requests, fetch_user_requests};
+use crate::state::AppState;
 
-pub fn routes() -> Router<()> { // Added <()>
+pub fn routes() -> Router<AppState> { // Added <()>
     Router::new()
         .route("/", get(request_handler::fetch_requests)
             .post(request_handler::add_request))

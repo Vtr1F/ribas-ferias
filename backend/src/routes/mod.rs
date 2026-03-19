@@ -4,9 +4,10 @@ pub mod request_type_routes;
 pub mod request_routes;
 pub mod team_routes;
 
+use crate::state::AppState;
 use axum::Router;
 
-pub fn create_routes() -> Router {
+pub fn create_routes() -> Router<AppState> {
     Router::new()
         .nest("/users", user_routes::routes())
         .nest("/roles", role_routes::routes())

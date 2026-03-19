@@ -1,34 +1,48 @@
 use serde::{Serialize, Deserialize};
 use crate::models::role_model::Role;
+use sqlx::FromRow;
+use chrono::{DateTime, Utc};
 
 pub struct UserPrivate { // For DB
-    pub id: u64,
-    pub name: String,
+    pub id: i32,
+    pub nome: String,
     pub email: String,
     pub password_hash: String,
-    pub birthday: String,
-    pub phone: String,
+    pub role_id: i32,
+    pub superior_id: Option<i32>,
+    pub dias_ferias_disponiveis: i32,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Serialize, Deserialize,FromRow)] 
+pub struct CreateUser {
+    pub nome: String,
+    pub email: String,
+}
+
+#[derive(Serialize, Deserialize, FromRow)] // For API
+pub struct UserPublic {
+    pub id: i32,
+    pub nome: String,
+    pub email: String,
     pub role: Role,
-    pub leader: u64,
+    pub superior_id: Option<i32>,
+    pub dias_ferias_disponiveis: i32,
     pub created_at: String,
 }
 
-#[derive(Serialize, Deserialize)] 
-pub struct CreateUser {
-    pub name: String,
-    pub email: String,
-    pub birthday: String,
-    pub phone: String,
+impl UserPrivate {
+    pub fn into_public(self, role: Role) -> UserPublic {
+        UserPublic {
+            id: self.id,
+            nome: self.nome,
+            email: self.email,
+            role,
+            superior_id: self.superior_id,
+            dias_ferias_disponiveis: self.dias_ferias_disponiveis,
+            created_at: self.created_at.to_rfc3339(),
+        }
+    }
 }
 
-#[derive(Serialize, Deserialize)] // For API
-pub struct UserPublic {
-    pub id: u64,
-    pub username: String,
-    pub email: String,
-    pub birthday: String,
-    pub phone: String,
-    pub role: Role,
-    pub leader: u64,
-}
 

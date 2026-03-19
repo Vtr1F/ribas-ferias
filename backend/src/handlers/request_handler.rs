@@ -16,7 +16,7 @@ pub async fn fetch_requests() -> Json<Vec<Request>> {
     Json(requests)
 }
 
-pub async fn fetch_user_requests(Path(_id): Path<u64>) -> Json<Vec<Request>> {
+pub async fn fetch_user_requests(Path(_id): Path<i64>) -> Json<Vec<Request>> {
     let requests = vec![
         Request {id: 1, user: _id,
             request_type: RequestType{id: 1, name:"Férias".to_string()}, reason: None,
@@ -26,7 +26,7 @@ pub async fn fetch_user_requests(Path(_id): Path<u64>) -> Json<Vec<Request>> {
     Json(requests)
 }
 
-pub async fn fetch_team_requests(Path(team_id): Path<u64>) -> Json<Vec<Request>> {
+pub async fn fetch_team_requests(Path(team_id): Path<i64>) -> Json<Vec<Request>> {
     let requests = vec![
         Request {id: 1, user: 2,
             request_type: RequestType{id: 1, name:"Férias".to_string()}, reason: None,
@@ -36,7 +36,7 @@ pub async fn fetch_team_requests(Path(team_id): Path<u64>) -> Json<Vec<Request>>
     Json(requests)
 }
 
-pub async fn fetch_request(Path(_id): Path<u64>) -> Json<Request> {
+pub async fn fetch_request(Path(_id): Path<i64>) -> Json<Request> {
     let request =
         Request {id: 1, user: _id,
             request_type: RequestType{id: 1, name:"Férias".to_string()}, reason: None,
@@ -55,7 +55,7 @@ pub async fn add_request(Json(payload): Json<Request>) -> (StatusCode, Json<Requ
     (StatusCode::OK, Json(new_request))
 }
 
-pub async fn accept_request(Path(_id): Path<u64>) -> (StatusCode, Json<Request>) {
+pub async fn accept_request(Path(_id): Path<i64>) -> (StatusCode, Json<Request>) {
     let request =
         Request {id: 1, user: _id,
             request_type: RequestType{id: 1, name:"Férias".to_string()}, reason: None,
@@ -64,7 +64,7 @@ pub async fn accept_request(Path(_id): Path<u64>) -> (StatusCode, Json<Request>)
     (StatusCode::OK, Json(request))
 }
 
-pub async fn reject_request(Path(_id): Path<u64>) -> (StatusCode, Json<Request>) {
+pub async fn reject_request(Path(_id): Path<i64>) -> (StatusCode, Json<Request>) {
     let request =
         Request {id: 1, user: _id,
             request_type: RequestType{id: 1, name:"Férias".to_string()}, reason: None,

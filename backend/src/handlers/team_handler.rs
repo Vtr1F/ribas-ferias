@@ -29,28 +29,28 @@ pub async fn add_team(Json(payload): Json<Team>) -> (StatusCode, Json<Team>) {
     (StatusCode::OK, Json(new_team))
 }
 
-pub async fn add_to_team(Path(_id): Path<u64>, Path(user_id): Path<u64>) -> (StatusCode, Json<Team>) {
+pub async fn add_to_team(Path(_id): Path<u64>, Path(user_id): Path<i64>) -> (StatusCode, Json<Team>) {
     //Update DB
     let new_team = Team { id: 1, team_name: "Desgin".to_string(), desc: None, members: None}; 
 
     (StatusCode::OK, Json(new_team))
 }
 
-pub async fn remove_from_team(Path(_id): Path<u64>, Path(user_id): Path<u64>) -> (StatusCode, Json<Team>) {
+pub async fn remove_from_team(Path(_id): Path<u64>, Path(user_id): Path<i64>) -> (StatusCode, Json<Team>) {
     //Update DB
     let new_team = Team { id: 1, team_name: "Desgin".to_string(), desc: None, members: None}; 
 
     (StatusCode::OK, Json(new_team))
 }
 
-pub async fn alter_team_lead(Path(_id): Path<u64>, Path(lead_id): Path<u64>) -> (StatusCode, Json<Team>) {
+pub async fn alter_team_lead(Path(_id): Path<u64>, Path(lead_id): Path<i64>) -> (StatusCode, Json<Team>) {
     //Update DB
     let new_team = Team { id: 1, team_name: "Desgin".to_string(), desc: None, members: None}; 
 
     (StatusCode::OK, Json(new_team))
 }
 
-pub async fn remove_team(Path(_id): Path<u64>) -> StatusCode {
+pub async fn remove_team(Path(_id): Path<i64>) -> StatusCode {
     //Update DB
 
     (StatusCode::OK)
