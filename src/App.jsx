@@ -1,8 +1,9 @@
-
+import { user_routes } from "./api/userRoutes.js";
 
 
 //Exemplo de um componente basico
 function App() {
+  
   return(<header>
     <h1>Ribas Ferias</h1>
   </header>)
