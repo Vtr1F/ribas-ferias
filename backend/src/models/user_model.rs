@@ -21,7 +21,7 @@ pub struct CreateUser {
    #[validate(length(min = 2, message = "Nome must have at least 2 characters"))]
     pub nome: String,
 
-    #[validate(email(message = "Invalid email format"))]
+    #[validate(email(message = "Invalid email format"), custom(function = "validate_ribas_email"))]
     pub email: String,
 
     #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
@@ -69,6 +69,14 @@ impl UserPrivate {
             superior_id: self.superior_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
         }
+    }
+}
+
+fn validate_ribas_email(email: &str) -> Result<(), validator::ValidationError> {
+    if email.ends_with("@ribas.pt") {
+        Ok(())
+    } else {
+        Err(validator::ValidationError::new("Domain must end with @ribas.pt"))
     }
 }
 

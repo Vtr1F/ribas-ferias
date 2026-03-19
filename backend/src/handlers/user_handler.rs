@@ -70,16 +70,6 @@ pub async fn add_user(State(state): State<AppState>,Json(payload): Json<CreateUs
         );
     }
 
-    // 2. Hash password using modern Argon2 API
-    let password_hash = match hash_password(&payload.password) {
-        Ok(h) => h,
-        Err(_) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": "Failed to hash password" })),
-            );
-        }
-    };
 
     // 3. Insert into DB
     let row: UserPrivate = sqlx::query_as(
@@ -89,7 +79,7 @@ pub async fn add_user(State(state): State<AppState>,Json(payload): Json<CreateUs
     )
     .bind(&payload.nome)
     .bind(&payload.email)
-    .bind(&password_hash)
+    .bind(&payload.password)
     .bind(payload.role_id)
     .bind(payload.superior_id)
     .bind(payload.dias_ferias_disponiveis)
@@ -187,24 +177,3 @@ pub async fn remove_user(
     }
 }
 
-pub fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error> {
-    // Generate a secure random salt
-    let salt = SaltString::generate(&mut OsRng);
-
-    // Use Argon2id with default parameters (secure)
-    let argon2 = Argon2::default();
-
-    // Hash the password
-    let hash = argon2
-        .hash_password(password.as_bytes(), &salt)?
-        .to_string();
-
-    Ok(hash)
-}
-
-pub fn verify_password(password: &str, hash: &str) -> bool {
-    let parsed = PasswordHash::new(hash).unwrap();
-    Argon2::default()
-        .verify_password(password.as_bytes(), &parsed)
-        .is_ok()
-}

@@ -1,10 +1,18 @@
+CREATE TYPE request_status AS ENUM ('Pending', 'Accepted', 'Rejected');
+
+
 CREATE TABLE IF NOT EXISTS requests (
     id SERIAL PRIMARY KEY,
-    colaborador_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    superior_id INTEGER REFERENCES users(id),
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    total_dias INTEGER,
-    estado TEXT DEFAULT 'pendente' CHECK (estado IN ('pendente', 'completo')),
-    data_submissao TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+    user_id INTEGER NOT NULL REFERENCES users(id),
+
+    request_type_id INTEGER NOT NULL REFERENCES request_types(id),
+
+    reason TEXT,
+
+    days INTEGER[] DEFAULT '{}',
+
+    status request_status NOT NULL DEFAULT 'Pending',
+
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
