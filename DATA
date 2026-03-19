@@ -1,5 +1,0 @@
-DATA BASE
-
-INSERT INTO users (nome, email, password_hash, role, dias_ferias_disponiveis)
-VALUES ('Admin Ribas', 'admin@ribas.com', '123', 'admin', 22);
-
