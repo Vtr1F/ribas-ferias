@@ -53,5 +53,5 @@ pub async fn alter_team_lead(Path(_id): Path<u64>, Path(lead_id): Path<u64>) -> 
 pub async fn remove_team(Path(_id): Path<u64>) -> StatusCode {
     //Update DB
 
-    (StatusCode::OK)
+    StatusCode::OK
 }
