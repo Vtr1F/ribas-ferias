@@ -15,3 +15,8 @@ André Silva 20241264
 Alexandre Rodrigues 20221233
 Diogo Vieira 20190592
 Joao Cruz 20191212
+
+Library Needed
+Cargo install sqlx
+Cargo install sqlx-cli
+cargo install dotenv
