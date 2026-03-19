@@ -21,7 +21,7 @@ pub async fn list_users(State(state): State<AppState>) -> Json<Vec<UserPublic>> 
 
     for row in rows {
         let role: Role = sqlx::query_as(
-            "SELECT id, nome FROM roles WHERE id = $1"
+            "SELECT id, name FROM roles WHERE id = $1"
         )
         .bind(row.role_id)
         .fetch_one(&*state.db)
@@ -38,7 +38,7 @@ pub async fn list_users(State(state): State<AppState>) -> Json<Vec<UserPublic>> 
 pub async fn fetch_user(State(state): State<AppState>, Path(id): Path<i32>) -> Json<UserPublic> {
     
     let row: UserPrivate = sqlx::query_as(
-        "SELECT id, name, email, password_hash, role_id, leader, created_at FROM users WHERE id = $1")
+        "SELECT id, nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, created_at FROM users WHERE id = $1")
     .bind(id)
     .fetch_one(&*state.db)
     .await

@@ -39,10 +39,9 @@ pub struct UserPublic {
     pub id: i32,
     pub nome: String,
     pub email: String,
-    pub role: Role,
+    pub role: String,
     pub superior_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
-    pub created_at: String,
 }
 
 #[derive(Deserialize, Validate,FromRow)]
@@ -66,10 +65,9 @@ impl UserPrivate {
             id: self.id,
             nome: self.nome,
             email: self.email,
-            role,
+            role : role.name,
             superior_id: self.superior_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
-            created_at: self.created_at.to_rfc3339(),
         }
     }
 }
