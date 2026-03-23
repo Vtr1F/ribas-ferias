@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/home.jsx';
+import Dashboard from './pages/dashboard.jsx';
 import Login from './pages/login.jsx';
 
 //função que baseado na rota mostra um dos layouts
@@ -11,7 +11,7 @@ function App() {
         <Route path="/" element={<Login />} />
 
         {/* Rota para a Home (Página Principal) */}
-        <Route path="/home" element={<Home />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         
         {/*  adicionar outras rotas aqui conforme sao criados ficheiros nas pages */}
       </Routes>

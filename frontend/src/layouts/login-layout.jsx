@@ -1,6 +1,8 @@
+import './login-layout.css';
+
 const LoginLayout = ({ children }) => {
   return (
-    <div className="login-full-page">
+    <div className="login-layout">
       {children}
     </div>
   );

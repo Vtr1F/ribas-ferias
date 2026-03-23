@@ -1,6 +1,7 @@
 import MainLayout from '../layouts/main-layout';
+import './dashboard.css'
 
-function Home() {
+function Dashboard() {
   return (
     <MainLayout>
       <main>
@@ -10,4 +11,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Dashboard;
