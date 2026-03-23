@@ -1,5 +1,12 @@
-const BASE_URL = "http://localhost:3000/api"; 
 
+
+// deve haver alguma forma melhor de fazer isto sem assumicoes hacky, fix later (mas funciona por enquanto)
+const BASE_URL = "http://localhost:3000"; 
+
+// quando recebermos o jWt mudar aqui
+export const jwt = null;
+
+// Nao chamar um route qualquer que pessa do JWT antes, ja que vai fazer babozeira
 export const apiClient = {
   
   // Body é um json
@@ -12,6 +19,9 @@ export const apiClient = {
         },
       };
 
+      if (jwt) {
+        options.headers['Authorization'] = `Bearer ${jwt}`;
+      }
 
       if (body) {
         options.body = JSON.stringify(body);
