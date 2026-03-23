@@ -1,7 +1,7 @@
 
 import { apiClient } from './apiClient';
 
-export const request_routes = {
+export const RequestRoutes = {
   
   fetchRequests: () => {
     return apiClient.request(`/api/requests`,`GET`); 

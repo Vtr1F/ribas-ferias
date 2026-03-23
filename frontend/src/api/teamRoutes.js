@@ -1,7 +1,7 @@
 
 import { apiClient } from './apiClient';
 
-export const user_routes = {
+export const UserRoutes = {
   //Teamdata e userdata sao jsons,
   fetchTeams: () => {
     return apiClient.request("/api/team","GET"); 

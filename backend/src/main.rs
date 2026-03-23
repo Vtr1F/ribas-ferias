@@ -4,8 +4,10 @@ mod routes;
 mod database;
 mod state;
 
+use axum::http::Method;
 use database::db::create_pool;
 use dotenv::dotenv;
+use tower_http::cors::CorsLayer;
 use std::{env, net::SocketAddr, sync::Arc};
 
 use crate::state::AppState;
@@ -16,6 +18,12 @@ async fn main() {
 
     // Load environment variables from .env file
     dotenv().ok();
+
+    let cors = CorsLayer::new()
+        // Allow requests from your React Vite dev server
+        .allow_origin("http://localhost:5173".parse::<axum::http::HeaderValue>().unwrap())// .allow_origin(Any) para aceitar qualquer origem
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers([axum::http::header::CONTENT_TYPE, axum::http::header::AUTHORIZATION]);
 
     let db_url = std::env::var("DATABASE_URL")
     .expect("Database URL not found");
@@ -41,11 +49,12 @@ async fn main() {
 
     // Define Routes    
     let app = routes::create_routes(state);
+    let app_with_cors = app.layer(cors);
 
     // Start listening localhost:3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("Server listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app_with_cors).await.unwrap();
 }
 

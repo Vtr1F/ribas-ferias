@@ -1,7 +1,7 @@
 
 import { apiClient } from './apiClient';
 
-export const user_routes = {
+export const UserRoutes = {
   
   getAllUsers: () => {
     return apiClient.request(`/api/users`,`GET`); 

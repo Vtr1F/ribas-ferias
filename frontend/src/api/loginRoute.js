@@ -1,7 +1,7 @@
 
 import { apiClient } from './apiClient';
 
-export const login_routes = {
+export const LoginRoute = {
   
   loginPost: (data) => {
     return apiClient.request(`/auth/login`,`POST`,data); 

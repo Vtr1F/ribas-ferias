@@ -1,7 +1,7 @@
 
 import { apiClient } from './apiClient';
 
-export const types_routes = {
+export const TypeRoutes = {
   
   fetchTypes: () => {
     return apiClient.request(`/api/types`,`GET`); 

@@ -1,5 +1,8 @@
+import { UserRoutes } from '../api/userRoutes';
 import MainLayout from '../layouts/main-layout';
 import './dashboard.css'
+
+const response = await UserRoutes.getAllUsers();
 
 function Dashboard() {
   return (
