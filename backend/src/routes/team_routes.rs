@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use axum::{routing::{get, post}, Router};
+
 use crate::{handlers::team_handler, models::auth_model::AppState};
 
 pub fn routes() -> Router<Arc<AppState>>{

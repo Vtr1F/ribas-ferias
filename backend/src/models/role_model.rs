@@ -1,7 +1,8 @@
 use serde::{Serialize, Deserialize};
+use sqlx::FromRow;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Role {
-    pub id: u64,
+    pub id: i32,
     pub name: String
 }

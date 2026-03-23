@@ -1,2 +1,5 @@
 backend/target/
+backend/.env
+/DATA
+/Conexao
 .env

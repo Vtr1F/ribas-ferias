@@ -1,13 +1,17 @@
-use axum::Json;
-
 use crate::models::request_type_model::RequestType;
+use axum::{Json, extract::State};
+use crate::state::AppState;
 
-pub async fn fetch_types () -> Json<Vec<RequestType>> {
-    let types: Vec<RequestType> = vec![
-        RequestType{id: 1, name: "License".to_string()},
-        RequestType{id: 2, name: "Sick Day".to_string()}, //Select in sqlx
-        RequestType{id: 3, name: "Vacation".to_string()}
-    ];
+pub async fn fetch_types(
+    State(state): State<AppState>
+) -> Json<Vec<RequestType>> {
+
+    let types: Vec<RequestType> = sqlx::query_as(
+        "SELECT id, name FROM request_types"
+    )
+    .fetch_all(&*state.db)
+    .await
+    .expect("Failed to fetch request types");
 
     Json(types)
 }

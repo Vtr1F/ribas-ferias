@@ -4,11 +4,11 @@
 ## Vacation Control System
 ### (Sistema Controlo de Férias)
 
-Sprint 1:
-Sprint 2:
-Sprint 3:
-Sprint 4:
-Sprint 5:
+Sprint 1: Alexandre Rodrigues
+Sprint 2: André Levi
+Sprint 3: Diogo Vieira
+Sprint 4: João Cruz
+Sprint 5: Victor Fonseca
 
 Victor Fonseca 20221246
 André Silva 20241264
@@ -16,6 +16,10 @@ Alexandre Rodrigues 20221233
 Diogo Vieira 20190592
 Joao Cruz 20191212
 
+Library Needed
+Cargo install sqlx
+Cargo install sqlx-cli
+cargo install dotenv
 Changelog
 
 

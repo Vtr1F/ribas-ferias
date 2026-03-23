@@ -1,9 +1,13 @@
 mod models;
 mod handlers;
 mod routes;
+mod database;
+mod state;
 
+use state::AppState;
+use database::db::create_pool;
+use dotenv::dotenv;
 use std::{env, net::SocketAddr, sync::Arc};
-use dotenvy::dotenv;
 
 use crate::models::auth_model::AppState;
 
@@ -11,7 +15,22 @@ use crate::models::auth_model::AppState;
 #[tokio::main]
 async fn main() {
 
+    // Load environment variables from .env file
     dotenv().ok();
+
+    let db_url = std::env::var("DATABASE_URL")
+    .expect("Database URL not found");
+
+    // Create database connection pool
+    let db_pool = create_pool(&db_url).await;
+
+
+    // Run database migrations(Create tables if they dont exist, create new ones with `sqlx migrate add <migration_name>`)
+    // Run `sqlx migrate run` in terminal to execute them
+
+    // Test the database connection
+    //database::db::test_query(&db_pool).await;
+    let state = AppState { db: Arc::new(db_pool),};
 
     let jwt_secret = env::var("JWT_KEY")
         .expect("JWT_KEY should be on .env file");
