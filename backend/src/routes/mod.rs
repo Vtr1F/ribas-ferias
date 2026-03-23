@@ -4,13 +4,26 @@ pub mod request_type_routes;
 pub mod request_routes;
 pub mod team_routes;
 
-use axum::Router;
+use std::sync::Arc;
 
-pub fn create_routes() -> Router {
-    Router::new()
+use axum::{Router, middleware, routing::post};
+
+use crate::{handlers::auth_handler::auth_middleware, models::auth_model::AppState};
+
+pub fn create_routes(state: Arc<AppState>) -> Router<()> {
+    let protected_routes = Router::new()
         .nest("/users", user_routes::routes())
         .nest("/roles", role_routes::routes())
         .nest("/types", request_type_routes::routes())
         .nest("/requests", request_routes::routes())
         .nest("/team", team_routes::routes())
+        .layer(middleware::from_fn_with_state(state.jwt_secret.clone(), auth_middleware));
+    
+    let public_routes = Router::<Arc<AppState>>::new() 
+        .route("/login", post(crate::handlers::auth_handler::login));
+
+    Router::new()
+        .nest("/api", protected_routes)
+        .nest("/auth", public_routes)
+        .with_state(state)
 }
