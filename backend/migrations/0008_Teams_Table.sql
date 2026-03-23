@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS teams (
     description TEXT,
     leader_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     members INTEGER[] DEFAULT '{}', -- vector of user IDs
-    created_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
 

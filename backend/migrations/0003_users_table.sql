@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     role_id INTEGER REFERENCES roles(id),
     superior_id INTEGER REFERENCES users(id), -- Auto-relacionamento
     dias_ferias_disponiveis INTEGER DEFAULT 22,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP NOT NULL WITH TIME ZONE DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
 
