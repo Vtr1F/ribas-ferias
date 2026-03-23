@@ -1,3 +1,9 @@
+backend/target/
+backend/.env
+/DATA
+/Conexao
+.env
+
 # Logs
 logs
 *.log
