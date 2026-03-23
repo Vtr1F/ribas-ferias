@@ -4,7 +4,6 @@ mod routes;
 mod database;
 mod state;
 
-use state::AppState;
 use database::db::create_pool;
 use dotenv::dotenv;
 use std::{env, net::SocketAddr, sync::Arc};
@@ -30,7 +29,7 @@ async fn main() {
 
     // Test the database connection
     //database::db::test_query(&db_pool).await;
-    let state = AppState { db: Arc::new(db_pool),};
+    //let state = AppState { db: Arc::new(db_pool),};
 
     let jwt_secret = env::var("JWT_KEY")
         .expect("JWT_KEY should be on .env file");
