@@ -7,10 +7,6 @@ pub struct Claims {
     pub role: String,  // User role for permissions
 }
 
-pub struct AppState {
-    pub jwt_secret: String,
-}
-
 #[derive(Deserialize)]
 pub struct LoginRequest {
     pub email: String,

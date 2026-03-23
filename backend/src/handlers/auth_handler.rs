@@ -4,7 +4,7 @@ use axum::{
     Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::{IntoResponse, Response}
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use crate::models::{auth_model::{AppState, Claims, LoginRequest}};
+use crate::{models::auth_model::{Claims, LoginRequest}, state::AppState};
 
 pub async fn auth_middleware(
     state: axum::extract::State<String>, // JWT Secret

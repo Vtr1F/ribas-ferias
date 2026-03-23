@@ -1,15 +1,15 @@
+
 use crate::models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}};
 use axum::{Json, extract::Path, http::StatusCode};
 use axum::extract::State;
 use crate::state::AppState;
-use argon2::{Argon2, PasswordHasher};
-use argon2::password_hash::{SaltString, PasswordHash, PasswordVerifier, rand_core::OsRng};
+use std::sync::Arc;
 use serde_json::json;
 use validator::Validate;
 
 
 
-pub async fn list_users(State(state): State<AppState>) -> Json<Vec<UserPublic>> {
+pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPublic>> {
     
     let rows: Vec<UserPrivate> = sqlx::query_as(
     "SELECT id, nome, email, password_hash, role_id, superior_id,dias_ferias_disponiveis, created_at FROM users")
@@ -35,7 +35,7 @@ pub async fn list_users(State(state): State<AppState>) -> Json<Vec<UserPublic>> 
     Json(users)
 }
 
-pub async fn fetch_user(State(state): State<AppState>, Path(id): Path<i32>) -> Json<UserPublic> {
+pub async fn fetch_user(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> Json<UserPublic> {
     
     let row: UserPrivate = sqlx::query_as(
         "SELECT id, nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, created_at FROM users WHERE id = $1")
@@ -57,7 +57,7 @@ pub async fn fetch_user(State(state): State<AppState>, Path(id): Path<i32>) -> J
 }
 
 
-pub async fn add_user(State(state): State<AppState>,Json(payload): Json<CreateUser>) -> (StatusCode, Json<serde_json::Value>) {
+pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<CreateUser>) -> (StatusCode, Json<serde_json::Value>) {
 
     // 1. Validate input
     if let Err(errors) = payload.validate() {
@@ -102,7 +102,7 @@ pub async fn add_user(State(state): State<AppState>,Json(payload): Json<CreateUs
     (StatusCode::CREATED, Json(json!(public_user)))
 }
 
-pub async fn alter_user(State(state): State<AppState>, Path(_id): Path<i32>, Json(payload): Json<UpdateUser>) -> (StatusCode, Json<serde_json::Value>) {
+pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>, Json(payload): Json<UpdateUser>) -> (StatusCode, Json<serde_json::Value>) {
     
     // 1. Validate input
     if let Err(errors) = payload.validate() {
@@ -152,7 +152,7 @@ pub async fn alter_user(State(state): State<AppState>, Path(_id): Path<i32>, Jso
 }
 
 pub async fn remove_user(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(id): Path<i32>,
 ) -> StatusCode {
 

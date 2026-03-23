@@ -8,7 +8,7 @@ use database::db::create_pool;
 use dotenv::dotenv;
 use std::{env, net::SocketAddr, sync::Arc};
 
-use crate::models::auth_model::AppState;
+use crate::state::AppState;
 
 // Tokio makes main asynchronous
 #[tokio::main]
@@ -29,16 +29,17 @@ async fn main() {
 
     // Test the database connection
     //database::db::test_query(&db_pool).await;
-    //let state = AppState { db: Arc::new(db_pool),};
 
     let jwt_secret = env::var("JWT_KEY")
         .expect("JWT_KEY should be on .env file");
 
-    let state = Arc::new(AppState {
+        
+    let state = Arc::new( AppState { 
+        db: Arc::new(db_pool),
         jwt_secret: jwt_secret.clone()
     });
 
-    // Define Routes
+    // Define Routes    
     let app = routes::create_routes(state);
 
     // Start listening localhost:3000

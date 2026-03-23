@@ -1,9 +1,11 @@
+use std::sync::Arc;
+
 use crate::models::request_type_model::RequestType;
 use axum::{Json, extract::State};
 use crate::state::AppState;
 
 pub async fn fetch_types(
-    State(state): State<AppState>
+    State(state): State<Arc<AppState>>
 ) -> Json<Vec<RequestType>> {
 
     let types: Vec<RequestType> = sqlx::query_as(

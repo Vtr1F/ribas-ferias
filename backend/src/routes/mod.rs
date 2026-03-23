@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use axum::{Router, middleware, routing::post};
 
-use crate::{handlers::auth_handler::auth_middleware, models::auth_model::AppState};
+use crate::{handlers::auth_handler::auth_middleware, state::AppState};
 
 pub fn create_routes(state: Arc<AppState>) -> Router<()> {
     let protected_routes = Router::new()
