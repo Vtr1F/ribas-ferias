@@ -1,15 +1,11 @@
+use std::sync::Arc;
+
 use axum::{routing::{get}, Router};
 
-use crate::handlers::user_handler::{
-    list_users,
-    fetch_user,
-    add_user,
-    alter_user,
-    remove_user,
-};
-use crate::state::AppState;
 
-pub fn routes() -> Router<AppState> { // Added <()>
+use crate::{handlers::user_handler, models::auth_model::AppState};
+
+pub fn routes() -> Router<Arc<AppState>> { 
     Router::new()
         .route("/", get(list_users)
             .post(add_user))

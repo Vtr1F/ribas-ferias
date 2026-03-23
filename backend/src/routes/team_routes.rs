@@ -1,8 +1,10 @@
-use axum::{routing::{get, post}, Router};
-use crate::handlers::{team_handler};
-use crate::state::AppState;
+use std::sync::Arc;
 
-pub fn routes() -> Router<AppState> {
+use axum::{routing::{get, post}, Router};
+
+use crate::{handlers::team_handler, models::auth_model::AppState};
+
+pub fn routes() -> Router<Arc<AppState>>{
     Router::new()
         .route("/", get(team_handler::fetch_teams)
             .post(team_handler::add_team))

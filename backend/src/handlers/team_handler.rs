@@ -278,4 +278,5 @@ fn internal_error<E: std::fmt::Display>(err: E) -> (axum::http::StatusCode, Stri
         axum::http::StatusCode::INTERNAL_SERVER_ERROR,
         format!("Internal server error: {}", err),
     )
+    StatusCode::OK
 }

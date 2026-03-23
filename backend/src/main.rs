@@ -4,11 +4,12 @@ mod routes;
 mod database;
 mod state;
 
-use std::net::SocketAddr;
-use std::sync::Arc;
 use state::AppState;
 use database::db::create_pool;
 use dotenv::dotenv;
+use std::{env, net::SocketAddr, sync::Arc};
+
+use crate::models::auth_model::AppState;
 
 // Tokio makes main asynchronous
 #[tokio::main]
@@ -31,8 +32,15 @@ async fn main() {
     //database::db::test_query(&db_pool).await;
     let state = AppState { db: Arc::new(db_pool),};
 
+    let jwt_secret = env::var("JWT_KEY")
+        .expect("JWT_KEY should be on .env file");
+
+    let state = Arc::new(AppState {
+        jwt_secret: jwt_secret.clone()
+    });
+
     // Define Routes
-    let app = routes::create_routes().with_state(state);
+    let app = routes::create_routes(state);
 
     // Start listening localhost:3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -40,3 +48,4 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
+
