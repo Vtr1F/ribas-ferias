@@ -1,7 +1,10 @@
+import { UserRoutes } from '../api/userRoutes';
 import MainLayout from '../layouts/main-layout';
 import './dashboard.css'
 
-function Dashboard() {
+const response = await UserRoutes.getAllUsers();
+
+function Users() {
   return (
     <MainLayout>
       <main>
@@ -11,4 +14,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Users;

@@ -6,7 +6,6 @@ import './login.css'
 
 function Login() {
   const navigate = useNavigate(); // Criamos a função de navegação
-  localStorage.setItem('token', '');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,9 +17,11 @@ function Login() {
     try{
       
       const token = await LoginRoute.loginPost({ email, password });
-      console.log(token);
-      
+      if (token) {
+        localStorage.setItem('token', token);
 
+        navigate('/dashboard');
+      }
     } catch(err) {
 
       console.error(err);
