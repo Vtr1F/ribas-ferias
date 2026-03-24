@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../layouts/login-layout';
-import { LoginRoutes } from '../api/loginRoute';
+import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
 import './login.css'
 
 function Login() {
   const navigate = useNavigate(); // Criamos a função de navegação
+  localStorage.setItem('token', '');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,16 +15,19 @@ function Login() {
   const handleLogin = async (e) =>{
     e.preventDefault(); // Evita que a página recarregue
     setError(''); // Clear old errors
+    try{
+      
+      const token = await LoginRoute.loginPost({ email, password });
+      console.log(token);
+      
 
-      const token = await LoginRoutes.loginPost({ email, password });
+    } catch(err) {
 
-      if (token) {
-        // Save the string to localStorage
-        localStorage.setItem('token', token);
-        navigate('/dashboard');
-      }
+      console.error(err);
+      setError('Credenciais Não Encontradas');
+
+    }
   };
-// Aqui pode-se adicionar lógica de validação no futuro
 
   return (
     <LoginLayout>

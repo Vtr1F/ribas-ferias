@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
-    pub sub: u64,      // ID
+    pub sub: i32,      // ID
     pub exp: usize,    // Expiration time
-    pub role: String,  // User role for permissions
+    pub role: i32,  // User role for permissions
 }
 
 #[derive(Deserialize)]

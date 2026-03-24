@@ -4,7 +4,16 @@ use axum::{
     Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::{IntoResponse, Response}
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use crate::{models::auth_model::{Claims, LoginRequest}, state::AppState};
+use sqlx::Postgres;
+use crate::{models::{auth_model::{Claims, LoginRequest}, user_model::UserPrivate}, state::AppState};
+
+#[derive(sqlx::FromRow)]
+struct UserRow {
+    id: i32,
+    email: String,
+    password_hash: String,
+    role_id: i32,
+}
 
 pub async fn auth_middleware(
     state: axum::extract::State<String>, // JWT Secret
@@ -39,13 +48,24 @@ pub async fn login(
 ) -> Result<Json<String>, StatusCode> {
     
     // DB check
-    if payload.email == "admin@ribas.pt" && payload.password == "admin123" {
+ let user_result = sqlx::query_as::<_, UserRow>(
+    "SELECT id, email, password_hash, role_id FROM users WHERE email = $1"
+    )
+    .bind(&payload.email)
+    .fetch_one(&*state.db) 
+    .await;
+
+    let user = user_result.map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    if payload.password != user.password_hash  {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
         
         // Token data
         let my_claims = Claims {
-            sub: 1, // Mock User ID
+            sub: user.id, // Mock User ID
             exp: 10000000000, // Set a very far future date for testing
-            role: "Admin".to_string(),
+            role: user.role_id,
         };
 
         let token = encode(
@@ -55,8 +75,4 @@ pub async fn login(
         ).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
         Ok(Json(token))
-    } else {
-        // If credentials don't match
-        Err(StatusCode::UNAUTHORIZED)
-    }
 }
