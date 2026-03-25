@@ -3,6 +3,7 @@ mod handlers;
 mod routes;
 mod database;
 mod state;
+mod utils;
 
 use axum::http::Method;
 use database::db::create_pool;
@@ -10,7 +11,7 @@ use dotenv::dotenv;
 use tower_http::cors::CorsLayer;
 use std::{env, net::SocketAddr, sync::Arc};
 
-use crate::state::AppState;
+use crate::{state::AppState, utils::hash_password};
 
 // Tokio makes main asynchronous
 #[tokio::main]
@@ -31,6 +32,8 @@ async fn main() {
     // Create database connection pool
     let db_pool = create_pool(&db_url).await;
 
+
+    println!("aq {}", hash_password("hashed_password_1").await);
 
     // Run database migrations(Create tables if they dont exist, create new ones with `sqlx migrate add <migration_name>`)
     // Run `sqlx migrate run` in terminal to execute them

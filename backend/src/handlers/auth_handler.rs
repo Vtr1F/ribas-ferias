@@ -1,16 +1,15 @@
 use std::sync::Arc;
 
+use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use axum::{
-    Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::{IntoResponse, Response}
+    Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::Response
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use sqlx::Postgres;
-use crate::{models::{auth_model::{Claims, LoginRequest}, user_model::UserPrivate}, state::AppState};
+use crate::{models::{auth_model::{Claims, LoginRequest, PasswordReset}, team_model::User, user_model::UserPrivate}, state::AppState};
 
 #[derive(sqlx::FromRow)]
 struct UserRow {
     id: i32,
-    email: String,
     password_hash: String,
     role_id: i32,
 }
@@ -48,8 +47,8 @@ pub async fn login(
 ) -> Result<Json<String>, StatusCode> {
     
     // DB check
- let user_result = sqlx::query_as::<_, UserRow>(
-    "SELECT id, email, password_hash, role_id FROM users WHERE email = $1"
+    let user_result = sqlx::query_as::<_, UserRow>(
+    "SELECT id, password_hash, role_id FROM users WHERE email = $1"
     )
     .bind(&payload.email)
     .fetch_one(&*state.db) 

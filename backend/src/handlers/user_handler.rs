@@ -1,5 +1,5 @@
 
-use crate::models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}};
+use crate::{models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}}, utils::hash_password};
 use axum::{Json, extract::Path, http::StatusCode};
 use axum::extract::State;
 use crate::state::AppState;
@@ -16,7 +16,7 @@ pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPubl
     .fetch_all(&*state.db)
     .await
     .expect("Failed to fetch users");
-
+    
     let mut users = Vec::new();
 
     for row in rows {
@@ -59,7 +59,7 @@ pub async fn fetch_user(State(state): State<Arc<AppState>>, Path(id): Path<i32>)
 
 pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<CreateUser>) -> (StatusCode, Json<serde_json::Value>) {
 
-    // 1. Validate input
+    // Validate input
     if let Err(errors) = payload.validate() {
         return (
             StatusCode::BAD_REQUEST,
@@ -70,8 +70,10 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
         );
     }
 
+    // Hash Password
+    let hashed: String = hash_password(&payload.password).await;
 
-    // 3. Insert into DB
+    // Insert into DB
     let row: UserPrivate = sqlx::query_as(
         "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis)
          VALUES ($1, $2, $3, $4, $5, $6)
@@ -79,7 +81,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     )
     .bind(&payload.nome)
     .bind(&payload.email)
-    .bind(&payload.password)
+    .bind(&hashed)
     .bind(payload.role_id)
     .bind(payload.superior_id)
     .bind(payload.dias_ferias_disponiveis)
@@ -87,7 +89,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .await
     .expect("Failed to insert user");
 
-    // 4. Fetch role
+    // Fetch role
     let role: Role = sqlx::query_as(
         "SELECT id, nome FROM roles WHERE id = $1"
     )
@@ -96,7 +98,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .await
     .unwrap();
 
-    // 5. Convert to public
+    // Convert to public
     let public_user = row.into_public(role);
 
     (StatusCode::CREATED, Json(json!(public_user)))

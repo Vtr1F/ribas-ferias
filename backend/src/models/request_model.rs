@@ -24,7 +24,6 @@ pub struct RequestInput {
 }
 
 
-
 #[derive(Serialize, Deserialize, Type, Debug)]
 #[sqlx(type_name = "request_status")]
 pub enum Status {

@@ -19,3 +19,4 @@ jsonwebtoken = { version = "10.3", features = ["rust_crypto"] }
 axum-extra = { version = "0.12.5", features = ["typed-header"] }
 dotenvy = "0.15"
 sqlx-cli = "0.8.6"
+password-hash = "0.6"
