@@ -1,5 +1,7 @@
-use std::time::Instant;
-use sqlx::{Pool, Postgres};
+use std::{sync::Arc, time::Instant};
+use sqlx::{Pool, Postgres, Error};
+use crate::{models::user_model::User, state::AppState};
+use axum::extract::State;
 
 pub async fn create_pool(url: &str) -> Pool<Postgres> {
     Pool::<Postgres>::connect(url)
@@ -8,18 +10,37 @@ pub async fn create_pool(url: &str) -> Pool<Postgres> {
 
 }
 
-// Example function to tes the database connection and query execution time
-pub async fn test_query(db_pool: &Pool<Postgres>) {
-    let start = Instant::now();
 
-    let row = sqlx::query("SELECT * FROM users")
-        .fetch_all(db_pool)
-        .await
-        .expect("Failed to execute query");
+pub async fn find_user_by_email(
+    db: &Pool<Postgres>,
+    email: &str,
+) -> Result<Option<User>, sqlx::Error> {
+    let user = sqlx::query_as::<_, User>(
+        "SELECT id, email, password_hash FROM users WHERE email = $1"
+    )
+    .bind(email)
+    .fetch_optional(db)
+    .await?;
 
-    let duration = start.elapsed();
+    Ok(user)
+}
 
+pub async fn update_user_password(
+    db: &Pool<Postgres>,
+    user_id: &str,
+    new_hash: &str,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        UPDATE users
+        SET password_hash = $1
+        WHERE id = $2
+        "#,
+    )
+    .bind(new_hash)
+    .bind(user_id)
+    .execute(db)
+    .await?;
 
-    println!("{:#?}", row);
-    println!("Query took: {:?}", duration);
+    Ok(())
 }

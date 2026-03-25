@@ -3,6 +3,7 @@ mod handlers;
 mod routes;
 mod database;
 mod state;
+mod mailer;
 mod utils;
 
 use axum::http::Method;
@@ -10,6 +11,7 @@ use database::db::create_pool;
 use dotenv::dotenv;
 use tower_http::cors::CorsLayer;
 use std::{env, net::SocketAddr, sync::Arc};
+use mailer::mailer::MailService;
 
 use crate::{state::AppState, utils::hash_password};
 
@@ -35,6 +37,7 @@ async fn main() {
 
     println!("aq {}", hash_password("hashed_password_1").await);
 
+
     // Run database migrations(Create tables if they dont exist, create new ones with `sqlx migrate add <migration_name>`)
     // Run `sqlx migrate run` in terminal to execute them
 
@@ -47,7 +50,8 @@ async fn main() {
         
     let state = Arc::new( AppState { 
         db: Arc::new(db_pool),
-        jwt_secret: jwt_secret.clone()
+        jwt_secret: jwt_secret.clone(),
+        mail_service: Arc::new(MailService::new()),
     });
 
     // Define Routes    
@@ -57,7 +61,13 @@ async fn main() {
     // Start listening localhost:3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("Server listening on {}", addr);
+
+
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app_with_cors).await.unwrap();
 }
+
+
+
+
 

@@ -80,4 +80,11 @@ fn validate_ribas_email(email: &str) -> Result<(), validator::ValidationError> {
     }
 }
 
+#[derive(Debug, FromRow, Clone)]
+pub struct User {
+    pub id: String,
+    pub email: String,
+    pub password_hash: String,
+}
+
 

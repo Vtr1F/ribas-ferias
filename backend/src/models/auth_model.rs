@@ -16,3 +16,10 @@ pub struct LoginRequest {
 pub struct PasswordReset {
     pub email: String
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResetClaims {
+    pub sub: String,   // user id
+    pub exp: i64,      // expiration timestamp
+    pub kind: String,  // must be "password_reset"
+}

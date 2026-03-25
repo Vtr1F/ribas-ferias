@@ -1,11 +1,12 @@
 use std::sync::Arc;
+use chrono::{Utc, Duration};
 
 use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use axum::{
     Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::Response
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use crate::{models::{auth_model::{Claims, LoginRequest, PasswordReset}, team_model::User, user_model::UserPrivate}, state::AppState};
+use crate::{models::{auth_model::{Claims, LoginRequest}, team_model::User, user_model::UserPrivate}, state::AppState};
 
 #[derive(sqlx::FromRow)]
 struct UserRow {
@@ -83,4 +84,44 @@ pub async fn login(
         ).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
         Ok(Json(token))
+}
+
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResetClaims {
+    pub sub: String,   // user id
+    pub exp: i64,      // expiration timestamp
+    pub kind: String,  // must be "password_reset"
+}
+
+pub fn generate_reset_token(user_id: &str, secret: &str) -> String {
+    let exp = (Utc::now() + Duration::minutes(30)).timestamp();
+
+    let claims = ResetClaims {
+        sub: user_id.to_string(),
+        exp,
+        kind: "password_reset".into(),
+    };
+
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+    .unwrap()
+}
+
+pub fn validate_reset_token(token: &str, secret: &str) -> Result<ResetClaims, ()> {
+    let data = decode::<ResetClaims>(
+        token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::default(),
+    ).map_err(|_| ())?;
+
+    if data.claims.kind != "password_reset" {
+        return Err(());
+    }
+
+    Ok(data.claims)
 }
