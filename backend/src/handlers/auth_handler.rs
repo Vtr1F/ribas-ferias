@@ -56,7 +56,16 @@ pub async fn login(
 
     let user = user_result.map_err(|_| StatusCode::UNAUTHORIZED)?;
 
-    if payload.password != user.password_hash  {
+    let expected_hash = PasswordHash::new(&user.password_hash)
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let result = Argon2::default().verify_password(
+        payload.password.as_bytes(), 
+        &expected_hash
+    );
+
+
+    if result.is_err() {
         return Err(StatusCode::UNAUTHORIZED);
     }
         

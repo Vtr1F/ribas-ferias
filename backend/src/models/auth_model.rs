@@ -12,3 +12,7 @@ pub struct LoginRequest {
     pub email: String,
     pub password: String
 }
+
+pub struct PasswordReset {
+    pub email: String
+}
