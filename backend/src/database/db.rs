@@ -1,7 +1,6 @@
-use std::{sync::Arc, time::Instant};
-use sqlx::{Pool, Postgres, Error};
-use crate::{models::user_model::User, state::AppState};
-use axum::extract::State;
+
+use sqlx::{Pool, Postgres};
+use crate::{models::user_model::User};
 
 pub async fn create_pool(url: &str) -> Pool<Postgres> {
     Pool::<Postgres>::connect(url)

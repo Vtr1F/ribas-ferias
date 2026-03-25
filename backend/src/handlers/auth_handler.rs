@@ -6,7 +6,7 @@ use axum::{
     Json, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::Response
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use crate::{models::{auth_model::{Claims, LoginRequest}, team_model::User, user_model::UserPrivate}, state::AppState};
+use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}, team_model::User, user_model::UserPrivate}, state::AppState};
 
 #[derive(sqlx::FromRow)]
 struct UserRow {
@@ -86,14 +86,7 @@ pub async fn login(
         Ok(Json(token))
 }
 
-use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ResetClaims {
-    pub sub: String,   // user id
-    pub exp: i64,      // expiration timestamp
-    pub kind: String,  // must be "password_reset"
-}
 
 pub fn generate_reset_token(user_id: &str, secret: &str) -> String {
     let exp = (Utc::now() + Duration::minutes(30)).timestamp();

@@ -13,10 +13,6 @@ pub struct LoginRequest {
     pub password: String
 }
 
-pub struct PasswordReset {
-    pub email: String
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResetClaims {
     pub sub: String,   // user id

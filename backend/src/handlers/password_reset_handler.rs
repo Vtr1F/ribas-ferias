@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use crate::handlers::auth_handler::validate_reset_token;
-use crate::models::auth_model::Claims;
 use crate::state::AppState;
 use axum::http::StatusCode;
 use axum::Json;
@@ -8,9 +7,7 @@ use axum::extract::State;
 use crate::models::request_password::PasswordResetRequest;
 use crate::database::db::find_user_by_email;
 use crate::database::db::update_user_password;
-use jsonwebtoken::{decode, DecodingKey, Validation};
 use crate::models::reset_password::PasswordResetPayload;
-use crate::models::auth_model::ResetClaims;
 use crate::handlers::auth_handler::generate_reset_token;
 use crate::utils::hash_password;
 
