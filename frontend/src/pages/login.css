@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Questrial&display=swap');
+
+.login-container {
+  background-color: #ffffff;
+  font-family: 'Questrial', sans-serif;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;            /* Responsivo para telemóveis */
+  max-width: 400px;      /* Não cresce mais que isto em PCs */
+  text-align: center;
+}
+
+.login-container h2 {
+  font-family: 'Roboto', sans-serif;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.login-container input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+/* ESTE É O BOTÃO DE LOGIN (AZUL) */
+.login-container button[type="submit"] {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.login-container button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* ESTE É O BOTÃO DE ESQUECI A SENHA (TEXTO PRETO) */
+.forgot-password-btn {
+  display: inline-block;
+  background: none !important;
+  border: none !important;
+  color: #333 !important; /* Força a cor preta/cinza escuro */
+  text-decoration: underline !important;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 15px;
+  padding: 5px;
+  width: auto;
+}
+
+.forgot-password-btn:hover {
+  color: #000 !important;
+  background: none !important;
+}

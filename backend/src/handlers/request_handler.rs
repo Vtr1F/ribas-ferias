@@ -1,17 +1,16 @@
-use axum::extract::Path;
+use std::sync::Arc;
+
+use axum::extract::{Path, State};
 use axum::http::{StatusCode};
 use axum::{Json};
-use axum::{extract::State};
 use crate::state::AppState;
 
-use crate::models::request_type_model::RequestType;
-use crate::models::request_model::Request;
-use crate::models::request_model::Status;
-use crate::models::request_model::RequestInput;
-
+use crate::models::request_type_model::{RequestType};
+use crate::models::request_model::{Request, RequestInput, Status};
+use sqlx;
 
 pub async fn fetch_requests(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
 ) -> Json<Vec<Request>> {
 
     let rows = sqlx::query!(
@@ -55,7 +54,7 @@ pub async fn fetch_requests(
 
 
 pub async fn fetch_user_requests(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(user_id): Path<i32>,
 ) -> Json<Vec<Request>> {
 
@@ -102,7 +101,7 @@ pub async fn fetch_user_requests(
 
 
 pub async fn fetch_team_requests(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(team_id): Path<i32>,
 ) -> Result<Json<Vec<Request>>, (StatusCode, String)> {
 
@@ -170,7 +169,7 @@ pub async fn fetch_team_requests(
 
 
 pub async fn fetch_request(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(request_id): Path<i32>,
 ) -> Result<Json<Request>, (StatusCode, String)> {
 
@@ -217,7 +216,7 @@ pub async fn fetch_request(
 
 
 pub async fn add_request(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Json(payload): Json<RequestInput>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
@@ -272,7 +271,7 @@ pub async fn add_request(
 
 
 pub async fn accept_request(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(request_id): Path<i32>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
@@ -329,7 +328,7 @@ pub async fn accept_request(
 
 
 pub async fn reject_request(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(request_id): Path<i32>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 

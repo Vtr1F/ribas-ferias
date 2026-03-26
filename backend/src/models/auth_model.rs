@@ -2,17 +2,20 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
-    pub sub: u64,      // ID
+    pub sub: i32,      // ID
     pub exp: usize,    // Expiration time
-    pub role: String,  // User role for permissions
-}
-
-pub struct AppState {
-    pub jwt_secret: String,
+    pub role: i32,  // User role for permissions
 }
 
 #[derive(Deserialize)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResetClaims {
+    pub sub: i32,   // user id
+    pub exp: i64,      // expiration timestamp
+    pub kind: String,  // must be "password_reset"
 }

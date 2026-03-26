@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::models::{role_model::Role, team_model::TeamWithUsers, user_model::{CreateUser, UserPublic}};
 use axum::{Json, extract::Path,extract::State, http::StatusCode};
 use crate::state::AppState;
@@ -5,7 +7,7 @@ use crate::models::team_model::{Team, MemberWithUser, User};
 
 
 pub async fn fetch_teams(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
 ) -> Json<Vec<Team>> {
 
     let teams = sqlx::query!(
@@ -58,7 +60,7 @@ pub async fn fetch_teams(
 }
 
 pub async fn fetch_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(team_id): Path<i32>,
 ) -> Result<Json<TeamWithUsers>, (StatusCode, String)> {
 
@@ -125,7 +127,7 @@ pub async fn fetch_team(
     
 
 pub async fn alter_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Json(payload): Json<Team>,
 ) -> (StatusCode, Json<Team>) {
     // DB returns Option<Vec<i32>> for members
@@ -172,7 +174,7 @@ pub async fn alter_team(
 
 
 pub async fn add_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Json(payload): Json<Team>
 ) -> (StatusCode, Json<Team>) {
 
@@ -193,7 +195,7 @@ pub async fn add_team(
 }
 
 pub async fn add_to_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path((team_id, user_id)): Path<(i32, i32)>
 ) -> (StatusCode, Json<Team>) {
 
@@ -213,7 +215,7 @@ pub async fn add_to_team(
 }
 
 pub async fn remove_from_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path((team_id, user_id)): Path<(i32, i32)>
 ) -> (StatusCode, Json<Team>) {
 
@@ -233,7 +235,7 @@ pub async fn remove_from_team(
 }
 
 pub async fn alter_team_lead(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path((team_id, lead_id)): Path<(i32, i32)>
 ) -> (StatusCode, Json<Team>) {
 
@@ -254,7 +256,7 @@ pub async fn alter_team_lead(
 }
 
 pub async fn remove_team(
-    State(state): State<AppState>,
+    State(state): State<Arc<AppState>>,
     Path(team_id): Path<i32>
 ) -> StatusCode {
 
@@ -278,5 +280,4 @@ fn internal_error<E: std::fmt::Display>(err: E) -> (axum::http::StatusCode, Stri
         axum::http::StatusCode::INTERNAL_SERVER_ERROR,
         format!("Internal server error: {}", err),
     )
-    StatusCode::OK
 }

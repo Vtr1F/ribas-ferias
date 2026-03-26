@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{routing::{get}, Router};
 
 
-use crate::{handlers::request_type_handler, models::auth_model::AppState};
+use crate::{handlers::request_type_handler, state::AppState};
 
 pub fn routes() -> Router<Arc<AppState>> { 
     Router::new()

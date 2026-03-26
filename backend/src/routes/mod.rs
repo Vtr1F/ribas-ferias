@@ -3,12 +3,13 @@ pub mod role_routes;
 pub mod request_type_routes;
 pub mod request_routes;
 pub mod team_routes;
+pub mod password_reset_routes;
 
 use std::sync::Arc;
 
 use axum::{Router, middleware, routing::post};
 
-use crate::{handlers::auth_handler::auth_middleware, models::auth_model::AppState};
+use crate::{handlers::auth_handler::auth_middleware, state::AppState};
 
 pub fn create_routes(state: Arc<AppState>) -> Router<()> {
     let protected_routes = Router::new()
@@ -20,7 +21,8 @@ pub fn create_routes(state: Arc<AppState>) -> Router<()> {
         .layer(middleware::from_fn_with_state(state.jwt_secret.clone(), auth_middleware));
     
     let public_routes = Router::<Arc<AppState>>::new() 
-        .route("/login", post(crate::handlers::auth_handler::login));
+        .route("/login", post(crate::handlers::auth_handler::login))
+        .nest("/password", password_reset_routes::routes());
 
     Router::new()
         .nest("/api", protected_routes)
