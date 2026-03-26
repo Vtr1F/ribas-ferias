@@ -15,7 +15,7 @@ pub struct LoginRequest {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ResetClaims {
-    pub sub: String,   // user id
+    pub sub: i32,   // user id
     pub exp: i64,      // expiration timestamp
     pub kind: String,  // must be "password_reset"
 }

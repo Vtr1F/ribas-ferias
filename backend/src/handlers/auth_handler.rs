@@ -88,11 +88,11 @@ pub async fn login(
 
 
 
-pub fn generate_reset_token(user_id: &str, secret: &str) -> String {
+pub fn generate_reset_token(user_id: &i32, secret: &str) -> String {
     let exp = (Utc::now() + Duration::minutes(30)).timestamp();
 
     let claims = ResetClaims {
-        sub: user_id.to_string(),
+        sub: *user_id,
         exp,
         kind: "password_reset".into(),
     };

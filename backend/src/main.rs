@@ -34,10 +34,6 @@ async fn main() {
     // Create database connection pool
     let db_pool = create_pool(&db_url).await;
 
-
-    println!("aq {}", hash_password("hashed_password_1").await);
-
-
     // Run database migrations(Create tables if they dont exist, create new ones with `sqlx migrate add <migration_name>`)
     // Run `sqlx migrate run` in terminal to execute them
 

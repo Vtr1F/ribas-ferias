@@ -26,7 +26,7 @@ pub async fn find_user_by_email(
 
 pub async fn update_user_password(
     db: &Pool<Postgres>,
-    user_id: &str,
+    user_id: &i32,
     new_hash: &str,
 ) -> Result<(), sqlx::Error> {
     sqlx::query(

@@ -36,7 +36,7 @@ impl MailService {
         to: &str,
         reset_token: &str,
     ) -> Result<Message, Box<dyn std::error::Error + Send + Sync>> {
-        let reset_link = format!("{}/reset-password?token={}", self.frontend_base_url, reset_token);
+        let reset_link = format!("{}/new-password?token={}", self.frontend_base_url, reset_token);
 
         let body = format!(
             "Olá,\n\n\

@@ -28,7 +28,7 @@ export const apiClient = {
         throw new Error(`Erro na API: ${response.status}`);
       }
 
-      if (response.status === 204) return null;
+      if (response.status === 204) return true;
 
       return await response.json();
     } catch (err) {

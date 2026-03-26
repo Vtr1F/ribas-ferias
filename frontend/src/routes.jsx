@@ -1,9 +1,11 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import MainLayout from './layouts/main-layout';
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Dashboard = lazy(() => import('./pages/dashboard'));
 const Users = lazy(() => import('./pages/users'));
-const Login = lazy(() => import('./pages/Login'));
+const Login = lazy(() => import('./pages/login'));
+const ResetPassword = lazy(() => import('./pages/reset_password'));
+const NewPassword = lazy(() => import('./pages/new_password'));
 
 const Loading = () => <div className="loading-spinner">Carregando...</div>;
 
@@ -22,6 +24,23 @@ export const router = createBrowserRouter([
       <Suspense fallback={<Loading />}>
         <Login />
       </Suspense>
+    ),
+  },
+  
+  {
+    path: "/forgot-password",
+    element: (
+        <Suspense fallback={<Loading />}>
+            <ResetPassword />
+        </Suspense>
+    ),
+  },
+  {
+    path: "/new-password",
+    element: (
+        <Suspense fallback={<Loading />}>
+            <NewPassword />
+        </Suspense>
     ),
   },
 

@@ -28,13 +28,12 @@ pub async fn request_password_reset(
     let user = user.unwrap();
 
     // 2. Generate JWT reset token
-    let jwt_secret = std::env::var("JWT_SECRET").unwrap();
+    let jwt_secret = state.jwt_secret.as_ref();
     let reset_token = generate_reset_token(&user.id, &jwt_secret);
-
     // 3. Send email
     state
         .mail_service
-        .send_reset_email(&payload.email, &reset_token)
+        .send_reset_email("victor.fonseca.f2@gmail.com", &reset_token) //email para testes deveria ser &payload.email
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -45,7 +44,8 @@ pub async fn reset_password(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<PasswordResetPayload>,
 ) -> Result<StatusCode, StatusCode> {
-    let jwt_secret = std::env::var("JWT_SECRET").unwrap();
+    
+    let jwt_secret = state.jwt_secret.as_ref();
 
     // 1. Validate token
     let claims = validate_reset_token(&payload.token, &jwt_secret)
@@ -60,6 +60,7 @@ pub async fn reset_password(
     update_user_password(&*state.db,&user_id, &hashed.await.to_string())
     .await
     .map_err(|_: sqlx::Error| StatusCode::INTERNAL_SERVER_ERROR)?;
+
 
     Ok(StatusCode::NO_CONTENT)
 }
