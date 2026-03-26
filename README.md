@@ -22,6 +22,10 @@ Cargo install sqlx-cli
 cargo install dotenv
 Changelog
 
+Make sure to set your SMTP variables
+SMTP_HOST
+SMTP_PASS
+SMTP_USER
 
 17/03
 Backend API Receives and Process Requests (No DB)
@@ -29,3 +33,6 @@ Database Tables created
 
 19/03
 Backend Uses JWT tokens for authentication and session control
+
+25/03
+Added Password Reset and Request using JWT and Mail Service USING SMTP
