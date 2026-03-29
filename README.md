@@ -4,37 +4,37 @@
 ## Vacation Control System
 ### (Sistema Controlo de Férias)
 
-Sprint 1: Alexandre Rodrigues_
-Sprint 2: André Levi_
-Sprint 3: Diogo Vieira_
-Sprint 4: João Cruz_
-Sprint 5: Victor Fonseca
+Sprint 1: Alexandre Rodrigues <br/>
+Sprint 2: André Levi <br/>
+Sprint 3: Diogo Vieira <br/>
+Sprint 4: João Cruz <br/>
+Sprint 5: Victor Fonseca <br/>
 
-Victor Fonseca 20221246_
-André Silva 20241264_
-Alexandre Rodrigues 20221233_
-Diogo Vieira 20190592_
-Joao Cruz 20191212
+Victor Fonseca 20221246 <br/>
+André Silva 20241264 <br/>
+Alexandre Rodrigues 20221233 <br/>
+Diogo Vieira 20190592 <br/>
+Joao Cruz 20191212 <br/>
 
-Library Needed_
-Cargo install sqlx_
-Cargo install sqlx-cli_
-cargo install dotenv_
+Library Needed <br/>
+Cargo install sqlx <br/>
+Cargo install sqlx-cli <br/>
+cargo install dotenv <br/>
 
 Changelog
 
 Make sure to set your SMTP variables
 
-SMTP_HOST_
-SMTP_PASS_
-SMTP_USER_
+SMTP_HOST <br/>
+SMTP_PASS <br/>
+SMTP_USER <br/>
 
-17/03_
-Backend API Receives and Process Requests (No DB)__
+17/03 <br/>
+Backend API Receives and Process Requests (No DB) <br/>
 Database Tables created
 
-19/03_
+19/03 <br/>
 Backend Uses JWT tokens for authentication and session control
 
-25/03_
+25/03 <br/>
 Added Password Reset and Request using JWT and Mail Service USING SMTP
