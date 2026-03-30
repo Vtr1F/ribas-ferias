@@ -15,6 +15,7 @@ André Silva 20241264 <br/>
 Alexandre Rodrigues 20221233 <br/>
 Diogo Vieira 20190592 <br/>
 Joao Cruz 20191212 <br/>
+Samuel Santos 20240618 <br/>
 
 Library Needed <br/>
 Cargo install sqlx <br/>
