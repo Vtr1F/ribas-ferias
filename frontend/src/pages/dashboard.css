@@ -1,0 +1,56 @@
+
+/* 1. The Container for everything (Gray area) */
+.dashboard-content {
+  margin-left: 220px; /* Stay clear of your sidebar */
+  padding: 40px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  
+}
+
+.year-grid-container {
+  display: flex;
+  flex-wrap: wrap;        /* Allows months to sit side-by-side */
+  gap: 30px;              /* Space between months */
+  justify-content: center; /* Centers cards if the last row isn't full */
+  
+  /* This ensures the grid doesn't just hug the left side */
+  width: 100%; 
+  max-width: 1200px;      /* Adjust this based on how wide you want the 'center' block to be */
+}
+
+/* 3. The Month Card */
+.calendar-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  /* Remove any fixed "width: 300px" here so the grid can control it */
+}
+
+/* 4. The Numbers Grid inside each month */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.weekday-label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  padding: 10px 0;
+  font-size: 14px;
+ 
+}
+
+.calendar-day.empty {
+  visibility: hidden;
+}

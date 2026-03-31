@@ -1,10 +1,10 @@
 import './sidebar.css';
+import MyLogo from '../assets/logo.png';
 
 function Sidebar() {
   return (
     <aside className="sidebar">
-      <ul>
-      </ul>
+      <img src={MyLogo} alt="Ribas Férias Logo" className="sidebar-logo" />
     </aside>
   );
 }
