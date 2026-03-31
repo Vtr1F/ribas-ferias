@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
+import MyLogo from '../assets/logo.png';
 import './login.css'
 
 function Login() {
@@ -32,27 +33,27 @@ function Login() {
 
   return (
     <LoginLayout>
-      <div className="login-container">
-        <h2>Entrar</h2>
-        <form onSubmit={handleLogin}>
-          <input type="email" 
-          value= {email} onChange={(e) => setEmail(e.target.value)} 
-          placeholder="Email" required />
-          <input type="password" 
-          value={password} onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password" required />
-          <button type="submit">Login</button>
-        </form>
-        {error && <p className="error">{error}</p>}
-        {/* Botão de Esqueci a Senha */}
-        <button 
-          className="forgot-password-btn" 
-          onClick={() => navigate('/forgot-password')}
-        >
-          Esqueceu-se da palavra-passe?
-        </button>
-        
-      </div>
+          <div className="login-container">
+            <h2>Entrar</h2>
+            <form onSubmit={handleLogin}>
+              <input type="email" 
+              value= {email} onChange={(e) => setEmail(e.target.value)} 
+              placeholder="Email" required />
+              <input type="password" 
+              value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password" required />
+              <button type="submit">Login</button>
+            </form>
+            {error && <p className="error">{error}</p>}
+            {/* Botão de Esqueci a Senha */}
+            <button 
+              className="forgot-password-btn" 
+              onClick={() => navigate('/forgot-password')}
+            >
+              Esqueceu-se da palavra-passe?
+            </button>
+            
+          </div>
     </LoginLayout>
   );
 }

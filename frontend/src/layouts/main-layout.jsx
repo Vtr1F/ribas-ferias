@@ -9,6 +9,7 @@ const MainLayout = ({ children }) => {
       <Sidebar />
       <main className="content">
         <Outlet /> {/* Layout Rendering */}
+        {children}
       </main>
     </div>
   );

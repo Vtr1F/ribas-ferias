@@ -1,3 +1,4 @@
+import MyLogo from '../assets/logo.png';
 import './login-layout.css';
 
 const LoginLayout = ({ children }) => {
