@@ -7,12 +7,13 @@ pub mod password_reset_routes;
 
 use std::sync::Arc;
 
-use axum::{Router, middleware, routing::post};
+use axum::{Router, middleware, routing::{get, post}};
 
-use crate::{handlers::auth_handler::auth_middleware, state::AppState};
+use crate::{handlers::auth_handler::{auth_middleware, check_auth}, state::AppState};
 
 pub fn create_routes(state: Arc<AppState>) -> Router<()> {
     let protected_routes = Router::new()
+        .route("/check", get(check_auth))
         .nest("/users", user_routes::routes())
         .nest("/roles", role_routes::routes())
         .nest("/types", request_type_routes::routes())
