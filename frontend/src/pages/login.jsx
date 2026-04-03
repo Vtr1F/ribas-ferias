@@ -2,7 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
+<<<<<<< HEAD
 import { useAuth } from '../context/auth-context';
+=======
+import MyLogo from '../assets/logo.png';
+>>>>>>> 437e023d9f252d76adbc0432030387f0bb008b5f
 import './login.css'
 
 function Login() {
