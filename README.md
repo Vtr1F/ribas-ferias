@@ -39,3 +39,6 @@ Backend Uses JWT tokens for authentication and session control
 
 25/03 <br/>
 Added Password Reset and Request using JWT and Mail Service USING SMTP
+
+03/04 <br/>
+Added Cookies for JWT and Role Validation for Restricted Pages

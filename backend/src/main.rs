@@ -23,7 +23,7 @@ async fn main() {
     dotenv().ok();
 
     let cors = CorsLayer::new()
-        // Allow requests from your React Vite dev server
+        .allow_credentials(true)
         .allow_origin("http://localhost:5173".parse::<axum::http::HeaderValue>().unwrap())// .allow_origin(Any) para aceitar qualquer origem
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_headers([axum::http::header::CONTENT_TYPE, axum::http::header::AUTHORIZATION]);

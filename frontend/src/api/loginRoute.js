@@ -13,6 +13,10 @@ export const LoginRoute = {
 
   updatePassword: (data) => {
     return apiClient.request(`/auth/password/reset`,`POST`,data)
-  }
+  },
+
+  checkAuth: () => {
+    return apiClient.request(`/api/check`,`GET`) 
+  },
 
 };

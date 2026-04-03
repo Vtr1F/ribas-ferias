@@ -1,9 +1,16 @@
 .login-layout {
   display: flex;
+  flex-direction: column;
   justify-content: center; 
   align-items: center;     
-  min-height: 90vh;       
-  width: 90vw;            
-  margin: auto;
-  padding: auto;
+  min-height: 100vh;       
+  width: 100%;            
+}
+
+.login-logo {
+  width: 200px;
+  max-width: 90vw;
+  height: auto;
+  margin-bottom: 30px;
+  border-radius: 50%;
 }

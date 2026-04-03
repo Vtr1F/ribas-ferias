@@ -1,0 +1,9 @@
+.dashboard-content {
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.dashboard-content h1 {
+  font-family: 'Questrial', sans-serif;
+  color: #333;
+}
