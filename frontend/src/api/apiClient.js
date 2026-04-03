@@ -4,7 +4,6 @@ export const apiClient = {
   
   // Body é um json
   request: async (endpoint, method = 'GET', body = null) => {
-    const savedToken = localStorage.getItem('token');
     
     try {
       const options = {
@@ -12,13 +11,10 @@ export const apiClient = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include'
       };
 
-      if (savedToken) {
-        options.headers['Authorization'] = `Bearer ${savedToken}`;
-      }
-
-      if (body) {
+      if (body) { 
         options.body = JSON.stringify(body);
       }
 
@@ -28,9 +24,13 @@ export const apiClient = {
         throw new Error(`Erro na API: ${response.status}`);
       }
 
-      if (response.status === 204) return true;
+      const contentType = response.headers.get("content-type");
 
-      return await response.json();
+      if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+      }
+
+      return true;
     } catch (err) {
       console.error("Falha na ligação:", err);
       throw err;

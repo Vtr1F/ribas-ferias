@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
+import { useAuth } from '../context/auth-context';
 import MyLogo from '../assets/logo.png';
 import './login.css'
 
 function Login() {
+  const { setUser } = useAuth();
   const navigate = useNavigate(); // Criamos a função de navegação
 
   const [email, setEmail] = useState('');
@@ -17,10 +19,9 @@ function Login() {
     setError(''); // Clear old errors
     try{
       
-      const token = await LoginRoute.loginPost({ email, password });
-      if (token) {
-        localStorage.setItem('token', token);
-
+      const response = await LoginRoute.loginPost({ email, password });
+      if (!response.err) {
+        setUser(response);
         navigate('/dashboard');
       }
     } catch(err) {
