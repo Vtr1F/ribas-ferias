@@ -1,15 +1,27 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import MainLayout from './layouts/main-layout';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
-const Dashboard = lazy(() => import('./pages/dashboard'));
+const Dashboard = lazy(() => import('./components/dashboard'));
 const Users = lazy(() => import('./pages/users/users'));
+const Profile = lazy(() => import('./components/profile'));
+const Settings = lazy(() => import('./components/settings'));
 const Login = lazy(() => import('./pages/login'));
 const ResetPassword = lazy(() => import('./pages/reset_password'));
 const NewPassword = lazy(() => import('./pages/new_password'));
 
 const Loading = () => <div className="loading-spinner">Carregando...</div>;
+
+const AppLayout = () => (
+  <div style={{ display: 'flex', minHeight: '100vh' }}>
+    <Sidebar />
+    <main style={{ flex: 1, marginLeft: '9vw' }}>
+      <Outlet />
+    </main>
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
@@ -41,7 +53,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
-        <MainLayout /> {/* This component MUST have an <Outlet /> inside it */}
+        <AppLayout />
       </ProtectedRoute>
     ),
     children: [
@@ -61,6 +73,22 @@ export const router = createBrowserRouter([
               <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
                 <Users />
               </ProtectedRoute>
+            </Suspense>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Profile />
+            </Suspense>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Settings />
             </Suspense>
         ),
       },

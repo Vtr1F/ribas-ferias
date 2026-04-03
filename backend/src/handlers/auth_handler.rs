@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use axum_extra::extract::{CookieJar, cookie::{self, Cookie, SameSite}};
 use chrono::{Utc, Duration};
+use time::Duration as TimeDuration;
 
 use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use axum::{
@@ -8,8 +9,11 @@ use axum::{
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}, team_model::User, user_model::UserPrivate}, state::AppState};
+use std::fmt::Debug;
 
-#[derive(sqlx::FromRow)]
+const TOKEN_EXPIRATION_MINUTES: i64 = 15;
+
+#[derive(sqlx::FromRow, Debug)]
 struct UserRow {
     id: i32,
     password_hash: String,
@@ -61,7 +65,9 @@ pub async fn login(
     .fetch_one(&*state.db) 
     .await;
 
+
     let user = user_result.map_err(|_| StatusCode::UNAUTHORIZED)?;
+
 
     let expected_hash = PasswordHash::new(&user.password_hash)
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -77,9 +83,10 @@ pub async fn login(
     }
         
         // Token data
+    let exp = (Utc::now() + Duration::minutes(TOKEN_EXPIRATION_MINUTES)).timestamp() as usize;
     let my_claims = Claims {
         sub: user.id, // Mock User ID
-        exp: 10000000000, // Set a very far future date for testing
+        exp,
         role: user.role_id,
     };
 
@@ -91,13 +98,13 @@ pub async fn login(
 
     let cookie = Cookie::build(("token", token))
         .path("/")
-        .http_only(true)      // JavaScript can't touch this
-        .secure(true)         // Only sent over HTTPS
+        .http_only(true)
+        .secure(true)
         .same_site(SameSite::Lax) 
         .build();
 
 
-    Ok((jar.add(cookie), Json(serde_json::json!({"message": "Logged in safely"}))))
+    Ok((jar.add(cookie), Json(serde_json::json!({"message": "Logged in safely", "id": user.id, "role": user.role_id}))))
 }
 
 
@@ -130,4 +137,57 @@ pub fn validate_reset_token(token: &str, secret: &str) -> Result<ResetClaims, ()
     }
 
     Ok(data.claims)
+}
+
+pub async fn refresh_token(
+    State(state): State<Arc<AppState>>,
+    jar: CookieJar,
+) -> Result<impl IntoResponse, StatusCode> {
+    let old_token = jar
+        .get("token")
+        .map(|cookie| cookie.value().to_string())
+        .ok_or(StatusCode::UNAUTHORIZED)?;
+
+    let token_data = decode::<Claims>(
+        &old_token,
+        &DecodingKey::from_secret(state.jwt_secret.as_ref()),
+        &Validation::default(),
+    ).map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    let exp = (Utc::now() + Duration::minutes(TOKEN_EXPIRATION_MINUTES)).timestamp() as usize;
+    let new_claims = Claims {
+        sub: token_data.claims.sub,
+        exp,
+        role: token_data.claims.role,
+    };
+
+    let new_token = encode(
+        &Header::default(),
+        &new_claims,
+        &EncodingKey::from_secret(state.jwt_secret.as_ref()),
+    ).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let cookie = Cookie::build(("token", new_token))
+        .path("/")
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Lax)
+        .build();
+
+    Ok((jar.add(cookie), Json(serde_json::json!({"message": "Token refreshed"}))))
+}
+
+pub async fn logout(
+    jar: CookieJar,
+) -> impl IntoResponse {
+    let cookie = Cookie::build(("token", ""))
+        .path("/")
+        .http_only(true)
+        .secure(true)
+        .same_site(SameSite::Lax)
+        .max_age(TimeDuration::ZERO)
+        .build();
+
+
+    (jar.add(cookie), Json(serde_json::json!({"message": "Logged out"})))
 }

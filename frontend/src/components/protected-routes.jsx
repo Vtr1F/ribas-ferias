@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
+import AccessDenied from './access-denied';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -11,9 +12,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // If the route requires specific roles and the user doesn't have them
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    return <AccessDenied />;
   }
 
   return children;

@@ -1,0 +1,133 @@
+.logout-button {
+  height: 55px;
+  border-radius: 25px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-family: 'Questrial', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  width: 95%;
+}
+
+.logout-button:hover {
+  background-color: #2980b9;
+  transform: scale(1.02);
+}
+
+.logout-button:active {
+  transform: scale(0.98);
+}
+
+.logout-button svg {
+  width: 26px;
+  height: 26px;
+}
+
+.logout-text {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.logout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.logout-confirm-box {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  max-width: 400px;
+}
+
+.logout-confirm-text {
+  font-family: 'Questrial', sans-serif;
+  font-size: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.logout-confirm-buttons {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.logout-confirm-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: 'Questrial', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease;
+}
+
+.logout-confirm-btn:hover {
+  transform: scale(1.02);
+}
+
+.logout-confirm-btn.cancel {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.logout-confirm-btn.confirm {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.logout-icon-container {
+  width: 100px;
+  height: 100px;
+  background-color: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logout-icon-container svg {
+  stroke: #fff;
+}
+
+.logout-message {
+  font-family: 'Questrial', sans-serif;
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

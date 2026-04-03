@@ -1,0 +1,9 @@
+.profile-content {
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.profile-content h1 {
+  font-family: 'Questrial', sans-serif;
+  color: #333;
+}

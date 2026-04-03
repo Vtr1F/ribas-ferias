@@ -9,10 +9,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (window.location.pathname === '/login') {
+      setLoading(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
-        // Call your "get user info" endpoint here
-        // The backend should read the JWT from the cookie automatically
         const userData = await LoginRoute.checkAuth(); 
         setUser(userData); 
       } catch (err) {
