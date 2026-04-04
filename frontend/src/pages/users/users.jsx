@@ -217,6 +217,8 @@ const Users = () => {
 
   return (
     <div className="users-page">
+      <h1>Gestão de Utilizadores</h1>
+      <CreateUser />
       <Stats />
       <div className="users-container">
         <div className="users-header">
