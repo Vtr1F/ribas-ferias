@@ -118,7 +118,7 @@ pub async fn fetch_team_requests(
         return Err((StatusCode::NOT_FOUND, "Team not found".into()));
     };
 
-    let members = team.members.unwrap_or_default(); // Vec<i32>
+    let members = team.members.unwrap_or_default();
 
     if members.is_empty() {
         return Ok(Json(vec![]));

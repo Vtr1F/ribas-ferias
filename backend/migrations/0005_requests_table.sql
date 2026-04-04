@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS requests (
 
     status request_status NOT NULL DEFAULT 'Pending',
 
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW() 
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
