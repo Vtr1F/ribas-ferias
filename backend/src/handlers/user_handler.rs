@@ -91,7 +91,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
 
     // Fetch role
     let role: Role = sqlx::query_as(
-        "SELECT id, nome FROM roles WHERE id = $1"
+        "SELECT id, name FROM roles WHERE id = $1"
     )
     .bind(row.role_id)
     .fetch_one(&*state.db)
@@ -140,7 +140,7 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
 
     // 3. Fetch role
     let role: Role = sqlx::query_as(
-        "SELECT id, nome FROM roles WHERE id = $1"
+        "SELECT id, name FROM roles WHERE id = $1"
     )
     .bind(row.role_id)
     .fetch_one(&*state.db)
