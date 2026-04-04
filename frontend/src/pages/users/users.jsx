@@ -4,6 +4,7 @@ import { TeamRoutes } from '../../api/teamRoutes';
 import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
 import Stats from '../../components/stats';
+import AlterUser from '../../components/alter_user';
 import './users.css';
 
 const Users = () => {
@@ -14,6 +15,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [collapsedTeams, setCollapsedTeams] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -202,7 +204,7 @@ const Users = () => {
           </div>
         </div>
         {isAdmin && (
-          <button className="user-settings-btn" title="Definições">
+          <button className="user-settings-btn" title="Definições" onClick={() => setSelectedUser(user)}>
             <span className="gear-icon">⚙</span>
           </button>
         )}
@@ -268,6 +270,13 @@ const Users = () => {
           )}
         </div>
       </div>
+      {selectedUser && (
+        <AlterUser
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+          onSave={fetchData}
+        />
+      )}
     </div>
   );
 };
