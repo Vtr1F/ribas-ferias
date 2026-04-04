@@ -19,7 +19,6 @@ function ResetPassword() {
     e.preventDefault(); // Evita que a página recarregue
     setError(''); // Clear old errors
     try{
-      
         await LoginRoute.requestPassword({email});
         setIsCodeSent(true);
     } catch(err) {
