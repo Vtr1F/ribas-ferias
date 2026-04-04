@@ -5,6 +5,9 @@ import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
 import Stats from '../../components/stats';
 import './users.css';
+import  CreateUser from '../../components/user/create_user.jsx';
+
+
 
 const Users = () => {
   const { user } = useAuth();
