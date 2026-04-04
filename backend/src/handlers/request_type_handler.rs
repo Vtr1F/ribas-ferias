@@ -9,7 +9,7 @@ pub async fn fetch_types(
 ) -> Json<Vec<RequestType>> {
 
     let types: Vec<RequestType> = sqlx::query_as(
-        "SELECT id, tipo FROM request_types"
+        "SELECT id, type FROM request_types"
     )
     .fetch_all(&*state.db)
     .await
