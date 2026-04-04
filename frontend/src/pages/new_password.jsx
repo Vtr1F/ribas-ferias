@@ -44,36 +44,37 @@ function NewPassword() {
 
   return (
     <LoginLayout>
+      <div className="login-container">
+        <button className="back-arrow" onClick={() => navigate('/login')}>←</button>
         {!isPassSent ? (
-    <div className="login-container">
-      <h2>Nova Password</h2>
-      <form onSubmit={handleSubmit}>
-        <input 
-          type="password" 
-          placeholder="Nova Password" 
-          value={new_password} 
-          onChange={(e) => setPassword(e.target.value)} 
-          required 
-        />
-        <input 
-          type="password" 
-          placeholder="Confirmar Password" 
-          value={confirmPassword} 
-          onChange={(e) => setConfirmPassword(e.target.value)} 
-          required 
-        />
-        <button type="submit">Atualizar Password</button>
-      </form>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-    </div>
-    ) : (
-        
-    <div className="login-container">
-        <h2>Password Alterada com Sucesso</h2>
-        
-        <p>Redirecionando ao Login...</p>
-    </div>
-    )}
+          <>
+            <h2>Nova Password</h2>
+            <form onSubmit={handleSubmit}>
+              <input 
+                type="password" 
+                placeholder="Nova Password" 
+                value={new_password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+              />
+              <input 
+                type="password" 
+                placeholder="Confirmar Password" 
+                value={confirmPassword} 
+                onChange={(e) => setConfirmPassword(e.target.value)} 
+                required 
+              />
+              <button type="submit">Atualizar Password</button>
+            </form>
+            {error && <p style={{color: 'red'}}>{error}</p>}
+          </>
+        ) : (
+          <>
+            <h2>Password Alterada com Sucesso</h2>
+            <p>Redirecionando ao Login...</p>
+          </>
+        )}
+      </div>
     </LoginLayout>
   );
 }

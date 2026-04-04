@@ -29,8 +29,8 @@ function ResetPassword() {
 
   return (
     <LoginLayout>
-      
       <div className="login-container">
+        <button className="back-arrow" onClick={() => navigate('/login')}>←</button>
       {!isCodeSent ? (
         <form onSubmit={handleReset}>
           <h2>Recuperar Password</h2>

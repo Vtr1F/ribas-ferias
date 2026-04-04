@@ -1,9 +1,259 @@
 .users-page {
   padding: 40px;
   min-height: 100vh;
+  font-family: 'Questrial', sans-serif;
 }
 
-.users-page h1 {
+.users-container {
+  background-color: #efefef;
+  border-radius: 45px;
+  padding: 30px;
+  margin-right: 40px;
+}
+
+.users-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.users-search {
+  padding: 12px 20px 12px 45px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  min-width: 300px;
   font-family: 'Questrial', sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.users-search:focus {
+  outline: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.users-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.users-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.users-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.users-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
   color: #333;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #999;
+}
+
+.user-tabs {
+  display: flex;
+  gap: 30px;
+  margin-right: 20px;
+}
+
+.user-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.tab-label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.roles-tab {
+  align-items: center;
+}
+
+.teams-tab {
+  align-items: center;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-ball {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.role-name {
+  font-size: 14px;
+  color: #333;
+}
+
+.team-value {
+  font-size: 14px;
+  color: #333;
+}
+
+.user-settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.user-settings-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.gear-icon {
+  font-size: 20px;
+  display: inline-block;
+}
+
+.users-loading,
+.users-error,
+.users-no-results {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+}
+
+.users-error {
+  color: #d32f2f;
+}
+
+.team-group {
+  margin-bottom: 20px;
+}
+
+.team-group + .team-group {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px 20px;
+  background-color: #e8e8e8;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.team-toggle {
+  font-size: 12px;
+  color: #666;
+}
+
+.team-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.team-description {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.team-member-count {
+  font-size: 14px;
+  color: #888;
+  background-color: #fff;
+  padding: 4px 12px;
+  border-radius: 15px;
+}
+
+.team-users {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
