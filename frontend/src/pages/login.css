@@ -10,6 +10,7 @@
   max-width: 500px;
   text-align: center;
   border: 1px solid rgba(169, 169, 169, 0.5);
+  position: relative;
 }
 
 .login-container h2 {
@@ -75,4 +76,20 @@
 .forgot-password-btn:hover {
   color: #000 !important;
   background: none !important;
+}
+
+.back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  padding: 10px;
+}
+
+.back-arrow:hover {
+  color: #000;
 }

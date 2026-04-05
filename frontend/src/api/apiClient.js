@@ -1,26 +1,14 @@
-import { jwtDecode } from 'jwt-decode';
+import { useAuth } from "../context/auth-context";
 
 const BASE_URL = "http://localhost:3000"; 
-
-const getCookieValue = (name) => {
-  const cookies = document.cookie.split(';');
-  for (let cookie of cookies) {
-    const parts = cookie.trim().split('=');
-    const cookieName = parts[0];
-    const value = parts.slice(1).join('=');
-    if (cookieName === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-};
+const getExp = () => localStorage.getItem('auth_exp');
 
 const isTokenExpired = () => {
-  const token = getCookieValue('token');
-  if (!token) return true;
+  
+  console.log(user);
+  if (!user) return true;
   try {
-    const decoded = jwtDecode(token);
-    return decoded.exp * 1000 < Date.now();
+    return user.exp * 1000 < Date.now();
   } catch {
     return true;
   }
@@ -33,6 +21,8 @@ export const refreshToken = async () => {
       credentials: 'include'
     });
     if (response.ok) {
+      const data = await response.json();
+      if (data.exp) localStorage.setItem('auth_exp', data.exp);
       return true;
     }
     return false;
@@ -41,19 +31,25 @@ export const refreshToken = async () => {
   }
 };
 
+const handleGlobalLogout = () => {
+  localStorage.removeItem('auth_exp');
+  window.location.href = '/login';
+};
+
 export const apiClient = {
   
   request: async (endpoint, method = 'GET', body = null) => {
     
-    try {
-      const isLoginPage = window.location.pathname === '/login';
-      if (isTokenExpired() && !isLoginPage) {
-        const refreshed = await refreshToken();
-        if (!refreshed) {
-          window.location.href = '/login';
-          return { err: true, message: 'Unauthorized' };
-        }
+      const isLoginPage = endpoint.includes('/login');
+      const exp = getExp();
+      
+      if (!isLoginPage && exp && (parseInt(exp) * 1000 < Date.now())) {
+      const refreshed = await refreshToken();
+      if (!refreshed) {
+        handleGlobalLogout();
+        return { err: true, message: 'Session Expired' };
       }
+    }
 
       const options = {
         method: method.toUpperCase(), 
@@ -66,8 +62,9 @@ export const apiClient = {
       if (body) { 
         options.body = JSON.stringify(body);
       }
-
-      const response = await fetch(`${BASE_URL}${endpoint}`, options);
+    
+    try {
+      let response = await fetch(`${BASE_URL}${endpoint}`, options);
 
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`);

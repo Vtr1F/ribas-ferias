@@ -1,11 +1,11 @@
-use serde::{Serialize, Deserialize};
 use crate::models::role_model::Role;
-use sqlx::FromRow;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use validator::Validate;
 
-#[derive(Serialize, Deserialize, FromRow)] 
-pub struct UserPrivate { // For DB
+#[derive(Serialize, Deserialize, FromRow)]
+pub struct UserPrivate {
     pub id: i32,
     pub nome: String,
     pub email: String,
@@ -13,38 +13,37 @@ pub struct UserPrivate { // For DB
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
+    pub team_id: Option<i32>,
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Deserialize,FromRow,Validate)] 
+#[derive(Deserialize, FromRow, Validate)]
 pub struct CreateUser {
-   #[validate(length(min = 2, message = "Nome must have at least 2 characters"))]
+    #[validate(length(min = 2, message = "Nome must have at least 2 characters"))]
     pub nome: String,
 
-    #[validate(email(message = "Invalid email format"), custom(function = "validate_ribas_email"))]
+    #[validate(
+        email(message = "Invalid email format"),
+        custom(function = "validate_ribas_email")
+    )]
     pub email: String,
-
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
-    pub password: String,
-
     pub role_id: i32,
     pub superior_id: Option<i32>,
-
-    #[validate(range(min = 0, message = "Dias de férias must be non-negative"))]
-    pub dias_ferias_disponiveis: i32,
+    pub team_id: Option<i32>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)] // For API
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct UserPublic {
     pub id: i32,
     pub nome: String,
     pub email: String,
     pub role: String,
     pub superior_id: Option<i32>,
+    pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
 }
 
-#[derive(Deserialize, Validate,FromRow)]
+#[derive(Deserialize, Validate, FromRow)]
 pub struct UpdateUser {
     #[validate(length(min = 2))]
     pub nome: String,
@@ -57,6 +56,7 @@ pub struct UpdateUser {
 
     pub role_id: i32,
     pub superior_id: Option<i32>,
+    pub team_id: Option<i32>,
 }
 
 impl UserPrivate {
@@ -65,8 +65,9 @@ impl UserPrivate {
             id: self.id,
             nome: self.nome,
             email: self.email,
-            role : role.name,
+            role: role.name,
             superior_id: self.superior_id,
+            team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
         }
     }
@@ -76,7 +77,9 @@ fn validate_ribas_email(email: &str) -> Result<(), validator::ValidationError> {
     if email.ends_with("@ribas.pt") {
         Ok(())
     } else {
-        Err(validator::ValidationError::new("Domain must end with @ribas.pt"))
+        Err(validator::ValidationError::new(
+            "Domain must end with @ribas.pt",
+        ))
     }
 }
 
@@ -86,5 +89,3 @@ pub struct User {
     pub email: String,
     pub password_hash: String,
 }
-
-

@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
+const SetUser = lazy(() => import('./pages/set-user/set-user'));
 const Dashboard = lazy(() => import('./components/dashboard'));
 const Users = lazy(() => import('./pages/users/users'));
 const Profile = lazy(() => import('./components/profile'));
@@ -45,6 +46,14 @@ export const router = createBrowserRouter([
     element: (
         <Suspense fallback={<Loading />}>
             <NewPassword />
+        </Suspense>
+    ),
+  },
+  {
+    path: "/set-password",
+    element: (
+        <Suspense fallback={<Loading />}>
+            <SetUser />
         </Suspense>
     ),
   },

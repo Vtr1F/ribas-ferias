@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import LoginLayout from '../layouts/login-layout';
+import LoginLayout from '../../layouts/login-layout';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { LoginRoute } from '../api/loginRoute';
+import { LoginRoute } from '../../api/loginRoute';
 import { useState } from 'react';
-import './login.css'
+import '../login.css'
 
-function NewPassword() {
+function SetUser() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
@@ -52,7 +52,7 @@ function NewPassword() {
             <form onSubmit={handleSubmit}>
               <input 
                 type="password" 
-                placeholder="Nova Password" 
+                placeholder="Password" 
                 value={new_password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
@@ -64,13 +64,13 @@ function NewPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)} 
                 required 
               />
-              <button type="submit">Atualizar Password</button>
+              <button type="submit">Definir Password</button>
             </form>
             {error && <p style={{color: 'red'}}>{error}</p>}
           </>
         ) : (
           <>
-            <h2>Password Alterada com Sucesso</h2>
+            <h2>Perfil Criado com Sucesso</h2>
             <p>Redirecionando ao Login...</p>
           </>
         )}
@@ -79,4 +79,4 @@ function NewPassword() {
   );
 }
 
-export default NewPassword;
+export default SetUser;

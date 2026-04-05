@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     role_id INTEGER REFERENCES roles(id),
     superior_id INTEGER REFERENCES users(id), -- Auto-relacionamento
     dias_ferias_disponiveis INTEGER DEFAULT 22,
-    created_at TIMESTAMP NOT NULL WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
 
@@ -14,7 +14,7 @@ INSERT INTO users (nome, email, password_hash, role_id, superior_id)
 VALUES ('Admin User', 'admin@ribas.pt', 'hashed_password_1', 1, NULL);
 
 INSERT INTO users (nome, email, password_hash, role_id, superior_id)
-VALUES ('Team Leader', 'leader@ribas.p', 'hashed_password_2', 2, 1);
+VALUES ('Team Leader', 'leader@ribas.pt', 'hashed_password_2', 2, 1);
 
 INSERT INTO users (nome, email, password_hash, role_id, superior_id)
 VALUES ('Worker User', 'worker@ribas.pt', 'hashed_password_3', 3, 2);

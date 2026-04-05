@@ -1,30 +1,28 @@
-use serde::{Serialize, Deserialize};
-use sqlx::FromRow;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
-
-#[derive(Serialize, Deserialize, FromRow)]
-pub struct Team {
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct User {
     pub id: i32,
-    pub team_name: String,
-    pub description: Option<String>,
-    pub leader_id: Option<i32>,
-    pub members: Vec<i32>,           // INTEGER[] → Vec<i32>
-    pub created_at: Option<DateTime<Utc>>,
+    pub nome: String,
+    pub email: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MemberWithUser {
     pub user: User,
     pub leader: bool,
 }
 
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct User {
+#[derive(Serialize, Deserialize)]
+pub struct Team {
     pub id: i32,
-    pub nome: String,
-    pub email: String,
+    pub team_name: String,
+    pub description: Option<String>,
+    pub leader_id: Option<i32>,
+    pub members: Vec<MemberWithUser>,
+    pub created_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -33,6 +31,24 @@ pub struct TeamWithUsers {
     pub team_name: String,
     pub description: Option<String>,
     pub leader_id: Option<i32>,
-    pub created_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
     pub members: Vec<MemberWithUser>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CreateTeam {
+    pub team_name: String,
+    pub description: Option<String>,
+    pub leader_id: Option<i32>,
+    pub members: Vec<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct TeamResponse {
+    pub id: i32,
+    pub team_name: String,
+    pub description: Option<String>,
+    pub leader_id: Option<i32>,
+    pub members: Vec<i32>,
+    pub created_at: DateTime<Utc>,
 }

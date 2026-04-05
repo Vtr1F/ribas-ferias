@@ -1,8 +1,8 @@
 import MainLayout from '../layouts/main-layout';
 import './login.css'
-import './dashboard.css'
+import { UserRoutes } from '../../api/userRoutes.js';
 
-function Dashboard() {
+function CreateUser() {
     
 
     return (
@@ -22,4 +22,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default CreateUser;
