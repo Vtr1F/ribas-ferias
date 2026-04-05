@@ -1,11 +1,12 @@
 
-use crate::{models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}}, utils::hash_password};
+use crate::{handlers::auth_handler::generate_reset_token, models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}}, utils::hash_password};
 use axum::{Json, extract::Path, http::StatusCode};
 use axum::extract::State;
 use crate::state::AppState;
 use std::sync::Arc;
 use serde_json::json;
 use validator::Validate;
+use crate::mailer::mailer::MailService;
 
 
 
@@ -70,9 +71,6 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
         );
     }
 
-    // Hash Password
-    let hashed: String = hash_password(&payload.password).await;
-
     // Insert into DB
     let row: UserPrivate = sqlx::query_as(
         "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id)
@@ -81,26 +79,37 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     )
     .bind(&payload.nome)
     .bind(&payload.email)
-    .bind(&hashed)
+    .bind("Not-Set")// With this as a password that isnt hashed its impossible to make any changes
     .bind(payload.role_id)
     .bind(payload.superior_id)
-    .bind(payload.dias_ferias_disponiveis)
+    .bind(22)//TODO Get from settings
     .bind(payload.team_id)
     .fetch_one(&*state.db)
     .await
     .expect("Failed to insert user");
 
+    let id = row.id;
     // Fetch role
     let role: Role = sqlx::query_as(
         "SELECT id, name FROM roles WHERE id = $1"
     )
-    .bind(row.role_id)
+    .bind(&row.role_id.clone())
     .fetch_one(&*state.db)
     .await
     .unwrap();
 
     // Convert to public
     let public_user = row.into_public(role);
+
+    let jwt_secret = state.jwt_secret.as_ref();
+    let set_token = generate_reset_token(&id, &jwt_secret);
+    // Send email
+    let _ = state
+        .mail_service
+        .send_set_email("victor.fonseca.f2@gmail.com", &set_token) //email para testes deveria ser &payload.email
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR);
+    
 
     (StatusCode::CREATED, Json(json!(public_user)))
 }

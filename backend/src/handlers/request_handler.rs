@@ -23,7 +23,7 @@ pub async fn fetch_requests(
             r.status as "status: Status",
             r.created_at,
             rt.id AS rt_id,
-            rt.tipo AS rt_name
+            rt.type AS rt_name
         FROM requests r
         JOIN request_types rt ON rt.id = r.request_type_id
         ORDER BY r.id
@@ -68,7 +68,7 @@ pub async fn fetch_user_requests(
             r.status as "status: Status",
             r.created_at,
             rt.id AS rt_id,
-            rt.tipo AS rt_name
+            rt.type AS rt_name
         FROM requests r
         JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.user_id = $1
@@ -135,7 +135,7 @@ pub async fn fetch_team_requests(
             r.status as "status: Status",
             r.created_at,
             rt.id AS rt_id,
-            rt.tipo AS rt_name
+            rt.type AS rt_name
         FROM requests r
         JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.user_id = ANY($1)
@@ -173,7 +173,7 @@ pub async fn fetch_request(
     Path(request_id): Path<i32>,
 ) -> Result<Json<Request>, (StatusCode, String)> {
 
-    let row = sqlx::query!(
+    let row= sqlx::query!(
         r#"
         SELECT 
             r.id,
@@ -183,7 +183,7 @@ pub async fn fetch_request(
             r.status as "status: Status",
             r.created_at,
             rt.id AS rt_id,
-            rt.tipo AS rt_name
+            rt.type AS rt_name
         FROM requests r
         JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.id = $1
@@ -245,7 +245,7 @@ pub async fn add_request(
 
     // Fetch request type info
     let rt = sqlx::query!(
-        r#"SELECT id, tipo FROM request_types WHERE id = $1"#,
+        r#"SELECT id, type FROM request_types WHERE id = $1"#,
         row.request_type_id
     )
     .fetch_one(&*state.db)
@@ -261,7 +261,7 @@ pub async fn add_request(
         created_at: row.created_at,
         request_type: RequestType {
             id: rt.id,
-            name: rt.tipo,
+            name: rt.r#type,
         },
     };
 
@@ -302,7 +302,7 @@ pub async fn accept_request(
 
     // 2. Fetch request type info
     let rt = sqlx::query!(
-        r#"SELECT id, tipo FROM request_types WHERE id = $1"#,
+        r#"SELECT id, type FROM request_types WHERE id = $1"#,
         r.request_type_id
     )
     .fetch_one(&*state.db)
@@ -319,7 +319,7 @@ pub async fn accept_request(
         created_at: r.created_at,
         request_type: RequestType {
             id: rt.id,
-            name: rt.tipo,
+            name: rt.r#type,
         },
     };
 
@@ -359,7 +359,7 @@ pub async fn reject_request(
 
     // 2. Fetch the request type
     let rt = sqlx::query!(
-        r#"SELECT id, tipo FROM request_types WHERE id = $1"#,
+        r#"SELECT id, type FROM request_types WHERE id = $1"#,
         r.request_type_id
     )
     .fetch_one(&*state.db)
@@ -376,7 +376,7 @@ pub async fn reject_request(
         created_at: r.created_at,
         request_type: RequestType {
             id: rt.id,
-            name: rt.tipo,
+            name: rt.r#type,
         },
     };
 

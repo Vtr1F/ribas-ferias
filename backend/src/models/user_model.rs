@@ -27,16 +27,9 @@ pub struct CreateUser {
         custom(function = "validate_ribas_email")
     )]
     pub email: String,
-
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
-    pub password: String,
-
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
-
-    #[validate(range(min = 0, message = "Dias de férias must be non-negative"))]
-    pub dias_ferias_disponiveis: i32,
 }
 
 #[derive(Serialize, Deserialize, FromRow)]

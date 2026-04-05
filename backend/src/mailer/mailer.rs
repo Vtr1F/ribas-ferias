@@ -72,7 +72,44 @@ impl MailService {
         Ok(())
     }
 
+    pub fn build_set_email(
+        &self,
+        to: &str,
+        reset_token: &str,
+    ) -> Result<Message, Box<dyn std::error::Error + Send + Sync>> {
+        let reset_link = format!("{}/set-password?token={}", self.frontend_base_url, reset_token);
 
+        let body = format!(
+            "Olá,\n\n\
+            Bem-Vindo a Empresa Ribas\n\
+            Clica neste link para Criar sua Conta no Sitema de Férias:\n\n\
+            {}",
+            reset_link
+        );
+
+        Ok(
+            Message::builder()
+                .from(format!("Ribas Ferias <{}>", self.from).parse()?)
+                .to(to.parse()?)
+                .subject("Criação de Conta - Sistema de Férias")
+                .body(body)?
+        )
+    }
+
+    pub async fn send_set_email(
+        &self,
+        to: &str,
+        set_token: &str,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let email = self.build_set_email(to, set_token)?; // now works
+
+        let mailer = self.mailer.clone();
+
+        tokio::task::spawn_blocking(move || mailer.send(&email))
+            .await??;
+
+        Ok(())
+    }
 
 }
 
