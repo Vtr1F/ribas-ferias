@@ -31,6 +31,29 @@
   margin: 0;
   font-size: 24px;
   color: #333;
+  flex: 1;
+}
+
+.trash-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e74c3c;
+  transition: background-color 0.2s;
+}
+
+.trash-btn:hover {
+  background-color: #ffebee;
+}
+
+.trash-btn:disabled {
+  color: #999;
+  cursor: not-allowed;
 }
 
 .alter-user-profile {
@@ -140,8 +163,15 @@
 
 .form-actions {
   display: flex;
+  justify-content: space-between;
   gap: 15px;
   margin-top: 10px;
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 15px;
+  flex: 1;
 }
 
 .cancel-btn {

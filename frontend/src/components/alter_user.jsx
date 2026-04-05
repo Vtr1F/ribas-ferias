@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { UserRoutes } from '../api/userRoutes';
 import './alter_user.css';
+import RemoveButton from './remove_button/remove_button';
+import ConfirmModal from './confirm_modal';
+
 
 const AlterUser = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    dias_ferias_disponiveis: 0,
     role_id: 3
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const getRoleIdFromRole = (role) => {
     const roleLower = role?.toLowerCase();
@@ -30,9 +31,6 @@ const AlterUser = ({ user, onClose, onSave }) => {
   useEffect(() => {
     if (user) {
       setFormData({
-        nome: user.nome || '',
-        email: user.email || '',
-        dias_ferias_disponiveis: user.dias_ferias_disponiveis || 0,
         role_id: user.role_id || getRoleIdFromRole(user.role)
       });
     }
@@ -53,9 +51,9 @@ const AlterUser = ({ user, onClose, onSave }) => {
 
     try {
       const payload = {
-        nome: formData.nome,
-        email: formData.email,
-        dias_ferias_disponiveis: parseInt(formData.dias_ferias_disponiveis) || 0,
+        nome: user.nome,
+        email: user.email,
+        dias_ferias_disponiveis: user.dias_ferias_disponiveis,
         role_id: parseInt(formData.role_id) || 3,
         superior_id: user.superior_id,
         team_id: user.team_id
@@ -72,6 +70,31 @@ const AlterUser = ({ user, onClose, onSave }) => {
     }
   };
 
+  const handleRemove = async () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await UserRoutes.removeUser(user.id);
+      setShowConfirm(false);
+      onSave?.();
+      onClose?.();
+    } catch (err) {
+      console.error('Error removing user:', err);
+      setError('Erro ao remover utilizador');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setShowConfirm(false);
+  };
+
   if (!user) return null;
 
   return (
@@ -83,7 +106,8 @@ const AlterUser = ({ user, onClose, onSave }) => {
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
           </button>
-          <h2>Editar Utilizador</h2>
+          <h2>Editar Cargo</h2>
+          <RemoveButton onClick={handleRemove} disabled={loading} />
         </div>
 
         <div className="alter-user-profile">
@@ -95,60 +119,20 @@ const AlterUser = ({ user, onClose, onSave }) => {
         <form onSubmit={handleSubmit} className="alter-user-form">
           {error && <div className="alter-user-error">{error}</div>}
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+          <div className="form-group">
+            <label htmlFor="role_id">Cargo</label>
+            <div className="role-select-wrapper">
+              {getRoleBall(formData.role_id)}
+              <select
+                id="role_id"
+                name="role_id"
+                value={formData.role_id}
                 onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="role_id">Cargo</label>
-              <div className="role-select-wrapper">
-                {getRoleBall(formData.role_id)}
-                <select
-                  id="role_id"
-                  name="role_id"
-                  value={formData.role_id}
-                  onChange={handleChange}
-                >
-                  <option value={3}>Colaborador</option>
-                  <option value={2}>Responsável</option>
-                  <option value={1}>Administrador</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="dias_ferias_disponiveis">Dias de Férias</label>
-              <input
-                type="number"
-                id="dias_ferias_disponiveis"
-                name="dias_ferias_disponiveis"
-                value={formData.dias_ferias_disponiveis}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="nome">Nome</label>
-              <input
-                type="text"
-                id="nome"
-                name="nome"
-                value={formData.nome}
-                onChange={handleChange}
-                required
-              />
+              >
+                <option value={3}>Colaborador</option>
+                <option value={2}>Responsável</option>
+                <option value={1}>Administrador</option>
+              </select>
             </div>
           </div>
 
@@ -162,6 +146,13 @@ const AlterUser = ({ user, onClose, onSave }) => {
           </div>
         </form>
       </div>
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Remover Utilizador"
+        message="Tem a certeza que deseja remover este utilizador?"
+        onConfirm={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+      />
     </div>
   );
 };
