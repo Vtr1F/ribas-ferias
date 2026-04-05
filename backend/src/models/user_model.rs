@@ -46,15 +46,12 @@ pub struct UserPublic {
 #[derive(Deserialize, Validate, FromRow)]
 pub struct UpdateUser {
     #[validate(length(min = 2))]
-    pub nome: String,
-
+    pub nome: Option<String>,
     #[validate(email)]
-    pub email: String,
-
+    pub email: Option<String>,
     #[validate(range(min = 0))]
-    pub dias_ferias_disponiveis: i32,
-
-    pub role_id: i32,
+    pub dias_ferias_disponiveis: Option<i32>,
+    pub role_id: Option<i32>,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
 }

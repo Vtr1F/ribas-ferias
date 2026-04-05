@@ -130,25 +130,23 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
     // 2. Update user in DB
     let row: UserPrivate = sqlx::query_as(
         "UPDATE users
-         SET nome = $1,
-             email = $2,
-             dias_ferias_disponiveis = $3,
-             role_id = $4,
-             superior_id = $5,
-             team_id = $6
-         WHERE id = $7
-         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at"
-    )
-    .bind(&payload.nome)
-    .bind(&payload.email)
-    .bind(payload.dias_ferias_disponiveis)
-    .bind(payload.role_id)
-    .bind(payload.superior_id)
-    .bind(payload.team_id)
-    .bind(_id)
-    .fetch_one(&*state.db)
-    .await
-    .expect("Failed to update user");
+        SET nome = COALESCE($1, nome),
+            email = COALESCE($2, email),
+            dias_ferias_disponiveis = COALESCE($3, dias_ferias_disponiveis),
+            role_id = COALESCE($4, role_id),
+            superior_id = COALESCE($5, superior_id)
+        WHERE id = $6
+        RETURNING id, nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id, created_at"
+        )
+        .bind(&payload.nome)                    
+        .bind(&payload.email)
+        .bind(payload.dias_ferias_disponiveis)
+        .bind(payload.role_id)
+        .bind(payload.superior_id)
+        .bind(_id)
+        .fetch_one(&*state.db)
+        .await
+        .expect("Error Altering the User");
 
     // 3. Fetch role
     let role: Role = sqlx::query_as(

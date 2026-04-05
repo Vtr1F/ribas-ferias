@@ -10,10 +10,8 @@ use crate::{
 pub fn routes() -> Router<Arc<AppState>> {
     // Added <()>
     Router::new()
-        .route(
-            "/",
-            get(request_handler::fetch_requests).post(request_handler::add_request),
-        )
+        .route("/",get(request_handler::fetch_requests)
+            .post(request_handler::add_request),)
         .route("/{id}", get(fetch_request))
         .route("/user/{id}", get(fetch_user_requests))
         .route("/team/{id}", get(fetch_team_requests))
