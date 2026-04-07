@@ -1,6 +1,7 @@
 import { UserRoutes } from '../../api/userRoutes.js';
+import { TeamRoutes } from '../../api/teamRoutes.js';
 import './create_user.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
@@ -13,6 +14,52 @@ const CreateUser = () => {
   const [superior_id, setSuperior_id] = useState('');
   const [team_id, setTeam_id] = useState('');
   const [error, setError] = useState('');
+  const [superiors, setSuperiors] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [loadingSuperiors, setLoadingSuperiors] = useState(true);
+  const [loadingTeams, setLoadingTeams] = useState(true);
+
+  useEffect(() => {
+    loadSuperiors();
+    loadTeams();
+  }, []);
+
+  const loadSuperiors = async () => {
+    try {
+      setLoadingSuperiors(true);
+      const response = await UserRoutes.getAllUsers();
+      if (Array.isArray(response)) {
+        const superiorUsers = response.filter(user => user.role === "admin" || user.role === "leader");
+        setSuperiors(superiorUsers);
+      } else {
+        console.error('Unexpected response format for users:', response);
+        setError('Erro ao buscar superiores - formato inesperado');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao buscar superiores');
+    } finally {
+      setLoadingSuperiors(false);
+    }
+  };
+
+  const loadTeams = async () => {
+    try {
+      setLoadingTeams(true);
+      const response = await TeamRoutes.fetchTeams();
+      if (Array.isArray(response)) {
+        setTeams(response);
+      } else {
+        console.error('Unexpected response format for teams:', response);
+        setError('Erro ao buscar equipas - formato inesperado');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao buscar equipas');
+    } finally {
+      setLoadingTeams(false);
+    }
+  };
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -37,6 +84,7 @@ const CreateUser = () => {
       setError('Erro ao criar utilizador');
     }
   };
+
 
   return (
     <div className="create-user-page">
@@ -63,13 +111,31 @@ const CreateUser = () => {
           </label>
 
           <label>
-            ID do Superior (opcional)
-            <input type="number" value={superior_id} onChange={(e) => setSuperior_id(e.target.value)} />
+            Superior (opcional)
+            <select value={superior_id} onChange={(e) => setSuperior_id(e.target.value)} disabled={loadingSuperiors}>
+              <option value="">
+                {loadingSuperiors ? "Carregando superiores..." : "Selecione o Superior"}
+              </option>
+              {superiors.map(superior => (
+                <option key={superior.id} value={superior.id}>
+                  {superior.nome}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
-            ID da Equipa (opcional)
-            <input type="number" value={team_id} onChange={(e) => setTeam_id(e.target.value)} />
+            Equipa (opcional)
+            <select value={team_id} onChange={(e) => setTeam_id(e.target.value)} disabled={loadingTeams}>
+              <option value="">
+                {loadingTeams ? "Carregando equipas..." : "Selecione a Equipa"}
+              </option>
+              {teams.map(team => (
+                <option key={team.id} value={team.id}>
+                  {team.team_name}
+                </option>
+              ))}
+            </select>
           </label>
 
           <button type="submit">Criar Utilizador</button>
