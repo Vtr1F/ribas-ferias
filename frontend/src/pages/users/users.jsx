@@ -5,7 +5,7 @@ import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
 import Stats from '../../components/stats';
 import './users.css';
-import  CreateUser from '../../components/user/create_user.jsx';
+
 
 
 
@@ -218,7 +218,7 @@ const Users = () => {
   return (
     <div className="users-page">
       <h1>Gestão de Utilizadores</h1>
-      <CreateUser />
+      
       <Stats />
       <div className="users-container">
         <div className="users-header">
