@@ -13,6 +13,7 @@
   font-weight: 700;
   margin-bottom: 30px;
   color: #1a1a1a;
+  font-family: 'Roboto', sans-serif;
 }
 
 .edit-header {
@@ -90,6 +91,7 @@
 .email-sub {
   color: #888;
   font-size: 1rem;
+  font-family: 'Roboto', sans-serif;
 }
 
 .profile-info-box-clean {
@@ -108,10 +110,11 @@
 .info-row label {
   font-weight: 700;
   color: #333;
+  font-family: 'Roboto', sans-serif;
 }
 
 .vacation-count {
-  color: #4a74e1;
+  color: #4670DB;
   font-weight: bold;
 }
 
@@ -146,7 +149,7 @@
 }
 
 .btn-password-inline {
-  background-color: #4a74e1;
+  background-color: #4670DB;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -154,10 +157,11 @@
   font-weight: 600;
   cursor: pointer;
   width: fit-content;
+  font-family: 'Questrial', sans-serif;
 }
 
 .btn-edit-main-blue, .btn-save-blue {
-  background-color: #4a74e1;
+  background-color: #4670DB;
   color: white;
   border: none;
   padding: 12px 35px;
@@ -165,16 +169,18 @@
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
+  font-family: 'Questrial', sans-serif;
 }
 
 .btn-cancel-outline {
   background-color: transparent;
-  color: #4a74e1;
-  border: 2px solid #4a74e1;
+  color: #4670DB;
+  border: 2px solid #4670DB;
   padding: 12px 35px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  font-family: 'Questrial', sans-serif;
 }
 
 .form-actions {
