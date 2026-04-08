@@ -6,55 +6,30 @@ use crate::state::AppState;
 use std::sync::Arc;
 use serde_json::json;
 use validator::Validate;
-use crate::mailer::mailer::MailService;
 
 
 
 pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPublic>> {
     
-    let rows: Vec<UserPrivate> = sqlx::query_as(
-    "SELECT id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at FROM users")
+    let rows: Vec<UserPublic> = sqlx::query_as(
+    "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis FROM users")
     .fetch_all(&*state.db)
     .await
     .expect("Failed to fetch users");
     
-    let mut users = Vec::new();
-
-    for row in rows {
-        let role: Role = sqlx::query_as(
-            "SELECT id, name FROM roles WHERE id = $1"
-        )
-        .bind(row.role_id)
-        .fetch_one(&*state.db)
-        .await
-        .unwrap();
-
-        users.push(row.into_public(role));
-    }
-
-
-    Json(users)
+    Json(rows)
 }
 
 pub async fn fetch_user(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> Json<UserPublic> {
     
-    let row: UserPrivate = sqlx::query_as(
-        "SELECT id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at FROM users WHERE id = $1")
+    let row: UserPublic = sqlx::query_as(
+        "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at FROM users WHERE id = $1")
     .bind(id)
     .fetch_one(&*state.db)
     .await
     .expect("User not found");
 
-    let role: Role = sqlx::query_as(
-        "SELECT id, name FROM roles WHERE id = $1"
-    )
-    .bind(row.role_id)
-    .fetch_one(&*state.db)
-    .await
-    .unwrap();
-
-    Json(row.into_public(role))
-    
+    Json(row)
 }
 
 
@@ -88,21 +63,11 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .await
     .expect("Failed to insert user");
 
-    let id = row.id;
-    // Fetch role
-    let role: Role = sqlx::query_as(
-        "SELECT id, name FROM roles WHERE id = $1"
-    )
-    .bind(&row.role_id.clone())
-    .fetch_one(&*state.db)
-    .await
-    .unwrap();
-
     // Convert to public
-    let public_user = row.into_public(role);
+    let public_user = row.into_public();
 
     let jwt_secret = state.jwt_secret.as_ref();
-    let set_token = generate_reset_token(&id, &jwt_secret);
+    let set_token = generate_reset_token(&public_user.id, &jwt_secret);
     // Send email
     let _ = state
         .mail_service
@@ -137,7 +102,7 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
              superior_id = $5,
              team_id = $6
          WHERE id = $7
-         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at"
+         RETURNING id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at"
     )
     .bind(&payload.nome)
     .bind(&payload.email)
@@ -150,19 +115,8 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
     .await
     .expect("Failed to update user");
 
-    // 3. Fetch role
-    let role: Role = sqlx::query_as(
-        "SELECT id, name FROM roles WHERE id = $1"
-    )
-    .bind(row.role_id)
-    .fetch_one(&*state.db)
-    .await
-    .unwrap();
 
-    // 4. Convert to public
-    let public_user = row.into_public(role);
-
-    (StatusCode::OK, Json(json!(public_user)))
+    (StatusCode::OK, Json(json!(row)))
 }
 
 pub async fn remove_user(

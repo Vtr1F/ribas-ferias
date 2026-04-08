@@ -5,21 +5,17 @@ import { useAuth } from '../context/auth-context';
 import './profile.css';
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { userId } = useParams();
   const { user: authUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwords, setPasswords] = useState({ current: '', next: '', confirm: '' });
 
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const users = await UserRoutes.getAllUsers();
-        const targetId = userId || authUser?.sub;
-        const current = users.find(u => String(u.id) === String(targetId));
-        setProfileData(current);
+        const user = await UserRoutes.fetchUser(userId || authUser?.sub);
+        setProfileData(user);
       } catch (err) {
         console.error("Erro ao carregar perfil:", err);
       } finally {
@@ -29,33 +25,6 @@ const Profile = () => {
     if (authUser?.sub) loadProfile();
   }, [authUser, userId]);
 
-  const handlePasswordUpdate = async () => {
-    if (passwords.next !== passwords.confirm) {
-      alert("As passwords não coincidem!");
-      return;
-    }
-    try {
-      // Ajuste de URL para garantir consistência com o backend Rust
-      const response = await fetch('http://localhost:3000/password/reset', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: Number(authUser.sub), 
-          newPassword: passwords.next
-        })
-      });
-
-      if (response.ok) {
-        alert("Password alterada com sucesso!");
-        setIsChangingPassword(false);
-        setPasswords({ current: '', next: '', confirm: '' });
-      } else {
-        alert("Erro de ligação ao servidor.");
-      }
-    } catch (err) {
-      alert("Erro de ligação ao servidor.");
-    }
-  };
 
   if (loading) return null;
 
@@ -68,61 +37,7 @@ const Profile = () => {
     </div>
   );
 
-  if (isChangingPassword) {
-    return (
-      <div className="profile-page-main">
-        {renderBackHeader("Alterar Password", () => setIsChangingPassword(false))}
-        <div className="edit-form-container">
-          <div className="input-group">
-            <label>Password Atual</label>
-            <input type="password" value={passwords.current} onChange={(e) => setPasswords({...passwords, current: e.target.value})} />
-          </div>
-          <div className="input-group">
-            <label>Nova Password</label>
-            <input type="password" value={passwords.next} onChange={(e) => setPasswords({...passwords, next: e.target.value})} />
-          </div>
-          <div className="input-group">
-            <label>Confirmar Nova Password</label>
-            <input type="password" value={passwords.confirm} onChange={(e) => setPasswords({...passwords, confirm: e.target.value})} />
-          </div>
-          <div className="form-actions">
-            <button className="btn-cancel-outline" onClick={() => setIsChangingPassword(false)}>Cancelar</button>
-            <button className="btn-save-blue" onClick={handlePasswordUpdate}>Salvar</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isEditing) {
-    return (
-      <div className="profile-page-main">
-        {renderBackHeader("Editar perfil", () => setIsEditing(false))}
-        <div className="profile-header-clean">
-          <div className="avatar-wrapper">
-            <div className="profile-avatar-main">
-              {profileData?.nome ? profileData.nome.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <button className="edit-photo-badge">✎</button>
-          </div>
-          <h2 className="profile-name-edit">{profileData?.nome}</h2>
-        </div>
-        <div className="edit-form-container">
-          <div className="input-group">
-            <label>Email</label>
-            <input type="text" value={profileData?.email || ''} disabled className="input-disabled" />
-          </div>
-          <button className="btn-password-inline" onClick={() => { setIsEditing(false); setIsChangingPassword(true); }}>
-            Alterar Password
-          </button>
-          <div className="form-actions">
-            <button className="btn-cancel-outline" onClick={() => setIsEditing(false)}>Cancelar</button>
-            <button className="btn-save-blue" onClick={() => setIsEditing(false)}>Salvar</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+ 
 
   const isOwnProfile = !userId || String(userId) === String(authUser?.sub);
 
@@ -149,7 +64,7 @@ const Profile = () => {
         </div>
       </div>
       {isOwnProfile && (
-        <button className="btn-edit-main-blue" onClick={() => setIsEditing(true)}>Editar Perfil</button>
+        <button className="btn-edit-main-blue" onClick={() => navigate("/users/edit-profile")}>Editar Perfil</button>
       )}
     </div>
   );

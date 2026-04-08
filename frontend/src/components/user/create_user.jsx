@@ -3,6 +3,7 @@ import { TeamRoutes } from '../../api/teamRoutes.js';
 import './create_user.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ROLES } from '../../constants/roles.js';
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const CreateUser = () => {
       setLoadingSuperiors(true);
       const response = await UserRoutes.getAllUsers();
       if (Array.isArray(response)) {
-        const superiorUsers = response.filter(user => user.role === "admin" || user.role === "leader");
+        const superiorUsers = response.filter(user => user.role_id === ROLES.ADMIN || user.role_id === ROLES.TEAM_LEADER);
         setSuperiors(superiorUsers);
       } else {
         console.error('Unexpected response format for users:', response);

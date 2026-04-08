@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { UserRoutes } from '../api/userRoutes';
+import { useState, useEffect, useCallback } from 'react';
 import { RequestRoutes } from '../api/requestRoutes';
 import { useAuth } from '../context/auth-context';
 import { ROLES } from '../constants/roles';
 import './stats.css';
 
-const Stats = () => {
+// 1. Remove 'async' from the component definition
+const Stats = ({ users }) => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
     totalColaboradores: 0,
@@ -14,16 +14,12 @@ const Stats = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  // 2. Wrap the logic in useCallback or define it inside useEffect
+  // We want this to run whenever 'users' or 'user' changes
+  const fetchStats = useCallback(async () => {
     try {
-      const [users, requests] = await Promise.all([
-        UserRoutes.getAllUsers(),
-        RequestRoutes.fetchRequests()
-      ]);
+      setLoading(true);
+      const requests = await RequestRoutes.fetchRequests();
 
       const isLeader = user?.role === ROLES.TEAM_LEADER;
       const isAdmin = user?.role === ROLES.ADMIN;
@@ -31,12 +27,13 @@ const Stats = () => {
       let filteredUsers = users;
       let filteredRequests = requests;
 
+      // Logic for Team Leaders (see only themselves and subordinates)
       if (isLeader && !isAdmin) {
         filteredUsers = users.filter(u => 
           u.id === user?.sub || u.superior_id === user?.sub
         );
         filteredRequests = requests.filter(r => 
-          filteredUsers.some(u => u.id === r.user)
+          filteredUsers.some(u => u.id === r.user_id) // Match your backend field name (user_id vs user)
         );
       }
 
@@ -52,7 +49,11 @@ const Stats = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [users, user]); // Dependencies: Recalculate if users list or current logged-in user changes
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   if (loading) {
     return <div className="stats-loading">A carregar...</div>;

@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserRoutes } from '../../api/userRoutes';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
+import { lazy } from 'react';
 import Stats from '../../components/stats';
+import CreateUser from '../../components/user/create_user';
 import './users.css';
 
-
-
-
 const Users = () => {
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth(); // Renamed to avoid confusion with the user list
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -19,6 +18,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [collapsedTeams, setCollapsedTeams] = useState({});
+  const [isClicked, setClicked] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -42,186 +42,141 @@ const Users = () => {
     }
   };
 
-  const isAdmin = user?.role === ROLES.ADMIN;
+  const isAdmin = currentUser?.role === ROLES.ADMIN;
+  const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
 
-  const toggleTeam = (teamId) => {
-    setCollapsedTeams(prev => ({
-      ...prev,
-      [teamId]: !prev[teamId]
-    }));
-  };
-
+  // Helper to get team name safely
   const getTeamName = (teamId) => {
-    const team = teams.find(t => t.id === teamId);
-    return team?.team_name || null;
+    return teams.find(t => t.id === teamId)?.team_name || '—';
   };
 
-  const getTeamDescription = (teamId) => {
-    const team = teams.find(t => t.id === teamId);
-    return team?.description || null;
-  };
-
-  const getFilteredUsers = () => {
-    let baseUsers = isAdmin
+  // 1. Memoized Filtering: Only recalculates when users, search, or current user changes
+  const filteredUsers = useMemo(() => {
+    let base = isAdmin
       ? users
       : users.filter(u => {
-          const isCurrentUser = u.id === user?.sub;
-          const isTeamMember = u.superior_id === user?.sub || u.team_id === user?.team_id;
-          return isCurrentUser || isTeamMember;
+          const isMe = u.id === currentUser?.sub;
+          const isMySubordinate = u.superior_id === currentUser?.sub;
+          const isMyTeamMate = u.team_id === currentUser?.team_id;
+          return isMe || isMySubordinate || isMyTeamMate;
         });
 
-    if (!searchTerm) return baseUsers;
+    if (!searchTerm) return base;
 
     const search = searchTerm.toLowerCase();
-    return baseUsers.filter(u =>
+    return base.filter(u =>
       u.nome?.toLowerCase().includes(search) ||
       u.email?.toLowerCase().includes(search) ||
-      u.role?.toLowerCase().includes(search) ||
-      getTeamName(u.team_id)?.toLowerCase().includes(search)
+      getTeamName(u.team_id).toLowerCase().includes(search)
     );
-  };
+  }, [users, searchTerm, currentUser, isAdmin, teams]);
 
-  const getGroupedUsers = () => {
-    const filtered = getFilteredUsers();
-
-    const isLeader = user?.role === ROLES.TEAM_LEADER;
-
-    if (!isAdmin && !isLeader) {
-      return [{ id: 'all', team_name: 'Equipa', description: null, users: filtered }];
-    }
-
+  // 2. Memoized Grouping: Organizes the filtered list into the UI sections
+  const groups = useMemo(() => {
     const grouped = [];
 
-    // Admin team with admin + all leaders
-    const allLeaders = filtered.filter(u => u.role?.toLowerCase() === 'leader');
-    const adminUser = filtered.find(u => u.role?.toLowerCase() === 'admin');
-    
-    if (isAdmin) {
-      const adminTeamUsers = [];
-      if (adminUser) adminTeamUsers.push(adminUser);
-      adminTeamUsers.push(...allLeaders);
+    // Case A: Normal Worker - Show one flat group
+    if (!isAdmin && !isLeader) {
+      return [{ id: 'all', team_name: 'Minha Equipa', users: filteredUsers }];
+    }
+
+    // Case B: Grouping by Teams
+    // Admins see all teams, Leaders see only their own
+    teams.forEach(team => {
+      const isMyTeam = team.leader_id === currentUser?.sub;
       
-      if (adminTeamUsers.length > 0) {
-        grouped.push({
-          id: 'admin-team',
-          team_name: 'Administradores',
-          description: 'Todos os responsáveis',
-          users: adminTeamUsers
-        });
-      }
-    }
-
-    // For leaders: show only their team
-    if (isLeader && !isAdmin) {
-      const leaderTeam = teams.find(t => t.leader_id === user?.sub);
-      if (leaderTeam) {
-        const leader = filtered.find(u => u.id === leaderTeam.leader_id);
-        const workers = filtered
-          .filter(u => u.superior_id === leaderTeam.leader_id)
-          .sort((a, b) => a.nome.localeCompare(b.nome));
+      if (isAdmin || (isLeader && isMyTeam)) {
+        const teamUsers = filteredUsers.filter(u => u.superior_id === team.leader_id || u.id === team.leader_id);
         
-        const teamUsers = [];
-        if (leader) teamUsers.push(leader);
-        teamUsers.push(...workers);
-        
-        grouped.push({
-          id: leaderTeam.id,
-          team_name: leaderTeam.team_name,
-          description: leaderTeam.description,
-          users: teamUsers
-        });
-      }
-    }
-
-    // For admins: show all teams
-    if (isAdmin) {
-      teams.forEach(team => {
-        if (team.leader_id) {
-          const leader = filtered.find(u => u.id === team.leader_id);
-          const workers = filtered
-            .filter(u => u.superior_id === team.leader_id)
-            .sort((a, b) => a.nome.localeCompare(b.nome));
-          
-          if (leader || workers.length > 0) {
-            const teamUsers = [];
-            if (leader) teamUsers.push(leader);
-            teamUsers.push(...workers);
-            
-            grouped.push({
-              id: team.id,
-              team_name: team.team_name,
-              description: team.description,
-              users: teamUsers
-            });
-          }
+        if (teamUsers.length > 0) {
+          grouped.push({
+            id: team.id,
+            team_name: team.team_name,
+            description: team.description,
+            users: teamUsers
+          });
         }
+      }
+    });
+
+    if (isAdmin) {
+    const unassignedUsers = filteredUsers.filter(u => 
+      !u.team_id && 
+      u.role !== ROLES.ADMIN && 
+      u.role !== ROLES.TEAM_LEADER
+    );
+
+    if (unassignedUsers.length > 0) {
+      grouped.push({
+        id: 'unassigned-users',
+        team_name: 'Utilizadores sem Equipa',
+        description: 'Colaboradores que ainda não foram atribuídos a uma equipa',
+        users: unassignedUsers,
+        isWarning: true // Optional flag for styling
       });
     }
+  }
 
     return grouped;
+  }, [filteredUsers, teams, isAdmin, isLeader, currentUser]);
+
+  const toggleTeam = (teamId) => {
+    setCollapsedTeams(prev => ({ ...prev, [teamId]: !prev[teamId] }));
   };
 
   const getRoleBall = (role) => {
-    const roleLower = role?.toLowerCase();
-    let color = '#999';
-    if (roleLower === 'admin') color = '#e74c3c';
-    else if (roleLower === 'worker') color = '#2ecc71';
-    else if (roleLower === 'leader') color = '#f1c40f';
-    return <span className="role-ball" style={{ backgroundColor: color }}></span>;
+    const colors = {
+      [ROLES.ADMIN]: '#e74c3c',
+      [ROLES.TEAM_LEADER]: '#f1c40f',
+      [ROLES.USER]: '#2ecc71'
+    };
+    return <span className="role-ball" style={{ backgroundColor: colors[role] || '#999' }}></span>;
   };
 
   const getRoleLabel = (role) => {
-    const roleLower = role?.toLowerCase();
-    if (roleLower === 'admin') return 'Administrador';
-    if (roleLower === 'worker') return 'Colaborador';
-    if (roleLower === 'leader') return 'Responsável';
-    return role;
+    if (role === ROLES.ADMIN) return 'Administrador';
+    if (role === ROLES.TEAM_LEADER) return 'Responsável';
+    return 'Colaborador';
   };
 
-  const renderUserCard = (user) => {
-    const isWorker = user.role?.toLowerCase() === 'worker';
-    return (
-      <div key={user.id} className="user-card">
-        <div className="user-info">
-          <div className="user-avatar" onClick={() => navigate(`/users/${user.id}`)} style={{ cursor: 'pointer' }}>
-            {user.nome?.charAt(0).toUpperCase() || '?'}
-          </div>
-          <div className="user-details">
-            <span className="user-name">{user.nome}</span>
-            <span className="user-email">{user.email}</span>
-          </div>
+  const renderUserCard = (u) => (
+    <div key={u.id} className="user-card">
+      <div className="user-info">
+        <div className="user-avatar" onClick={() => navigate(`/users/${u.id}`)}>
+          {u.nome?.charAt(0).toUpperCase() || '?'}
         </div>
-        <div className="user-tabs">
-          <div className="user-tab roles-tab">
-            <span className="tab-label">Cargo</span>
-            <div className="role-item">
-              {getRoleBall(user.role)}
-              <span className="role-name">{getRoleLabel(user.role)}</span>
-            </div>
-          </div>
-          <div className="user-tab teams-tab">
-            <span className="tab-label">Team</span>
-            <span className="team-value">
-              {getTeamName(user.team_id) || '—'}
-            </span>
-          </div>
+        <div className="user-details">
+          <span className="user-name">{u.nome}</span>
+          <span className="user-email">{u.email}</span>
         </div>
-        {isAdmin && (
-          <button className="user-settings-btn" title="Definições">
-            <span className="gear-icon">⚙</span>
-          </button>
-        )}
       </div>
-    );
-  };
-
-  const groups = getGroupedUsers();
+      <div className="user-tabs">
+        <div className="user-tab">
+          <span className="tab-label">Cargo</span>
+          <div className="role-item">
+            {getRoleBall(u.role_id)}
+            <span className="role-name">{getRoleLabel(u.role_id)}</span>
+          </div>
+        </div>
+        <div className="user-tab">
+          <span className="tab-label">Equipa</span>
+          <span className="team-value">{getTeamName(u.team_id)}</span>
+        </div>
+      </div>
+      {isAdmin && (
+        <button className="user-settings-btn" title="Definições">⚙</button>
+      )}
+    </div>
+  );
 
   return (
     <div className="users-page">
       <h1>Gestão de Utilizadores</h1>
       
-      <Stats />
+      <Stats
+        users={users}
+      ></Stats>
+
       <div className="users-container">
         <div className="users-header">
           <div className="search-wrapper">
@@ -233,44 +188,62 @@ const Users = () => {
             </span>
             <input
               type="text"
-              placeholder="Pesquisar..."
+              placeholder="Pesquisar por nome, email ou equipa..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="users-search"
             />
           </div>
+          {isAdmin && (
+            <button 
+              className="add-user-btn" 
+              onClick={() => setClicked(true)}
+            >
+              <span className="plus-icon">+</span> Novo Utilizador
+            </button>
+          )}
         </div>
+
+          {isClicked && (
+            <div className="modal-overlay" onClick={() => setClicked(false)}>
+              {/* stopPropagation prevents the modal from closing when clicking inside the form */}
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>Criar Novo Utilizador</h2>
+                  <button className="close-modal" onClick={() => setClicked(false)}>&times;</button>
+                </div>
+                <CreateUser onSuccess={() => {
+                  setClicked(false);
+                  fetchData(); // Refresh list after creation
+                }} />
+              </div>
+            </div>
+          )}
 
         <div className="users-list">
           {loading ? (
             <p className="users-loading">A carregar...</p>
           ) : error ? (
             <p className="users-error">{error}</p>
-          ) : groups.every(g => g.users.length === 0) ? (
+          ) : groups.length === 0 ? (
             <p className="users-no-results">Nenhum utilizador encontrado</p>
           ) : (
             groups.map((group) => (
-              group.users.length > 0 && (
-                <div key={group.id} className="team-group">
-                  {(isAdmin || user?.role === ROLES.TEAM_LEADER) && (
-                    <div className="team-header" onClick={() => toggleTeam(group.id)} style={{ cursor: 'pointer' }}>
-                      <div className="team-info">
-                        <span className="team-toggle">{collapsedTeams[group.id] ? '▶' : '▼'}</span>
-                        <span className="team-name">{group.team_name}</span>
-                        {group.description && (
-                          <span className="team-description">{group.description}</span>
-                        )}
-                      </div>
-                      <span className="team-member-count">{group.users.length} membro{group.users.length !== 1 ? 's' : ''}</span>
-                    </div>
-                  )}
-                  {!collapsedTeams[group.id] && (
-                    <div className="team-users">
-                      {group.users.map(renderUserCard)}
-                    </div>
-                  )}
+              <div key={group.id} className="team-group">
+                <div className="team-header" onClick={() => toggleTeam(group.id)}>
+                  <div className="team-info">
+                    <span className="team-toggle">{collapsedTeams[group.id] ? '▶' : '▼'}</span>
+                    <span className="team-name">{group.team_name}</span>
+                    {group.description && <span className="team-description">{group.description}</span>}
+                  </div>
+                  <span className="team-member-count">{group.users.length} membros</span>
                 </div>
-              )
+                {!collapsedTeams[group.id] && (
+                  <div className="team-users">
+                    {group.users.map(renderUserCard)}
+                  </div>
+                )}
+              </div>
             ))
           )}
         </div>

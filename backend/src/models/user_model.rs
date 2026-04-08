@@ -37,7 +37,7 @@ pub struct UserPublic {
     pub id: i32,
     pub nome: String,
     pub email: String,
-    pub role: String,
+    pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
@@ -60,12 +60,12 @@ pub struct UpdateUser {
 }
 
 impl UserPrivate {
-    pub fn into_public(self, role: Role) -> UserPublic {
+    pub fn into_public(self) -> UserPublic {
         UserPublic {
             id: self.id,
             nome: self.nome,
             email: self.email,
-            role: role.name,
+            role_id: self.role_id,
             superior_id: self.superior_id,
             team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
