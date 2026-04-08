@@ -1,19 +1,38 @@
 .profile-page-main {
-  padding: 60px;
-  background-color: #fdfaf7;
+  padding: 40px 60px;
+  background-color: #fdfaf7; 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  font-family: sans-serif;
 }
 
 .main-title {
   font-size: 2.2rem;
   font-weight: 700;
   margin-bottom: 30px;
+  color: #1a1a1a;
 }
 
-/* Header */
+.edit-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.back-arrow-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #333;
+}
+
 .profile-header-clean {
   display: flex;
   align-items: center;
@@ -21,74 +40,145 @@
   margin-bottom: 40px;
 }
 
+.avatar-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
 .profile-avatar-main {
-  width: 85px;
-  height: 85px;
-  background: #3498db;
-  color: white;
+  width: 100%;
+  height: 100%;
+  background: #e0e0e0;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
+  border: 1px solid #ddd;
+  color: #555;
 }
 
-.avatar-wrapper { position: relative; }
-.edit-photo-icon {
-  position: absolute; bottom: 0; right: 0;
-  background: black; color: white; border-radius: 50%;
-  width: 25px; height: 25px; border: 2px solid white; cursor: pointer;
+.edit-photo-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-/* Quadrado Branco */
-.profile-info-box {
-  background: white;
+.profile-name-edit {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.header-text-main h2 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.email-sub {
+  color: #888;
+  font-size: 1rem;
+}
+
+.profile-info-box-clean {
   width: 100%;
-  max-width: 500px;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-  margin-bottom: 30px;
+  max-width: 450px;
+  margin-bottom: 40px;
 }
 
-.detail-row {
+.info-row {
   display: flex;
   justify-content: space-between;
   padding: 15px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #eee;
 }
 
-.detail-row label { font-weight: 700; color: #333; }
-.detail-row .value { color: #888; }
-.detail-row .value.emphasis { color: #3498db; font-weight: bold; }
+.info-row label {
+  font-weight: 700;
+  color: #333;
+}
 
-/* Formulário de Edição */
+.vacation-count {
+  color: #4a74e1;
+  font-weight: bold;
+}
+
 .edit-form-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 550px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.input-group label { display: block; font-weight: bold; margin-bottom: 8px; }
+.input-group label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+}
+
 .input-group input {
-  width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
-.input-disabled { background: #f9f9f9; color: #bbb; cursor: not-allowed; }
 
-.btn-password {
-  background: #5c7ce5; color: white; border: none;
-  padding: 10px 20px; border-radius: 8px; width: fit-content; cursor: pointer;
+.input-disabled {
+  background-color: #f9f9f9;
+  color: #999;
+  cursor: not-allowed;
 }
 
-.form-actions { display: flex; gap: 15px; margin-top: 20px; }
-.btn-cancel {
-  background: white; color: #5c7ce5; border: 1px solid #5c7ce5;
-  padding: 12px 30px; border-radius: 10px; cursor: pointer;
+.btn-password-inline {
+  background-color: #4a74e1;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
 }
-.btn-save, .btn-edit-main {
-  background: #5c7ce5; color: white; border: none;
-  padding: 12px 40px; border-radius: 10px; cursor: pointer; font-weight: bold;
+
+.btn-edit-main-blue, .btn-save-blue {
+  background-color: #4a74e1;
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-cancel-outline {
+  background-color: transparent;
+  color: #4a74e1;
+  border: 2px solid #4a74e1;
+  padding: 12px 35px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
 }
