@@ -28,6 +28,8 @@ const Users = () => {
         UserRoutes.getAllUsers(),
         TeamRoutes.fetchTeams()
       ]);
+      //For debugging: log the raw data to check structure and values, press F12 to open dev tools and check console
+      console.log('Users data:', JSON.stringify(usersData, null, 2));
       setUsers(usersData);
       setTeams(teamsData);
       setError(null);
