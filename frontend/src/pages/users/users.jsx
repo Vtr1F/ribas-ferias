@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserRoutes } from '../../api/userRoutes';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { useAuth } from '../../context/auth-context';
@@ -11,6 +12,7 @@ import './users.css';
 
 const Users = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -181,7 +183,7 @@ const Users = () => {
     return (
       <div key={user.id} className="user-card">
         <div className="user-info">
-          <div className="user-avatar">
+          <div className="user-avatar" onClick={() => navigate(`/users/${user.id}`)} style={{ cursor: 'pointer' }}>
             {user.nome?.charAt(0).toUpperCase() || '?'}
           </div>
           <div className="user-details">

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { UserRoutes } from '../api/userRoutes';
 import { useAuth } from '../context/auth-context';
 import './profile.css';
 
 const Profile = () => {
+  const { userId } = useParams();
   const { user: authUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,8 @@ const Profile = () => {
     const loadProfile = async () => {
       try {
         const users = await UserRoutes.getAllUsers();
-        const current = users.find(u => String(u.id) === String(authUser?.sub));
+        const targetId = userId || authUser?.sub;
+        const current = users.find(u => String(u.id) === String(targetId));
         setProfileData(current);
       } catch (err) {
         console.error("Erro ao carregar perfil:", err);
@@ -24,7 +27,7 @@ const Profile = () => {
       }
     };
     if (authUser?.sub) loadProfile();
-  }, [authUser]);
+  }, [authUser, userId]);
 
   const handlePasswordUpdate = async () => {
     if (passwords.next !== passwords.confirm) {
@@ -121,6 +124,8 @@ const Profile = () => {
     );
   }
 
+  const isOwnProfile = !userId || String(userId) === String(authUser?.sub);
+
   return (
     <div className="profile-page-main">
       <h1 className="main-title">Perfil</h1>
@@ -143,7 +148,9 @@ const Profile = () => {
           <span className="vacation-count">{profileData?.dias_ferias_disponiveis ?? 0}</span>
         </div>
       </div>
-      <button className="btn-edit-main-blue" onClick={() => setIsEditing(true)}>Editar Perfil</button>
+      {isOwnProfile && (
+        <button className="btn-edit-main-blue" onClick={() => setIsEditing(true)}>Editar Perfil</button>
+      )}
     </div>
   );
 };

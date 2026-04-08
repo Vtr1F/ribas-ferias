@@ -94,6 +94,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "users/:userId",
+        element: (
+            <Suspense fallback={<Loading />}>
+                <Profile />
+            </Suspense>
+        ),
+      },
+      {
         path: "settings",
         element: (
             <Suspense fallback={<Loading />}>
