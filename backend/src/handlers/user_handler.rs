@@ -12,7 +12,8 @@ use validator::Validate;
 pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPublic>> {
     
     let rows: Vec<UserPublic> = sqlx::query_as(
-    "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis FROM users")
+    // Altere para incluir os 3 campos:
+"SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter FROM users")
     .fetch_all(&*state.db)
     .await
     .expect("Failed to fetch users");
@@ -23,7 +24,7 @@ pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPubl
 pub async fn fetch_user(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> Json<UserPublic> {
     
     let row: UserPublic = sqlx::query_as(
-        "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at FROM users WHERE id = $1")
+        "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter, created_at FROM users WHERE id = $1")
     .bind(id)
     .fetch_one(&*state.db)
     .await

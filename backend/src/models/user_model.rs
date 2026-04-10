@@ -15,6 +15,9 @@ pub struct UserPrivate {
     pub dias_ferias_disponiveis: i32,
     pub team_id: Option<i32>,
     pub created_at: DateTime<Utc>,
+    pub birthday: Option<chrono::NaiveDate>, 
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Deserialize, FromRow, Validate)]
@@ -41,6 +44,9 @@ pub struct UserPublic {
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
+    pub birthday: Option<chrono::NaiveDate>, 
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Deserialize, Validate, FromRow)]
@@ -69,6 +75,10 @@ impl UserPrivate {
             superior_id: self.superior_id,
             team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
+            // ADICIONE ESTAS 3 LINHAS ABAIXO:
+            birthday: self.birthday,
+            phone_number: self.phone_number,
+            headquarter: self.headquarter,
         }
     }
 }
@@ -89,3 +99,4 @@ pub struct User {
     pub email: String,
     pub password_hash: String,
 }
+

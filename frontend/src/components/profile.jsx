@@ -59,6 +59,18 @@ const Profile = () => {
           <span>{profileData?.email}</span>
         </div>
         <div className="info-row">
+          <label>Data Nascimento</label>
+          <span className="vacation-count">{profileData?.birthday}</span>
+        </div>
+        <div className="info-row"> 
+          <label>Numero de telefone</label>
+          <span className="vacation-count">{profileData?.phone_number}</span>
+        </div>
+        <div className="info-row">
+          <label>Cidade</label>
+          <span className="vacation-count">{profileData?.headquarter}</span>
+        </div>
+        <div className="info-row">
           <label>Dias de Férias</label>
           <span className="vacation-count">{profileData?.dias_ferias_disponiveis ?? 0}</span>
         </div>
