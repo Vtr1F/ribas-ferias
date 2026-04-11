@@ -25,25 +25,14 @@ const Profile = () => {
     if (authUser?.sub) loadProfile();
   }, [authUser, userId]);
 
-
   if (loading) return null;
-
-  const renderBackHeader = (title, backAction) => (
-    <div className="edit-header">
-      <button className="back-arrow-btn" onClick={backAction}>
-        <span className="arrow-icon">←</span>
-      </button>
-      <h1 className="main-title">{title}</h1>
-    </div>
-  );
-
- 
 
   const isOwnProfile = !userId || String(userId) === String(authUser?.sub);
 
   return (
     <div className="profile-page-main">
       <h1 className="main-title">Perfil</h1>
+      
       <div className="profile-header-clean">
         <div className="profile-avatar-main">
           {profileData?.nome ? profileData.nome.charAt(0).toUpperCase() : 'U'}
@@ -53,30 +42,38 @@ const Profile = () => {
           <span className="email-sub">{profileData?.email}</span>
         </div>
       </div>
+
       <div className="profile-info-box-clean">
         <div className="info-row">
           <label>Email</label>
-          <span>{profileData?.email}</span>
+          <span>{profileData?.email}</span> 
         </div>
+
         <div className="info-row">
           <label>Data Nascimento</label>
-          <span className="vacation-count">{profileData?.birthday}</span>
+          <span>{profileData?.birthday}</span>
         </div>
+
         <div className="info-row"> 
           <label>Numero de telefone</label>
-          <span className="vacation-count">{profileData?.phone_number}</span>
+          <span>{profileData?.phone_number}</span>
         </div>
+
         <div className="info-row">
           <label>Cidade</label>
-          <span className="vacation-count">{profileData?.headquarter}</span>
+          <span>{profileData?.headquarter}</span>
         </div>
+
         <div className="info-row">
           <label>Dias de Férias</label>
           <span className="vacation-count">{profileData?.dias_ferias_disponiveis ?? 0}</span>
         </div>
       </div>
+
       {isOwnProfile && (
-        <button className="btn-edit-main-blue" onClick={() => navigate("/users/edit-profile")}>Editar Perfil</button>
+        <button className="btn-edit-main-blue" onClick={() => navigate("/users/edit-profile")}>
+          Editar Perfil
+        </button>
       )}
     </div>
   );
