@@ -6,8 +6,8 @@ function Dashboard() {
   const [currentYear, setCurrentYear] = useState(2026);
   const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; 
 
-  const nextYear = () => setCurrentYear(prev => prev + 1);
-  const prevYear = () => setCurrentYear(prev => prev - 1);
+  const nextYear = () => setCurrentYear(prev => (prev < 2200 ? prev + 1 : prev));
+  const prevYear = () => setCurrentYear(prev => (prev > 1900 ? prev - 1 : prev));
 
   return (
     <main className="dashboard-container">
