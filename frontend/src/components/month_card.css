@@ -1,0 +1,17 @@
+.card-header {
+  display: flex;
+  justify-content: space-between; /* Pushes Month to left and Year to right */
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0 5px;
+}
+
+.month-label {
+  color: #1a1a1a;
+}
+
+.year-label {
+  color: #888; /* Making the year a bit more subtle like the target */
+}
+
