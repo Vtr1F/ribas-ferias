@@ -33,7 +33,7 @@ pub struct CreateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
-    pub birthday: Option<String>,
+    pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }

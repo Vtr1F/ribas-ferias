@@ -72,6 +72,7 @@ const CreateUser = () => {
         role_id: parseInt(role_id, 10),
         superior_id: superior_id ? parseInt(superior_id, 10) : null,
         team_id: team_id ? parseInt(team_id, 10) : null
+        
       };
       const response = await UserRoutes.addUser(data);
       if (!response.err) {

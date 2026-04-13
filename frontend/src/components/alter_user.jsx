@@ -17,7 +17,7 @@ const AlterUser = ({ user, onClose, onSave }) => {
   const getRoleBall = (roleId) => {
     let color = '#999';
     if (roleId === ROLES.ADMIN) color = '#e74c3c';
-    else if (roleId === ROLES.TEAMLEADER) color = '#f1c40f';
+    else if (roleId === ROLES.TEAM_LEADER) color = '#f1c40f';
     else if (roleId === ROLES.USER) color = '#2ecc71';
     return <span className="alter-role-ball" style={{ backgroundColor: color }}></span>;
   };

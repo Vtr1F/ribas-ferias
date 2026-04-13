@@ -241,6 +241,13 @@ pub async fn remove_team(
     State(state): State<Arc<AppState>>,
     Path(team_id): Path<i32>
 ) -> StatusCode {
+    sqlx::query(
+        "UPDATE users SET team_id = 0 WHERE team_id = $1"
+    )
+    .bind(team_id)
+    .execute(&*state.db)
+    .await
+    .expect("Failed to update users team_id");
 
     let result = sqlx::query(
         "UPDATE teams

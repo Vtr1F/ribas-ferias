@@ -86,8 +86,11 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
 
 pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>, Json(payload): Json<UpdateUser>) -> (StatusCode, Json<serde_json::Value>) {
     
+    println!("DEBUG alter_user payload: {:?}", serde_json::to_string(&payload).unwrap_or_default());
+    
     // 1. Validate input
     if let Err(errors) = payload.validate() {
+        println!("DEBUG validation failed: {:?}", errors);
         return (
             StatusCode::BAD_REQUEST,
             Json(json!({

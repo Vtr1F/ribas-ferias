@@ -8,6 +8,10 @@ import { lazy } from 'react';
 import Stats from '../../components/stats';
 import AlterUser from '../../components/alter_user';
 import CreateUser from '../../components/user/create_user';
+import CreateTeam from '../../components/team/create_team';
+import AlterTeam from '../../components/team/alter_team';
+import AddToTeam from '../../components/team/add_to_team';
+import RemoveFromTeam from '../../components/team/remove_from_team';
 import './users.css';
 
 const Users = () => {
@@ -21,6 +25,10 @@ const Users = () => {
   const [collapsedTeams, setCollapsedTeams] = useState({});
   const [selectedUser, setSelectedUser] = useState(null);
   const [isClicked, setClicked] = useState(false);
+  const [showCreateTeam, setShowCreateTeam] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [addToTeam, setAddToTeam] = useState(null);
+  const [removeFromTeam, setRemoveFromTeam] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -37,6 +45,7 @@ const Users = () => {
       console.log('Users data:', JSON.stringify(usersData, null, 2));
       setUsers(usersData);
       setTeams(teamsData);
+      console.log('Teams data:', JSON.stringify(teamsData, null, 2));
       setError(null);
     } catch (err) {
       console.error(err);
@@ -84,42 +93,42 @@ const Users = () => {
       return [{ id: 'all', team_name: 'Minha Equipa', users: filteredUsers }];
     }
 
-    // Case B: Grouping by Teams
+    // Case B: Grouping by Teams (Hierarchical by superior_id)
     // Admins see all teams, Leaders see only their own
     teams.forEach(team => {
       const isMyTeam = team.leader_id === currentUser?.sub;
       
       if (isAdmin || (isLeader && isMyTeam)) {
-        const teamUsers = filteredUsers.filter(u => u.superior_id === team.leader_id || u.id === team.leader_id);
+        // Include leader and all users whose superior is the team leader
+        const teamUsers = filteredUsers.filter(u => 
+          (u.id === team.leader_id) ||
+          (u.superior_id === team.leader_id && u.role_id !== ROLES.ADMIN)
+        );
         
-        if (teamUsers.length > 0) {
-          grouped.push({
-            id: team.id,
-            team_name: team.team_name,
-            description: team.description,
-            users: teamUsers
-          });
-        }
+        grouped.push({
+          id: team.id,
+          team_name: team.team_name,
+          description: team.description,
+          leader_id: team.leader_id,
+          users: teamUsers
+        });
       }
     });
 
-    if (isAdmin) {
-    const unassignedUsers = filteredUsers.filter(u => 
-      !u.team_id && 
-      u.role !== ROLES.ADMIN && 
-      u.role !== ROLES.TEAM_LEADER
+    // Show users without a team
+    const usersWithoutTeam = filteredUsers.filter(u => 
+      (u.team_id === null)
     );
 
-    if (unassignedUsers.length > 0) {
+    if (usersWithoutTeam.length > 0) {
       grouped.push({
-        id: 'unassigned-users',
-        team_name: 'Utilizadores sem Equipa',
+        id: 'no-team',
+        team_name: 'Colaboradores sem Equipa',
         description: 'Colaboradores que ainda não foram atribuídos a uma equipa',
-        users: unassignedUsers,
-        isWarning: true // Optional flag for styling
+        users: usersWithoutTeam,
+        isWarning: true
       });
     }
-  }
 
     return grouped;
   }, [filteredUsers, teams, isAdmin, isLeader, currentUser]);
@@ -204,12 +213,20 @@ const Users = () => {
             />
           </div>
           {isAdmin && (
-            <button 
-              className="add-user-btn" 
-              onClick={() => setClicked(true)}
-            >
-              <span className="plus-icon">+</span> Novo Utilizador
-            </button>
+            <>
+              <button 
+                className="add-user-btn" 
+                onClick={() => setClicked(true)}
+              >
+                <span className="plus-icon">+</span> Novo Utilizador
+              </button>
+              <button 
+                className="add-team-btn" 
+                onClick={() => setShowCreateTeam(true)}
+              >
+                <span className="plus-icon">+</span> Criar Equipa
+              </button>
+            </>
           )}
         </div>
 
@@ -229,6 +246,46 @@ const Users = () => {
             </div>
           )}
 
+          {showCreateTeam && (
+            <div className="modal-overlay" onClick={() => setShowCreateTeam(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>Criar Nova Equipa</h2>
+                  <button className="close-modal" onClick={() => setShowCreateTeam(false)}>&times;</button>
+                </div>
+                <CreateTeam onSuccess={() => {
+                  setShowCreateTeam(false);
+                  fetchData(); // Refresh list after creation
+                }} onClose={() => setShowCreateTeam(false)} />
+              </div>
+            </div>
+          )}
+
+          {selectedTeam && (
+            <AlterTeam
+              team={selectedTeam}
+              onClose={() => setSelectedTeam(null)}
+              onSave={fetchData}
+            />
+          )}
+
+          {addToTeam && (
+            <AddToTeam
+              team={addToTeam}
+              onClose={() => setAddToTeam(null)}
+              onSave={fetchData}
+            />
+          )}
+
+          {removeFromTeam && (
+            <RemoveFromTeam
+              team={removeFromTeam}
+              users={users}
+              onClose={() => setRemoveFromTeam(null)}
+              onSave={fetchData}
+            />
+          )}
+
         <div className="users-list">
           {loading ? (
             <p className="users-loading">A carregar...</p>
@@ -239,13 +296,56 @@ const Users = () => {
           ) : (
             groups.map((group) => (
               <div key={group.id} className="team-group">
-                <div className="team-header" onClick={() => toggleTeam(group.id)}>
-                  <div className="team-info">
+                <div className="team-header">
+                  <div className="team-header-left" onClick={() => toggleTeam(group.id)}>
                     <span className="team-toggle">{collapsedTeams[group.id] ? '▶' : '▼'}</span>
                     <span className="team-name">{group.team_name}</span>
                     {group.description && <span className="team-description">{group.description}</span>}
+                    {group.id !== 'no-team' && (
+                      <button 
+                        className="add-to-team-btn" 
+                        onClick={(e) => { e.stopPropagation(); setAddToTeam(group); }}
+                        title="Adicionar a Equipa"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <line x1="19" y1="8" x2="19" y2="14"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                        Adicionar
+                      </button>
+                    )}
+                    {isAdmin && group.id !== 'no-team' && (
+                      <button 
+                        className="team-edit-btn" 
+                        onClick={(e) => { e.stopPropagation(); setSelectedTeam(group); }}
+                        title="Editar Equipa"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                    )}
                   </div>
-                  <span className="team-member-count">{group.users.length} membros</span>
+                  <div className="team-header-right">
+                    <span className="team-member-count">{group.users.length} membros</span>
+                    {isAdmin && group.id !== 'no-team' && (
+                      <button 
+                        className="remove-from-team-btn" 
+                        onClick={(e) => { e.stopPropagation(); setRemoveFromTeam(group); }}
+                        title="Remover da Equipa"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                        Remover
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {!collapsedTeams[group.id] && (
                   <div className="team-users">
