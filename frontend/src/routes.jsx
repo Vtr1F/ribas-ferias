@@ -17,7 +17,7 @@ const Loading = () => <div className="loading-spinner">Carregando...</div>;
 const AppLayout = () => (
   <div style={{ display: 'flex', minHeight: '100vh' }}>
     <Sidebar />
-    <main style={{ flex: 1, marginLeft: '9vw' }}>
+    <main style={{ flex: 1, marginLeft: '12vw'}}>
       <Outlet />
     </main>
   </div>

@@ -8,13 +8,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 0 20px;
+  gap: 8px;
+  padding: 0 10px;
   transition: background-color 0.3s ease, transform 0.2s ease;
   font-family: 'Questrial', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 500;
-  width: 95%;
+  width: 100%;
 }
 
 .logout-button:hover {
@@ -27,8 +27,17 @@
 }
 
 .logout-button svg {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1200px) {
+  .logout-button {
+    font-size: 16px;
+    gap: 10px;
+    padding: 0 15px;
+  }
 }
 
 .logout-text {
