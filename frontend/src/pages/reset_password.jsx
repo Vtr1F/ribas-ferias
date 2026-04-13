@@ -19,7 +19,6 @@ function ResetPassword() {
     e.preventDefault(); // Evita que a página recarregue
     setError(''); // Clear old errors
     try{
-      
         await LoginRoute.requestPassword({email});
         setIsCodeSent(true);
     } catch(err) {
@@ -30,8 +29,8 @@ function ResetPassword() {
 
   return (
     <LoginLayout>
-      
       <div className="login-container">
+        <button className="back-arrow" onClick={() => navigate('/login')}>←</button>
       {!isCodeSent ? (
         <form onSubmit={handleReset}>
           <h2>Recuperar Password</h2>

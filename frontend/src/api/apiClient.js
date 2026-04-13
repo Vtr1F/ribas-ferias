@@ -1,39 +1,87 @@
+import { useAuth } from "../context/auth-context";
+
 const BASE_URL = "http://localhost:3000"; 
+const getExp = () => localStorage.getItem('auth_exp');
+
+const isTokenExpired = () => {
+  
+  console.log(user);
+  if (!user) return true;
+  try {
+    return user.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
+
+export const refreshToken = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.exp) localStorage.setItem('auth_exp', data.exp);
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+const handleGlobalLogout = () => {
+  localStorage.removeItem('auth_exp');
+  window.location.href = '/login';
+};
 
 export const apiClient = {
   
-  // Body é um json
   request: async (endpoint, method = 'GET', body = null) => {
-    const savedToken = localStorage.getItem('token');
     
-    try {
+      const isLoginPage = endpoint.includes('/login');
+      const exp = getExp();
+      
+      if (!isLoginPage && exp && (parseInt(exp) * 1000 < Date.now())) {
+      const refreshed = await refreshToken();
+      if (!refreshed) {
+        handleGlobalLogout();
+        return { err: true, message: 'Session Expired' };
+      }
+    }
+
       const options = {
         method: method.toUpperCase(), 
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include'
       };
 
-      if (savedToken) {
-        options.headers['Authorization'] = `Bearer ${savedToken}`;
-      }
-
-      if (body) {
+      if (body) { 
         options.body = JSON.stringify(body);
       }
-
-      const response = await fetch(`${BASE_URL}${endpoint}`, options);
+    
+    try {
+      let response = await fetch(`${BASE_URL}${endpoint}`, options);
 
       if (!response.ok) {
         throw new Error(`Erro na API: ${response.status}`);
       }
 
-      if (response.status === 204) return true;
+      const contentType = response.headers.get("content-type");
 
-      return await response.json();
+      if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+      }
+
+      return true;
     } catch (err) {
       console.error("Falha na ligação:", err);
       throw err;
     }
   }
 };
+
+
