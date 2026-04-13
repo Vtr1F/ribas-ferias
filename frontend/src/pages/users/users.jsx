@@ -163,23 +163,23 @@ const Users = () => {
           </div>
         </div>
         {isAdmin && (
-          <button className="user-settings-btn" title="Definições" onClick={() => setSelectedUser(user)}>
+          <button className="user-settings-btn" title="Definições" onClick={() => setSelectedUser(u)}>
             <span className="gear-icon">⚙</span>
           </button>
         )}
-        <div className="user-tab">
-          <span className="tab-label">Equipa</span>
-          <span className="team-value">{getTeamName(u.team_id)}</span>
-        </div>
       </div>
-      {isAdmin && (
-        <button className="user-settings-btn" title="Definições">⚙</button>
-      )}
     </div>
   );
 
   return (
     <div className="users-page">
+      {selectedUser && (
+        <AlterUser
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+          onSave={fetchData}
+        />
+      )}
       <h1>Gestão de Utilizadores</h1>
       
       <Stats
@@ -257,13 +257,6 @@ const Users = () => {
           )}
         </div>
       </div>
-      {selectedUser && (
-        <AlterUser
-          user={selectedUser}
-          onClose={() => setSelectedUser(null)}
-          onSave={fetchData}
-        />
-      )}
     </div>
   );
 };

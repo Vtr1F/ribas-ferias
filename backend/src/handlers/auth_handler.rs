@@ -11,7 +11,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode}
 use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}, team_model::User, user_model::UserPrivate}, state::AppState};
 use std::fmt::Debug;
 
-const TOKEN_EXPIRATION_MINUTES: i64 = 15;
+const TOKEN_EXPIRATION_MINUTES: i64 = 30; //30 minutes for testing, can be changed to 60 or more for production
 
 #[derive(sqlx::FromRow, Debug)]
 struct UserRow {

@@ -3,35 +3,29 @@ import { UserRoutes } from '../api/userRoutes';
 import './alter_user.css';
 import RemoveButton from './remove_button/remove_button';
 import ConfirmModal from './confirm_modal';
+import {ROLES} from '../constants/roles.js';
 
 
 const AlterUser = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    role_id: 3
+    role_id: '3'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const getRoleIdFromRole = (role) => {
-    const roleLower = role?.toLowerCase();
-    if (roleLower === 'admin') return 1;
-    if (roleLower === 'leader') return 2;
-    return 3;
-  };
-
   const getRoleBall = (roleId) => {
     let color = '#999';
-    if (roleId === 1) color = '#e74c3c';
-    else if (roleId === 2) color = '#f1c40f';
-    else if (roleId === 3) color = '#2ecc71';
+    if (roleId === ROLES.ADMIN) color = '#e74c3c';
+    else if (roleId === ROLES.TEAMLEADER) color = '#f1c40f';
+    else if (roleId === ROLES.USER) color = '#2ecc71';
     return <span className="alter-role-ball" style={{ backgroundColor: color }}></span>;
   };
 
   useEffect(() => {
     if (user) {
       setFormData({
-        role_id: user.role_id || getRoleIdFromRole(user.role)
+        role_id: String(user.role_id) || '3'
       });
     }
   }, [user]);
@@ -40,7 +34,7 @@ const AlterUser = ({ user, onClose, onSave }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'role_id' ? parseInt(value) : value
+      [name]: value
     }));
   };
 
@@ -50,13 +44,21 @@ const AlterUser = ({ user, onClose, onSave }) => {
     setError(null);
 
     try {
+      const birthdayValue = user.birthday 
+        ? new Date(user.birthday).toISOString().split('T')[0]
+        : null;
+
       const payload = {
         nome: user.nome,
         email: user.email,
         dias_ferias_disponiveis: user.dias_ferias_disponiveis,
-        role_id: parseInt(formData.role_id) || 3,
+        role_id: parseInt(formData.role_id, 10) || 3,
         superior_id: user.superior_id,
-        team_id: user.team_id
+        team_id: user.team_id,
+        birthday: birthdayValue,
+        phone_number: user.phone_number,
+        headquarter: user.headquarter
+
       };
 
       await UserRoutes.alterUser(user.id, payload);
@@ -122,16 +124,16 @@ const AlterUser = ({ user, onClose, onSave }) => {
           <div className="form-group">
             <label htmlFor="role_id">Cargo</label>
             <div className="role-select-wrapper">
-              {getRoleBall(formData.role_id)}
+              {getRoleBall(parseInt(formData.role_id))}
               <select
                 id="role_id"
                 name="role_id"
                 value={formData.role_id}
                 onChange={handleChange}
               >
-                <option value={3}>Colaborador</option>
-                <option value={2}>Responsável</option>
-                <option value={1}>Administrador</option>
+                <option value="3">Colaborador</option>
+                <option value="2">Responsável</option>
+                <option value="1">Administrador</option>
               </select>
             </div>
           </div>

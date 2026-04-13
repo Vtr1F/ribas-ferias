@@ -18,9 +18,6 @@ pub struct UserPrivate {
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
     pub created_at: DateTime<Utc>,
-    pub birthday: Option<chrono::NaiveDate>, 
-    pub phone_number: Option<String>,
-    pub headquarter: Option<String>,
 }
 
 #[derive(Deserialize, FromRow, Validate)]
@@ -50,7 +47,7 @@ pub struct UserPublic {
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
-    pub birthday: Option<chrono::NaiveDate>, 
+    pub birthday: Option<NaiveDate>, 
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }
@@ -69,7 +66,7 @@ pub struct UpdateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
-    pub birthday: Option<String>,
+    pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }

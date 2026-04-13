@@ -13,7 +13,8 @@ pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPubl
     
     let rows: Vec<UserPublic> = sqlx::query_as(
     // Altere para incluir os 3 campos:
-"SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter FROM users")
+"SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter FROM users
+        WHERE deleted_at IS NULL")
     .fetch_all(&*state.db)
     .await
     .expect("Failed to fetch users");
