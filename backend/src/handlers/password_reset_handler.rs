@@ -33,7 +33,7 @@ pub async fn request_password_reset(
     // 3. Send email
     state
         .mail_service
-        .send_reset_email("victor.fonseca.f2@gmail.com", &reset_token) //email para testes deveria ser &payload.email
+        .send_reset_email("diogovieira11112@gmail.com", &reset_token) //email para testes deveria ser &payload.email
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 

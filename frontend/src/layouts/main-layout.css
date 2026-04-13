@@ -1,0 +1,15 @@
+.app-container {
+  display: flex;
+}
+
+.content {
+  margin-left: 12vw;
+  flex: 1;
+  min-height: 100vh;
+}
+
+@media (min-width: 1200px) {
+  .content {
+    margin-left: 12vw;
+  }
+}

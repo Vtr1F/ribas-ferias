@@ -49,9 +49,9 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
 
     // Insert into DB
     let row: UserPrivate = sqlx::query_as(
-        "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at"
+        "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id, birthday, phone_number, headquarter)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter"
     )
     .bind(&payload.nome)
     .bind(&payload.email)
@@ -60,6 +60,9 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .bind(payload.superior_id)
     .bind(22)//TODO Get from settings
     .bind(payload.team_id)
+    .bind(&payload.birthday)
+    .bind(&payload.phone_number)
+    .bind(&payload.headquarter)
     .fetch_one(&*state.db)
     .await
     .expect("Failed to insert user");
@@ -101,9 +104,12 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
              dias_ferias_disponiveis = $3,
              role_id = $4,
              superior_id = $5,
-             team_id = $6
-         WHERE id = $7
-         RETURNING id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at"
+             team_id = $6,
+             birthday = $7,
+             phone_number = $8,
+             headquarter = $9
+         WHERE id = $10
+         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter"
     )
     .bind(&payload.nome)
     .bind(&payload.email)
@@ -111,6 +117,9 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
     .bind(payload.role_id)
     .bind(payload.superior_id)
     .bind(payload.team_id)
+    .bind(&payload.birthday)
+    .bind(&payload.phone_number)
+    .bind(&payload.headquarter)
     .bind(_id)
     .fetch_one(&*state.db)
     .await

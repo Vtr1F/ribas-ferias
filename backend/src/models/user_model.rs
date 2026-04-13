@@ -1,5 +1,5 @@
 use crate::models::role_model::Role;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use validator::Validate;
@@ -14,6 +14,9 @@ pub struct UserPrivate {
     pub superior_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
     pub team_id: Option<i32>,
+    pub birthday: Option<NaiveDate>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
     pub created_at: DateTime<Utc>,
     pub birthday: Option<chrono::NaiveDate>, 
     pub phone_number: Option<String>,
@@ -33,6 +36,9 @@ pub struct CreateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
+    pub birthday: Option<String>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, FromRow)]
@@ -63,6 +69,9 @@ pub struct UpdateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
+    pub birthday: Option<String>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 impl UserPrivate {
@@ -75,7 +84,6 @@ impl UserPrivate {
             superior_id: self.superior_id,
             team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
-            // ADICIONE ESTAS 3 LINHAS ABAIXO:
             birthday: self.birthday,
             phone_number: self.phone_number,
             headquarter: self.headquarter,

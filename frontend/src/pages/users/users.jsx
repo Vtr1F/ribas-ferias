@@ -6,6 +6,7 @@ import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
 import { lazy } from 'react';
 import Stats from '../../components/stats';
+import AlterUser from '../../components/alter_user';
 import CreateUser from '../../components/user/create_user';
 import './users.css';
 
@@ -18,6 +19,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [collapsedTeams, setCollapsedTeams] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
   const [isClicked, setClicked] = useState(false);
 
   useEffect(() => {
@@ -31,6 +33,8 @@ const Users = () => {
         UserRoutes.getAllUsers(),
         TeamRoutes.fetchTeams()
       ]);
+      //For debugging: log the raw data to check structure and values, press F12 to open dev tools and check console
+      console.log('Users data:', JSON.stringify(usersData, null, 2));
       setUsers(usersData);
       setTeams(teamsData);
       setError(null);
@@ -158,6 +162,11 @@ const Users = () => {
             <span className="role-name">{getRoleLabel(u.role_id)}</span>
           </div>
         </div>
+        {isAdmin && (
+          <button className="user-settings-btn" title="Definições" onClick={() => setSelectedUser(user)}>
+            <span className="gear-icon">⚙</span>
+          </button>
+        )}
         <div className="user-tab">
           <span className="tab-label">Equipa</span>
           <span className="team-value">{getTeamName(u.team_id)}</span>
@@ -248,6 +257,13 @@ const Users = () => {
           )}
         </div>
       </div>
+      {selectedUser && (
+        <AlterUser
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+          onSave={fetchData}
+        />
+      )}
     </div>
   );
 };
