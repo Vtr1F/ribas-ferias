@@ -95,7 +95,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "edit-profile",
+        path: "users/edit-profile",
         element: (
             <Suspense fallback={<Loading />}>
                 <EditProfile />
