@@ -18,6 +18,9 @@ pub struct UserPrivate {
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
     pub created_at: DateTime<Utc>,
+    pub birthday: Option<chrono::NaiveDate>, 
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Deserialize, FromRow, Validate)]
@@ -30,17 +33,9 @@ pub struct CreateUser {
         custom(function = "validate_ribas_email")
     )]
     pub email: String,
-
-    #[validate(length(min = 8, message = "Password must be at least 8 characters"))]
-    pub password: String,
-
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
-
-    #[validate(range(min = 0, message = "Dias de férias must be non-negative"))]
-    pub dias_ferias_disponiveis: i32,
-
     pub birthday: Option<String>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
@@ -51,11 +46,11 @@ pub struct UserPublic {
     pub id: i32,
     pub nome: String,
     pub email: String,
-    pub role: String,
+    pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
-    pub birthday: Option<NaiveDate>,
+    pub birthday: Option<chrono::NaiveDate>, 
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }
@@ -80,12 +75,12 @@ pub struct UpdateUser {
 }
 
 impl UserPrivate {
-    pub fn into_public(self, role: Role) -> UserPublic {
+    pub fn into_public(self) -> UserPublic {
         UserPublic {
             id: self.id,
             nome: self.nome,
             email: self.email,
-            role: role.name,
+            role_id: self.role_id,
             superior_id: self.superior_id,
             team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
@@ -112,3 +107,4 @@ pub struct User {
     pub email: String,
     pub password_hash: String,
 }
+

@@ -3,7 +3,6 @@ import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
 import { useAuth } from '../context/auth-context';
-import MyLogo from '../assets/logo.png';
 import './login.css'
 
 function Login() {

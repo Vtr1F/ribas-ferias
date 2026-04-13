@@ -173,7 +173,7 @@ pub async fn fetch_request(
     Path(request_id): Path<i32>,
 ) -> Result<Json<Request>, (StatusCode, String)> {
 
-    let row = sqlx::query!(
+    let row= sqlx::query!(
         r#"
         SELECT 
             r.id,
