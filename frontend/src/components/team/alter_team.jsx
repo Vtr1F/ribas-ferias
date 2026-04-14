@@ -49,7 +49,7 @@ const AlterTeam = ({ team, onClose, onSave }) => {
       setLoadingLeaders(true);
       const response = await UserRoutes.getAllUsers();
       if (Array.isArray(response)) {
-        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER);
+        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER || user.role_id === ROLES.ADMIN );
         setLeaders(leaderUsers);
       }
     } catch (err) {

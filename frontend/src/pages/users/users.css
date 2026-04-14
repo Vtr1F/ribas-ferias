@@ -360,7 +360,7 @@
   color: white;
   border: none;
   font-family: 'Questrial', sans-serif;
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 500;
   cursor: pointer;
   border-radius: 25px;
@@ -381,7 +381,7 @@
   color: #1f2d4d;
   border: none;
   font-family: 'Questrial', sans-serif;
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 500;
   cursor: pointer;
   border-radius: 25px;
@@ -398,6 +398,7 @@
 .plus-icon {
   font-size: 1.2rem;
   line-height: 1;
+  margin-bottom: 0.1rem;
 }
 
 /* src/pages/users/users.css */

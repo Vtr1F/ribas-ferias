@@ -106,9 +106,9 @@ const CreateUser = () => {
             Papel
             <select required value={role_id} onChange={(e) => setRole_id(e.target.value)}>
               <option value="">Selecione o Papel</option>
-              <option value="1">Admin</option>
-              <option value="2">Team Leader</option>
-              <option value="3">Employee</option>
+              <option value="1">Administrador</option>
+              <option value="2">Responsável</option>
+              <option value="3">Colaborador</option>
             </select>
           </label>
 
