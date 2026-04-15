@@ -7,6 +7,7 @@ pub struct User {
     pub id: i32,
     pub nome: String,
     pub email: String,
+    pub role_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -21,7 +22,7 @@ pub struct Team {
     pub team_name: String,
     pub description: Option<String>,
     pub leader_id: Option<i32>,
-    pub members: Vec<MemberWithUser>,
+    pub members: Vec<User>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -49,6 +50,6 @@ pub struct TeamResponse {
     pub team_name: String,
     pub description: Option<String>,
     pub leader_id: Option<i32>,
-    pub members: Vec<i32>,
+    pub members: serde_json::Value,
     pub created_at: DateTime<Utc>,
 }

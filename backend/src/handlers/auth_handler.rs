@@ -109,7 +109,7 @@ pub async fn login(
 
 
 pub fn generate_reset_token(user_id: &i32, secret: &str) -> String {
-    let exp = (Utc::now() + Duration::minutes(30)).timestamp();
+    let exp = (Utc::now() + Duration::minutes(TOKEN_EXPIRATION_MINUTES)).timestamp();
 
     let claims = ResetClaims {
         sub: *user_id,

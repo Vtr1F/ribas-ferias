@@ -105,7 +105,6 @@ pub async fn fetch_team_requests(
     Path(team_id): Path<i32>,
 ) -> Result<Json<Vec<Request>>, (StatusCode, String)> {
 
-    // 1. Fetch team members
     let team = sqlx::query!(
         r#"SELECT members FROM teams WHERE id = $1"#,
         team_id
@@ -118,13 +117,18 @@ pub async fn fetch_team_requests(
         return Err((StatusCode::NOT_FOUND, "Team not found".into()));
     };
 
-    let members = team.members.unwrap_or_default();
+    let members: Vec<serde_json::Value> = serde_json::from_value(team.members.unwrap_or(serde_json::json!([]))).unwrap_or_default();
 
     if members.is_empty() {
         return Ok(Json(vec![]));
     }
 
-    // 2. Fetch all requests from those users
+    let member_ids: Vec<i32> = members.iter().filter_map(|m| m.get("id").and_then(|v| v.as_i64()).map(|v| v as i32)).collect();
+
+    if member_ids.is_empty() {
+        return Ok(Json(vec![]));
+    }
+
     let rows = sqlx::query!(
         r#"
         SELECT 
@@ -141,7 +145,7 @@ pub async fn fetch_team_requests(
         WHERE r.user_id = ANY($1)
         ORDER BY r.id
         "#,
-        &members[..]  // &[i32]
+        &member_ids
     )
     .fetch_all(&*state.db)
     .await

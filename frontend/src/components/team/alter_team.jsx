@@ -25,6 +25,7 @@ const AlterTeam = ({ team, onClose, onSave }) => {
       setTeamName(team.team_name || '');
       setDescription(team.description || '');
       setLeaderId(team.leader_id ? String(team.leader_id) : '');
+      
     }
   }, [team]);
 
@@ -49,7 +50,7 @@ const AlterTeam = ({ team, onClose, onSave }) => {
       setLoadingLeaders(true);
       const response = await UserRoutes.getAllUsers();
       if (Array.isArray(response)) {
-        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER || user.role_id === ROLES.ADMIN );
+        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER);
         setLeaders(leaderUsers);
       }
     } catch (err) {
@@ -90,14 +91,13 @@ const AlterTeam = ({ team, onClose, onSave }) => {
     setLoading(true);
 
     try {
-      const payload = {
+      const data = {
         team_name: teamName,
         description: description || null,
-        leader_id: leaderId ? parseInt(leaderId, 10) : null,
-        members: []
+        leader_id: leaderId ? parseInt(leaderId, 10) : null
       };
 
-      await TeamRoutes.alterTeam(team.id, payload);
+      await TeamRoutes.alterTeam(team.id, data);
       onSave?.();
       onClose?.();
     } catch (err) {

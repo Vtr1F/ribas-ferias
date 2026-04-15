@@ -54,10 +54,10 @@ pub async fn reset_password(
     let user_id = claims.sub;
 
     // 2. Hash new password
-    let hashed = hash_password(&payload.new_password);
+    let hashed = hash_password(&payload.new_password).await;
 
     // 3. Update DB
-    update_user_password(&*state.db,&user_id, &hashed.await.to_string())
+    update_user_password(&*state.db, &user_id, &hashed)
     .await
     .map_err(|_: sqlx::Error| StatusCode::INTERNAL_SERVER_ERROR)?;
 
