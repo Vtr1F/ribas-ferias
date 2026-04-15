@@ -13,7 +13,7 @@ use tower_http::cors::CorsLayer;
 use std::{env, net::SocketAddr, sync::Arc};
 use mailer::mailer::MailService;
 
-use crate::{state::AppState, utils::hash_password};
+use crate::{state::AppState};
 
 // Tokio makes main asynchronous
 #[tokio::main]

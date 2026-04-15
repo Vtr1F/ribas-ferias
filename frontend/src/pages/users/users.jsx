@@ -1,10 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRoutes } from '../../api/userRoutes';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
-import { lazy } from 'react';
 import Stats from '../../components/stats';
 import AlterUser from '../../components/alter_user';
 import CreateUser from '../../components/user/create_user';
@@ -15,9 +13,8 @@ import RemoveFromTeam from '../../components/team/remove_from_team';
 import './users.css';
 
 const Users = () => {
-  const { user: currentUser } = useAuth(); // Renamed to avoid confusion with the user list
+  const { user: currentUser } = useAuth();
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -37,15 +34,9 @@ const Users = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [usersData, teamsData] = await Promise.all([
-        UserRoutes.getAllUsers(),
-        TeamRoutes.fetchTeams()
-      ]);
-      //For debugging: log the raw data to check structure and values, press F12 to open dev tools and check console
-      console.log('Users data:', JSON.stringify(usersData, null, 2));
-      setUsers(usersData);
-      setTeams(teamsData);
+      const teamsData = await TeamRoutes.fetchTeams();
       console.log('Teams data:', JSON.stringify(teamsData, null, 2));
+      setTeams(teamsData);
       setError(null);
     } catch (err) {
       console.error(err);
@@ -58,77 +49,53 @@ const Users = () => {
   const isAdmin = currentUser?.role === ROLES.ADMIN;
   const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
 
-  // Helper to get team name safely
-  const getTeamName = (teamId) => {
-    return teams.find(t => t.id === teamId)?.team_name || '—';
-  };
-
-  // 1. Memoized Filtering: Only recalculates when users, search, or current user changes
-  const filteredUsers = useMemo(() => {
-    let base = isAdmin
-      ? users
-      : users.filter(u => {
-          const isMe = u.id === currentUser?.sub;
-          const isMySubordinate = u.superior_id === currentUser?.sub;
-          const isMyTeamMate = u.team_id === currentUser?.team_id;
-          return isMe || isMySubordinate || isMyTeamMate;
+  const allUsers = useMemo(() => {
+    const users = [];
+    teams.forEach(team => {
+      if (team.members && Array.isArray(team.members)) {
+        team.members.forEach(member => {
+          users.push({
+            ...member,
+            team_id: team.id,
+            team_name: team.team_name
+          });
         });
+      }
+    });
+    return users;
+  }, [teams]);
 
-    if (!searchTerm) return base;
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return allUsers;
 
     const search = searchTerm.toLowerCase();
-    return base.filter(u =>
+    return allUsers.filter(u =>
       u.nome?.toLowerCase().includes(search) ||
       u.email?.toLowerCase().includes(search) ||
-      getTeamName(u.team_id).toLowerCase().includes(search)
+      u.team_name?.toLowerCase().includes(search)
     );
-  }, [users, searchTerm, currentUser, isAdmin, teams]);
+  }, [allUsers, searchTerm]);
 
-  // 2. Memoized Grouping: Organizes the filtered list into the UI sections
   const groups = useMemo(() => {
     const grouped = [];
 
-    // Case A: Normal Worker - Show one flat group
     if (!isAdmin && !isLeader) {
-      return [{ id: 'all', team_name: 'Minha Equipa', users: filteredUsers }];
+      const myTeamUsers = filteredUsers.filter(u => u.team_id === currentUser?.team_id);
+      return [{ id: 'my-team', team_name: 'Minha Equipa', users: myTeamUsers }];
     }
 
-    // Case B: Grouping by Teams (Hierarchical by superior_id)
-    // Admins see all teams, Leaders see only their own
     teams.forEach(team => {
       const isMyTeam = team.leader_id === currentUser?.sub;
-      
+
       if (isAdmin || (isLeader && isMyTeam)) {
-        // Include leader and all users whose superior is the team leader
-        const teamUsers = filteredUsers.filter(u => 
-          (u.id === team.leader_id) ||
-          (u.superior_id === team.leader_id && u.role_id !== ROLES.ADMIN)
-        );
-        
+        const teamUsers = filteredUsers.filter(u => u.team_id === team.id);
+
         grouped.push({
-          id: team.id,
-          team_name: team.team_name,
-          description: team.description,
-          leader_id: team.leader_id,
+          ...team,
           users: teamUsers
         });
       }
     });
-
-    // Show users without a team
-    const usersWithoutTeam = filteredUsers.filter(u => 
-      (u.team_id === null)
-    );
-
-    if (usersWithoutTeam.length > 0) {
-      grouped.push({
-        id: 'no-team',
-        team_name: 'Colaboradores sem Equipa',
-        description: 'Colaboradores que ainda não foram atribuídos a uma equipa',
-        users: usersWithoutTeam,
-        isWarning: true
-      });
-    }
 
     return grouped;
   }, [filteredUsers, teams, isAdmin, isLeader, currentUser]);
@@ -191,9 +158,7 @@ const Users = () => {
       )}
       <h1>Gestão de Utilizadores</h1>
       
-      <Stats
-        users={users}
-      ></Stats>
+      <Stats users={allUsers} />
 
       <div className="users-container">
         <div className="users-header">
@@ -232,7 +197,6 @@ const Users = () => {
 
           {isClicked && (
             <div className="modal-overlay" onClick={() => setClicked(false)}>
-              {/* stopPropagation prevents the modal from closing when clicking inside the form */}
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                   <h2>Criar Novo Utilizador</h2>
@@ -240,7 +204,7 @@ const Users = () => {
                 </div>
                 <CreateUser onSuccess={() => {
                   setClicked(false);
-                  fetchData(); // Refresh list after creation
+                  fetchData();
                 }} />
               </div>
             </div>
@@ -255,7 +219,7 @@ const Users = () => {
                 </div>
                 <CreateTeam onSuccess={() => {
                   setShowCreateTeam(false);
-                  fetchData(); // Refresh list after creation
+                  fetchData();
                 }} onClose={() => setShowCreateTeam(false)} />
               </div>
             </div>
@@ -280,7 +244,7 @@ const Users = () => {
           {removeFromTeam && (
             <RemoveFromTeam
               team={removeFromTeam}
-              users={users}
+              users={allUsers}
               onClose={() => setRemoveFromTeam(null)}
               onSave={fetchData}
             />
@@ -301,7 +265,7 @@ const Users = () => {
                     <span className="team-toggle">{collapsedTeams[group.id] ? '▶' : '▼'}</span>
                     <span className="team-name">{group.team_name}</span>
                     {group.description && <span className="team-description">{group.description}</span>}
-                    {group.id !== 'no-team' && (
+                    {isAdmin && group.id !== 'no-team' && (
                       <button 
                         className="add-to-team-btn" 
                         onClick={(e) => { e.stopPropagation(); setAddToTeam(group); }}

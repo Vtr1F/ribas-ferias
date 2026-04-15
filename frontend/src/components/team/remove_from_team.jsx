@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { UserRoutes } from '../../api/userRoutes';
+import { TeamRoutes } from '../../api/teamRoutes';
+import { ROLES } from '../../constants/roles';
 import ConfirmModal from '../confirm_modal';
 import './remove_from_team.css';
 
@@ -9,10 +10,19 @@ const RemoveFromTeam = ({ team, users, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const teamUsers = users.filter(u => 
-    u.team_id === team.id || 
-    u.superior_id === team.leader_id
-  );
+  const teamUsers = team.members || [];
+
+  const getRoleLabel = (role) => {
+    if (role === ROLES.ADMIN) return 'Administrador';
+    if (role === ROLES.TEAM_LEADER) return 'Responsável';
+    return 'Colaborador';
+  };
+
+  const getRoleColor = (role) => {
+    if (role === ROLES.ADMIN) return '#e74c3c';
+    if (role === ROLES.TEAM_LEADER) return '#f1c40f';
+    return '#2ecc71';
+  };
 
   const toggleUser = (userId) => {
     setSelectedUsers(prev => 
@@ -28,17 +38,7 @@ const RemoveFromTeam = ({ team, users, onClose, onSave }) => {
 
     try {
       for (const userId of selectedUsers) {
-        await UserRoutes.alterUser(userId, {
-          nome: users.find(u => u.id === userId)?.nome,
-          email: users.find(u => u.id === userId)?.email,
-          dias_ferias_disponiveis: users.find(u => u.id === userId)?.dias_ferias_disponiveis,
-          role_id: users.find(u => u.id === userId)?.role_id,
-          superior_id: null,
-          team_id: null,
-          birthday: users.find(u => u.id === userId)?.birthday,
-          phone_number: users.find(u => u.id === userId)?.phone_number,
-          headquarter: users.find(u => u.id === userId)?.headquarter
-        });
+        await TeamRoutes.removeFromTeam(team.id, userId);
       }
       setShowConfirm(false);
       onSave?.();
@@ -91,6 +91,7 @@ const RemoveFromTeam = ({ team, users, onClose, onSave }) => {
                   <div className="user-info">
                     <span className="user-name">{user.nome}</span>
                     <span className="user-email">{user.email}</span>
+                    <span className="user-role" style={{ color: getRoleColor(user.role_id) }}>{getRoleLabel(user.role_id)}</span>
                   </div>
                 </div>
               ))}

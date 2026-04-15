@@ -97,17 +97,15 @@ EXECUTE FUNCTION assign_users_without_team();
 CREATE OR REPLACE FUNCTION sync_team_members()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- On UPDATE, clear old members first
     IF TG_OP = 'UPDATE' THEN
         DELETE FROM team_members WHERE team_id = NEW.id;
     END IF;
 
-    -- Insert members from the array (all non-leaders)
     INSERT INTO team_members (team_id, user_id, leader)
-    SELECT NEW.id, unnest(NEW.members), FALSE
+    SELECT NEW.id, (elem->>'id')::integer, FALSE
+    FROM jsonb_array_elements(NEW.members) AS elem
     ON CONFLICT DO NOTHING;
 
-    -- Insert leader (if not null)
     IF NEW.leader_id IS NOT NULL THEN
         INSERT INTO team_members (team_id, user_id, leader)
         VALUES (NEW.id, NEW.leader_id, TRUE)

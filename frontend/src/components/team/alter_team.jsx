@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
-import { UserRoutes } from '../../api/userRoutes';
-import { ROLES } from '../../constants/roles';
 import ConfirmModal from '../confirm_modal';
 import './alter_team.css';
 
@@ -25,7 +23,6 @@ const AlterTeam = ({ team, onClose, onSave }) => {
       setTeamName(team.team_name || '');
       setDescription(team.description || '');
       setLeaderId(team.leader_id ? String(team.leader_id) : '');
-      
     }
   }, [team]);
 
@@ -46,13 +43,21 @@ const AlterTeam = ({ team, onClose, onSave }) => {
   }, [showDropdown]);
 
   const loadLeaders = async () => {
+    if (!team) return;
     try {
       setLoadingLeaders(true);
-      const response = await UserRoutes.getAllUsers();
-      if (Array.isArray(response)) {
-        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER);
-        setLeaders(leaderUsers);
+      const teams = await TeamRoutes.fetchTeams();
+      const currentTeam = teams.find(t => t.id === team.id);
+      
+      const availableLeaders = [];
+      if (currentTeam && currentTeam.members && Array.isArray(currentTeam.members)) {
+        currentTeam.members.forEach(member => {
+          if (member.role_id === 1 || member.role_id === 2) {
+            availableLeaders.push(member);
+          }
+        });
       }
+      setLeaders(availableLeaders);
     } catch (err) {
       console.error(err);
       setError('Erro ao carregar responsáveis');
@@ -94,7 +99,8 @@ const AlterTeam = ({ team, onClose, onSave }) => {
       const data = {
         team_name: teamName,
         description: description || null,
-        leader_id: leaderId ? parseInt(leaderId, 10) : null
+        leader_id: leaderId ? parseInt(leaderId, 10) : null,
+        members: []
       };
 
       await TeamRoutes.alterTeam(team.id, data);
@@ -231,7 +237,10 @@ const AlterTeam = ({ team, onClose, onSave }) => {
                           <div className="leader-option-avatar">
                             {leader.nome?.charAt(0).toUpperCase() || '?'}
                           </div>
-                          <span className="leader-option-name">{leader.nome}</span>
+                          <div className="leader-option-info">
+                            <span className="leader-option-name">{leader.nome}</span>
+                            <span className="leader-option-team">{leader.team_name}</span>
+                          </div>
                         </div>
                       ))
                     )}

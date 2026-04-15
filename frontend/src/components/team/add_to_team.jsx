@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
-import { UserRoutes } from '../../api/userRoutes';
 import { ROLES } from '../../constants/roles';
 import './add_to_team.css';
 
 const AddToTeam = ({ team, onClose, onSave }) => {
-  console.log('AddToTeam team:', JSON.stringify(team));
-  const [users, setUsers] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState('');
@@ -17,7 +15,7 @@ const AddToTeam = ({ team, onClose, onSave }) => {
   const searchRef = useRef(null);
 
   useEffect(() => {
-    loadUsersWithoutTeam();
+    loadTeams();
   }, []);
 
   useEffect(() => {
@@ -36,23 +34,36 @@ const AddToTeam = ({ team, onClose, onSave }) => {
     }
   }, [showDropdown]);
 
-  const loadUsersWithoutTeam = async () => {
+  const loadTeams = async () => {
     try {
       setLoadingUsers(true);
-      const response = await UserRoutes.getAllUsers();
-      if (Array.isArray(response)) {
-        const usersWithoutTeam = response.filter(user => 
-          (user.team_id === null || user.team_id === 0)
-        );
-        setUsers(usersWithoutTeam);
-      }
+      const teamsData = await TeamRoutes.fetchTeams();
+      setTeams(teamsData);
     } catch (err) {
       console.error(err);
-      setError('Erro ao carregar utilizadores');
+      setError('Erro ao carregar equipas');
     } finally {
       setLoadingUsers(false);
     }
   };
+
+  const getUsersFromOtherTeams = () => {
+    const users = [];
+    teams.forEach(t => {
+      if (t.id !== team.id && t.members && Array.isArray(t.members)) {
+        t.members.forEach(member => {
+          users.push({
+            ...member,
+            current_team_id: t.id,
+            current_team_name: t.team_name
+          });
+        });
+      }
+    });
+    return users;
+  };
+
+  const users = getUsersFromOtherTeams();
 
   const filteredUsers = users.filter(user =>
     user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -83,20 +94,6 @@ const AddToTeam = ({ team, onClose, onSave }) => {
 
     try {
       for (const user of selectedUsers) {
-        const superiorId = team.leader_id ? parseInt(team.leader_id, 10) : null;
-        const payload = {
-          nome: user.nome,
-          email: user.email,
-          dias_ferias_disponiveis: user.dias_ferias_disponiveis || 22,
-          role_id: user.role_id,
-          superior_id: superiorId,
-          team_id: team.id,
-          birthday: user.birthday,
-          phone_number: user.phone_number,
-          headquarter: user.headquarter
-        };
-        console.log('Payload:', JSON.stringify(payload));
-        await UserRoutes.alterUser(user.id, payload);
         await TeamRoutes.addToTeam(team.id, user.id, {});
       }
       onSave?.();
@@ -171,6 +168,7 @@ const AddToTeam = ({ team, onClose, onSave }) => {
                           <div className="user-option-info">
                             <span className="user-option-name">{user.nome}</span>
                             <span className="user-option-email">{user.email}</span>
+                            <span className="user-option-team">de {user.current_team_name}</span>
                           </div>
                         </div>
                       ))

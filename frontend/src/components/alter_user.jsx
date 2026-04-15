@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserRoutes } from '../api/userRoutes';
+import { TeamRoutes } from '../api/teamRoutes';
 import './alter_user.css';
 import RemoveButton from './remove_button/remove_button';
 import ConfirmModal from './confirm_modal';
@@ -13,6 +14,7 @@ const AlterUser = ({ user, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [fullUserData, setFullUserData] = useState(null);
 
   const getRoleBall = (roleId) => {
     let color = '#999';
@@ -23,12 +25,21 @@ const AlterUser = ({ user, onClose, onSave }) => {
   };
 
   useEffect(() => {
-    if (user) {
-      setFormData({
-        role_id: String(user.role_id) || '3'
-      });
-    }
+    loadFullUserData();
   }, [user]);
+
+  const loadFullUserData = async () => {
+    try {
+      const data = await UserRoutes.fetchUser(user.id);
+      setFullUserData(data);
+      setFormData({
+        role_id: String(data.role_id) || '3'
+      });
+    } catch (err) {
+      console.error('Error loading user:', err);
+      setFullUserData(user);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,24 +54,24 @@ const AlterUser = ({ user, onClose, onSave }) => {
     setLoading(true);
     setError(null);
 
+    const currentUser = fullUserData || user;
+    const birthdayValue = currentUser.birthday 
+      ? new Date(currentUser.birthday).toISOString().split('T')[0]
+      : null;
+
+    const payload = {
+      nome: currentUser.nome,
+      email: currentUser.email,
+      dias_ferias_disponiveis: currentUser.dias_ferias_disponiveis,
+      role_id: parseInt(formData.role_id, 10) || 3,
+      superior_id: currentUser.superior_id,
+      team_id: currentUser.team_id,
+      birthday: birthdayValue,
+      phone_number: currentUser.phone_number,
+      headquarter: currentUser.headquarter
+    };
+
     try {
-      const birthdayValue = user.birthday 
-        ? new Date(user.birthday).toISOString().split('T')[0]
-        : null;
-
-      const payload = {
-        nome: user.nome,
-        email: user.email,
-        dias_ferias_disponiveis: user.dias_ferias_disponiveis,
-        role_id: parseInt(formData.role_id, 10) || 3,
-        superior_id: user.superior_id,
-        team_id: user.team_id,
-        birthday: birthdayValue,
-        phone_number: user.phone_number,
-        headquarter: user.headquarter
-
-      };
-
       await UserRoutes.alterUser(user.id, payload);
       onSave?.();
       onClose?.();

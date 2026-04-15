@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
-import { UserRoutes } from '../../api/userRoutes';
-import { ROLES } from '../../constants/roles';
 import './create_team.css';
 
 const CreateTeam = ({ onSuccess, onClose }) => {
@@ -40,11 +38,22 @@ const CreateTeam = ({ onSuccess, onClose }) => {
   const loadLeaders = async () => {
     try {
       setLoadingLeaders(true);
-      const response = await UserRoutes.getAllUsers();
-      if (Array.isArray(response)) {
-        const leaderUsers = response.filter(user => user.role_id === ROLES.TEAM_LEADER);
-        setLeaders(leaderUsers);
-      }
+      const teams = await TeamRoutes.fetchTeams();
+      const allLeaders = [];
+      teams.forEach(team => {
+        if (team.id == 1 && team.members && Array.isArray(team.members)) {
+          team.members.forEach(member => {
+            if (member.role_id === 2) {
+              allLeaders.push({
+                ...member,
+                team_id: team.id,
+                team_name: team.team_name
+              });
+            }
+          });
+        }
+      });
+      setLeaders(allLeaders);
     } catch (err) {
       console.error(err);
       setError('Erro ao carregar responsáveis');
@@ -187,7 +196,10 @@ const CreateTeam = ({ onSuccess, onClose }) => {
                       <div className="leader-option-avatar">
                         {leader.nome?.charAt(0).toUpperCase() || '?'}
                       </div>
-                      <span className="leader-option-name">{leader.nome}</span>
+                      <div className="leader-option-info">
+                        <span className="leader-option-name">{leader.nome}</span>
+                        <span className="leader-option-team">{leader.team_name}</span>
+                      </div>
                     </div>
                   ))
                 )}

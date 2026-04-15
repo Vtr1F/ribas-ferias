@@ -172,6 +172,13 @@
   text-overflow: ellipsis;
 }
 
+.user-role {
+  color: #f1c40f;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
 .remove-from-team-footer {
   display: flex;
   gap: 12px;

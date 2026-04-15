@@ -136,6 +136,27 @@ pub async fn alter_team(
     .await
     .expect("Failed to update team");
 
+    if payload.leader_id.is_some() {
+        let leader_id = payload.leader_id.unwrap();
+        
+        sqlx::query(
+            "DELETE FROM team_members WHERE user_id = $1"
+        )
+        .bind(leader_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+
+        sqlx::query(
+            "INSERT INTO team_members (team_id, user_id, leader) VALUES ($1, $2, TRUE) ON CONFLICT DO NOTHING"
+        )
+        .bind(id)
+        .bind(leader_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+    }
+
     (StatusCode::OK, Json(row))
 }
 
@@ -146,16 +167,36 @@ pub async fn add_team(
 
     let row: TeamResponse = sqlx::query_as(
         "INSERT INTO teams (team_name, description, leader_id, members)
-         VALUES ($1, $2, $3, $4)
+         VALUES ($1, $2, $3, '[]'::jsonb)
          RETURNING id, team_name, description, leader_id, members, created_at"
     )
     .bind(&payload.team_name)
     .bind(&payload.description)
     .bind(&payload.leader_id)
-    .bind(serde_json::json!([]))
     .fetch_one(&*state.db)
     .await
     .expect("Failed to insert team");
+
+    if payload.leader_id.is_some() {
+        let leader_id = payload.leader_id.unwrap();
+        
+        sqlx::query(
+            "DELETE FROM team_members WHERE user_id = $1"
+        )
+        .bind(leader_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+
+        sqlx::query(
+            "INSERT INTO team_members (team_id, user_id, leader) VALUES ($1, $2, TRUE) ON CONFLICT DO NOTHING"
+        )
+        .bind(row.id)
+        .bind(leader_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+    }
 
     (StatusCode::OK, Json(row))
 }
@@ -199,6 +240,15 @@ pub async fn remove_from_team(
     Path((team_id, user_id)): Path<(i32, i32)>
 ) -> (StatusCode, Json<TeamResponse>) {
 
+    let is_leader: Option<i32> = sqlx::query_scalar(
+        "SELECT leader_id FROM teams WHERE id = $1"
+    )
+    .bind(team_id)
+    .fetch_optional(&*state.db)
+    .await
+    .ok()
+    .flatten();
+
     sqlx::query(
         "DELETE FROM team_members WHERE team_id = $1 AND user_id = $2"
     )
@@ -208,13 +258,31 @@ pub async fn remove_from_team(
     .await
     .expect("Failed to remove user from team");
 
+    if is_leader == Some(user_id) {
+        sqlx::query(
+            "UPDATE teams SET leader_id = NULL WHERE id = $1"
+        )
+        .bind(team_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+    }
+
     sqlx::query(
-        "UPDATE users SET team_id = NULL WHERE id = $1"
+        "UPDATE users SET team_id = 1 WHERE id = $1"
     )
     .bind(user_id)
     .execute(&*state.db)
     .await
-    .expect("Failed to clear user team_id");
+    .expect("Failed to update user team_id");
+
+    sqlx::query(
+        "INSERT INTO team_members (team_id, user_id, leader) VALUES (1, $1, FALSE) ON CONFLICT DO NOTHING"
+    )
+    .bind(user_id)
+    .execute(&*state.db)
+    .await
+    .ok();
 
     let row: TeamResponse = sqlx::query_as(
         "SELECT id, team_name, description, leader_id, members, created_at FROM teams WHERE id = $1"
