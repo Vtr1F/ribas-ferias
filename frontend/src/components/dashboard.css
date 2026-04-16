@@ -32,6 +32,10 @@
   gap: 15px;
 }
 
+.vacation-allowance{
+  padding-top: 0.7rem;
+}
+
 .btn-request {
   background: white;
   border: 1px solid #eef0f2;

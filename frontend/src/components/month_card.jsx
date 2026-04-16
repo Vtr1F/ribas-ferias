@@ -1,6 +1,7 @@
+
 import './month_card.css';
 
-const MonthCard = ({ monthIndex, year }) => {
+const MonthCard = ({ monthIndex, year, vacationMap = {} }) => { 
   const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
   const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -14,12 +15,20 @@ const MonthCard = ({ monthIndex, year }) => {
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    let statusClass = "";
-    // Example status logic
-    if (monthIndex === 0 && d === 14) statusClass = "status-green";
-    if (monthIndex === 0 && d === 24) statusClass = "status-yellow";
-    if (monthIndex === 0 && (d === 27 || d === 29)) statusClass = "status-red";
+    // 1. Criar string YYYYMMDD (Ex: "20260416")
+    const dateStr = `${year}${String(monthIndex + 1).padStart(2, '0')}${String(d).padStart(2, '0')}`;
 
+    let statusClass = "";
+    const status = vacationMap[dateStr];
+
+    if (status) {
+      // Converte o status da DB para a classe CSS
+      if (status === 'Accepted') statusClass = "status-green";
+      if (status === 'Pending') statusClass = "status-yellow";
+      if (status === 'Rejected') statusClass = "status-red";
+    }
+
+    
     days.push(
       <div key={d} className={`day ${statusClass}`}>
         {d}
@@ -30,7 +39,6 @@ const MonthCard = ({ monthIndex, year }) => {
   return (
     <div className="calendar-card">
       <div className="card-header">
-        {/* Changed from <select> to <span> */}
         <span className="month-label">{monthNames[monthIndex]}</span>
         <span className="year-label">{year}</span>
       </div>

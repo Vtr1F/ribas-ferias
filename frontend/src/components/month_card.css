@@ -14,4 +14,22 @@
 .year-label {
   color: #888; /* Making the year a bit more subtle like the target */
 }
+/* Vacation Status Colors */
+.day.status-green {
+  background-color: #00FF40 !important; /* Matches 'Disponível' */
+  color: white;
+  font-weight: bold;
+}
+
+.day.status-yellow {
+  background-color: #FFB800 !important; /* Matches 'Pendente' */
+  color: white;
+  font-weight: bold;
+}
+
+.day.status-red {
+  background-color: #FF3B30 !important; /* Matches 'Rejeitado' */
+  color: white;
+  font-weight: bold;
+}
 
