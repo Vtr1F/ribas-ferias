@@ -1,0 +1,306 @@
+.add-to-team-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.add-to-team-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.add-to-team-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.add-to-team-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2d4d;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #516c99;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #f5f6fa;
+  color: #1f2d4d;
+}
+
+.add-to-team-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.add-to-team-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-to-team-form label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1f2d4d;
+}
+
+.add-to-team-error {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #fff1f0;
+  border: 1px solid #f5c2c0;
+  color: #9f1f1f;
+  font-size: 0.9rem;
+}
+
+.user-select-wrapper {
+  position: relative;
+}
+
+.user-input-container {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #d8dce8;
+  background: #fbfdff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-input-container:focus-within {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.user-search-icon {
+  color: #8f9bb7;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.user-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #1f2d4d;
+  outline: none;
+}
+
+.user-input::placeholder {
+  color: #8f9bb7;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  color: #8f9bb7;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-toggle:hover {
+  color: #516c99;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1.5px solid #d8dce8;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.user-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.user-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.user-option:hover {
+  background: #f5f6fa;
+}
+
+.user-option-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.user-option-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-option-name {
+  color: #1f2d4d;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.user-option-email {
+  color: #8f9bb7;
+  font-size: 0.8rem;
+}
+
+.user-no-results {
+  padding: 16px;
+  text-align: center;
+  color: #8f9bb7;
+  font-size: 0.9rem;
+}
+
+.selected-users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  background: #f5f6fa;
+  border-radius: 12px;
+  min-height: 60px;
+}
+
+.selected-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 6px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.selected-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.selected-user-name {
+  color: #1f2d4d;
+  font-size: 0.9rem;
+}
+
+.remove-user {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #8f9bb7;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.remove-user:hover {
+  color: #e74c3c;
+}
+
+.add-to-team-form .form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.add-to-team-form .cancel-btn {
+  padding: 12px 24px;
+  border: 1.5px solid #d8dce8;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #516c99;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-to-team-form .cancel-btn:hover {
+  background: #f5f6fa;
+  border-color: #b8c0d4;
+}
+
+.add-to-team-form .submit-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-to-team-form .submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.add-to-team-form .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

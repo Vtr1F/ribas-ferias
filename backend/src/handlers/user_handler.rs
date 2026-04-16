@@ -48,6 +48,8 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
         );
     }
 
+    let team_id = payload.team_id.unwrap_or(1);
+
     // Insert into DB
     let row: UserPrivate = sqlx::query_as(
         "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id, birthday, phone_number, headquarter)
@@ -56,11 +58,11 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     )
     .bind(&payload.nome)
     .bind(&payload.email)
-    .bind("Not-Set")// With this as a password that isnt hashed its impossible to make any changes
+    .bind("Not-Set")
     .bind(payload.role_id)
     .bind(payload.superior_id)
-    .bind(22)//TODO Get from settings
-    .bind(payload.team_id)
+    .bind(22)
+    .bind(team_id)
     .bind(&payload.birthday)
     .bind(&payload.phone_number)
     .bind(&payload.headquarter)
@@ -85,6 +87,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
 }
 
 pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>, Json(payload): Json<UpdateUser>) -> (StatusCode, Json<serde_json::Value>) {
+    
     
     // 1. Validate input
     if let Err(errors) = payload.validate() {
@@ -126,6 +129,16 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
     .await
     .expect("Failed to update user");
 
+    if payload.team_id.is_some() {
+        sqlx::query(
+            "INSERT INTO team_members (team_id, user_id, leader) VALUES ($1, $2, FALSE) ON CONFLICT DO NOTHING"
+        )
+        .bind(payload.team_id)
+        .bind(_id)
+        .execute(&*state.db)
+        .await
+        .ok();
+    }
 
     (StatusCode::OK, Json(json!(row)))
 }

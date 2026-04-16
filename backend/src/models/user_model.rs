@@ -33,7 +33,7 @@ pub struct CreateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
-    pub birthday: Option<String>,
+    pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }
@@ -47,7 +47,7 @@ pub struct UserPublic {
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
-    pub birthday: Option<NaiveDate>, 
+    pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
 }
@@ -104,4 +104,3 @@ pub struct User {
     pub email: String,
     pub password_hash: String,
 }
-
