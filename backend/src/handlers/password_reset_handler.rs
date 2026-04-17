@@ -33,7 +33,7 @@ pub async fn request_password_reset(
     // 3. Send email
     state
         .mail_service
-        .send_reset_email("victor.fonseca.f2@gmail.com", &reset_token) //email para testes deveria ser &payload.email
+        .send_reset_email("diogovieira11112@gmail.com", &reset_token) //email para testes deveria ser &payload.email
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
@@ -43,23 +43,38 @@ pub async fn request_password_reset(
 pub async fn reset_password(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<PasswordResetPayload>,
-) -> Result<StatusCode, StatusCode> {
+) -> Result<StatusCode, (StatusCode, String)> {
     
     let jwt_secret = state.jwt_secret.as_ref();
 
+    eprintln!("DEBUG: Token received: {}", &payload.token[..20.min(payload.token.len())]);
+
     // 1. Validate token
-    let claims = validate_reset_token(&payload.token, &jwt_secret)
-        .map_err(|_| StatusCode::UNAUTHORIZED)?;
+    let claims = match validate_reset_token(&payload.token, &jwt_secret) {
+        Ok(c) => c,
+        Err(_) => {
+            eprintln!("DEBUG: Token validation FAILED");
+            return Err((StatusCode::UNAUTHORIZED, "Invalid token".to_string()));
+        }
+    };
+
+    eprintln!("DEBUG: Token validated successfully for user_id: {}", claims.sub);
 
     let user_id = claims.sub;
 
     // 2. Hash new password
-    let hashed = hash_password(&payload.new_password);
+    let hashed = hash_password(&payload.new_password).await;
+    eprintln!("DEBUG: Password hashed, hash length: {}", hashed.len());
 
     // 3. Update DB
-    update_user_password(&*state.db,&user_id, &hashed.await.to_string())
+    update_user_password(&*state.db, &user_id, &hashed)
     .await
-    .map_err(|_: sqlx::Error| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        eprintln!("DEBUG: Database error: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+    })?;
+
+    eprintln!("DEBUG: Password updated successfully");
 
 
     Ok(StatusCode::NO_CONTENT)

@@ -1,5 +1,5 @@
 use crate::models::role_model::Role;
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use validator::Validate;
@@ -14,6 +14,9 @@ pub struct UserPrivate {
     pub superior_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
     pub team_id: Option<i32>,
+    pub birthday: Option<NaiveDate>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -30,6 +33,9 @@ pub struct CreateUser {
     pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
+    pub birthday: Option<NaiveDate>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, FromRow)]
@@ -37,10 +43,13 @@ pub struct UserPublic {
     pub id: i32,
     pub nome: String,
     pub email: String,
-    pub role: String,
+    pub role_id: i32,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
     pub dias_ferias_disponiveis: i32,
+    pub birthday: Option<NaiveDate>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 #[derive(Deserialize, Validate, FromRow)]
@@ -54,18 +63,24 @@ pub struct UpdateUser {
     pub role_id: Option<i32>,
     pub superior_id: Option<i32>,
     pub team_id: Option<i32>,
+    pub birthday: Option<NaiveDate>,
+    pub phone_number: Option<String>,
+    pub headquarter: Option<String>,
 }
 
 impl UserPrivate {
-    pub fn into_public(self, role: Role) -> UserPublic {
+    pub fn into_public(self) -> UserPublic {
         UserPublic {
             id: self.id,
             nome: self.nome,
             email: self.email,
-            role: role.name,
+            role_id: self.role_id,
             superior_id: self.superior_id,
             team_id: self.team_id,
             dias_ferias_disponiveis: self.dias_ferias_disponiveis,
+            birthday: self.birthday,
+            phone_number: self.phone_number,
+            headquarter: self.headquarter,
         }
     }
 }

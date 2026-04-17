@@ -11,7 +11,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode}
 use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}, team_model::User, user_model::UserPrivate}, state::AppState};
 use std::fmt::Debug;
 
-const TOKEN_EXPIRATION_MINUTES: i64 = 15;
+const TOKEN_EXPIRATION_MINUTES: i64 = 30; //30 minutes for testing, can be changed to 60 or more for production
 
 #[derive(sqlx::FromRow, Debug)]
 struct UserRow {
@@ -109,7 +109,7 @@ pub async fn login(
 
 
 pub fn generate_reset_token(user_id: &i32, secret: &str) -> String {
-    let exp = (Utc::now() + Duration::minutes(30)).timestamp();
+    let exp = (Utc::now() + Duration::minutes(TOKEN_EXPIRATION_MINUTES)).timestamp();
 
     let claims = ResetClaims {
         sub: *user_id,

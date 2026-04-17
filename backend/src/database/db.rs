@@ -30,11 +30,11 @@ pub async fn update_user_password(
     new_hash: &str,
 ) -> Result<(), sqlx::Error> {
     sqlx::query(
-        r#"
+        "
         UPDATE users
         SET password_hash = $1
         WHERE id = $2
-        "#,
+        ",
     )
     .bind(new_hash)
     .bind(user_id)

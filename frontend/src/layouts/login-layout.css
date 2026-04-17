@@ -9,8 +9,8 @@
 }
 
 .login-logo {
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 21rem;
   height: auto;
   margin-bottom: 30px;
   border-radius: 50%;
