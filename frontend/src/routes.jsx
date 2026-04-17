@@ -5,6 +5,7 @@ import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
 const SetUser = lazy(() => import('./pages/set-user/set-user'));
+const EditProfile = lazy(() => import('./pages/edit-profile/edit-profile'));
 const Dashboard = lazy(() => import('./components/dashboard'));
 const Users = lazy(() => import('./pages/users/users'));
 const Profile = lazy(() => import('./components/profile'));
@@ -94,6 +95,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "users/edit-profile",
+        element: (
+            <Suspense fallback={<Loading />}>
+                <EditProfile />
+            </Suspense>
+         ),
+       },
+       {
         path: "users/:userId",
         element: (
             <Suspense fallback={<Loading />}>

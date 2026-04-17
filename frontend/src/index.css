@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Questrial&family=Roboto:wght@400;500;700&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -10,4 +11,21 @@ html, body, #root {
 
 body {
   font-family: 'Questrial', sans-serif;
+}
+
+.clickable-button {
+  border: none;
+  border-radius: 16px;
+  font-size:medium;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickable-button:hover {
+  transform: translateY(-1px);
+}
+
+:root {
+  font-family: 'Questrial', 'Roboto', sans-serif;
+  color-scheme: light;
 }
