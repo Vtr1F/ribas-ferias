@@ -21,5 +21,9 @@ export const UserRoutes = {
 
   removeUser: (id) => {
     return apiClient.request(`/api/users/${id}`,`DELETE`);
-  }
+  },
+
+  updatePassword: (id, data) => {
+    return apiClient.request(`/api/users/password/${id}`,`PUT`,data)
+  },
 };

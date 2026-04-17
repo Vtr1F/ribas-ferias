@@ -15,9 +15,8 @@ function EditProfile() {
     const [pass, setPass] = useState('');
     const [newPass, setNewPass] = useState('');
     const [comfirmPass, setComfirmPass] = useState('');
-
-    console.log(user);
-    console.log("Amanha ao meio dia eu vou almocar");
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    
     const handleButton = () => {
         setClicked(true);
     }
@@ -25,22 +24,60 @@ function EditProfile() {
     const handleEditUser = async (e) => {
         e.preventDefault();
         setError('');
+        const rawUser = await UserRoutes.fetchUser(user.sub);
         try {
         const data = {
-            nome,
-            //telemovel
-            //localidade
+            nome: (nome ?  nome : rawUser.nome),
+            email: rawUser.email,
+            dias_ferias_disponiveis: rawUser.dias_ferias_disponiveis,
+            role_id: rawUser.role_id,
+            superior_id: rawUser.superior_id,
+            team_id: rawUser.team_id,
+            birthday: rawUser.birthday,
+            phone_number: (telemovel ?  telemovel : rawUser.phone_number),
+            headquarter: (localidade ?  localidade : rawUser.headquarter)
         };
             const response = await UserRoutes.alterUser(user.sub, data);
+            
             if (!response.err) {
+                setEdited(true);
+                await sleep(3000);
                 navigate('/users');
         }
 
-        setEdited(true);
 
         } catch (err) {
             console.error(err);
             setError('Erro ao criar utilizador');
+        }
+    }
+
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        setError();
+        const rawUser = await UserRoutes.fetchUser(user.sub);
+        if (newPass != comfirmPass){
+            setError('Passwords não Coincidem');
+            return;
+        }
+        const data = {
+            email: rawUser.email,
+            password: pass
+        }
+        try {
+            const log = await LoginRoute.loginPost(data)
+            if (!log.err) {
+                const data = {
+                    id: user.sub,
+                    email: rawUser.email,
+                    password_hash: newPass
+                }
+                const resp = await UserRoutes.updatePassword(user.sub, data);
+                console.log(resp);
+            }
+        } catch (err) {
+            console.log(err);
+            setError("Password não Autorizada");
         }
     }
 
@@ -51,17 +88,17 @@ function EditProfile() {
                 <form onSubmit={handleEditUser}>
                     <label>
                         Nome
-                        <input type="text" required value={nome} onChange={(e) => setNome(e.target.value)} />
+                        <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
                     </label>
 
                     <label>
                         Telemovel
-                        <input type="text" required value={telemovel} onChange={(e) => setTelemovel(e.target.value)} />
+                        <input type="text" value={telemovel} onChange={(e) => setTelemovel(e.target.value)} />
                     </label>
                     
                     <label className="full-width">
                         Localidade
-                        <input type="text" required value={localidade} onChange={(e) => setLocalidade(e.target.value)} />
+                        <input type="text" value={localidade} onChange={(e) => setLocalidade(e.target.value)} />
                     </label>
                 
                     <div className="actions">
@@ -84,7 +121,7 @@ function EditProfile() {
                     ) : (
                         <>
                             <h3>Alterar Password</h3>
-                            <form onSubmit={(e) => e.preventDefault()}>
+                            <form onSubmit={handlePasswordChange}>
                                 <label>
                                     Password Atual
                                     <input type="password" required value={pass} onChange={(e) => setPass(e.target.value)} />
@@ -98,9 +135,11 @@ function EditProfile() {
                                     Confirmar Nova Password
                                     <input type="password" required value={comfirmPass} onChange={(e) => setComfirmPass(e.target.value)} />
                                 </label>
+                                {error && <p className="error">{error}</p>}
                                 <div className="actions">
                                     <button type="submit" className="primary">Atualizar Password</button>
                                 </div>
+                                
                             </form>
                         </>
                     )}

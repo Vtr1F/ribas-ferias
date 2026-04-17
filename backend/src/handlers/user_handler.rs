@@ -1,12 +1,12 @@
 
-use crate::{handlers::auth_handler::generate_reset_token, models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate, UserPublic}}, utils::hash_password};
+use crate::{handlers::auth_handler::generate_reset_token, models::{role_model::Role, user_model::{CreateUser, UpdateUser, User, UserPrivate, UserPublic}}, utils::hash_password};
 use axum::{Json, extract::Path, http::StatusCode};
 use axum::extract::State;
 use crate::state::AppState;
 use std::sync::Arc;
 use serde_json::json;
 use validator::Validate;
-
+use crate::database::db::update_user_password;
 
 
 pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPublic>> {
@@ -167,5 +167,22 @@ pub async fn remove_user(
         }
         Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
+
+}
+
+pub async fn alter_password(State(state): State<Arc<AppState>>,  Path(_id): Path<i32>, Json(payload): Json<User>) 
+    ->  Result<StatusCode, (StatusCode, String)>  {
+    let hashed = hash_password(&payload.password_hash).await;
+    
+    update_user_password(&*state.db, &_id, &hashed)
+    .await
+    .map_err(|e| {
+        eprintln!("DEBUG: Database error: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+    })?;
+    
+    eprintln!("DEBUG: Password updated successfully");
+
+    Ok(StatusCode::NO_CONTENT)
 }
 

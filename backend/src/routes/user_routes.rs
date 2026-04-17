@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::{get, put}};
 
 use crate::{handlers::user_handler, state::AppState};
 
@@ -15,5 +15,9 @@ pub fn routes() -> Router<Arc<AppState>> {
             get(user_handler::fetch_user)
                 .put(user_handler::alter_user)
                 .delete(user_handler::remove_user),
+        )
+        .route(
+            "/password/{id}",
+            put(user_handler::alter_password)
         )
 }
