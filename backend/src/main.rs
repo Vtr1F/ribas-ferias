@@ -5,6 +5,7 @@ mod database;
 mod state;
 mod mailer;
 mod utils;
+mod tests;
 
 use axum::http::Method;
 use database::db::create_pool;
