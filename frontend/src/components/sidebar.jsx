@@ -4,15 +4,17 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { ROLES } from '../constants/roles';
 import Logout from './logout';
+import UserAvatar from './user_avatar';
 
 function Sidebar() {
   const { user } = useAuth();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-top">
         <img src={MyLogo} alt="Ribas Férias Logo" className="sidebar-logo" />
         <div className="sidebar-profile">
-          <img src="https://via.placeholder.com/50" alt="Profile" className="profile-img" />
+          <UserAvatar userId={user?.sub} name={user?.nome} size="medium" />
         </div>
         <nav>
           <NavLink to="/dashboard" className="sidebar-nav-button">

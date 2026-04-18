@@ -1,10 +1,11 @@
-import './settings.css'
+import Header from './header/header';
+import './settings.css';
 
 function Settings() {
   return (
     <main className="settings-content">
+      <Header />
       <h1>Settings</h1>
-      <h1>Amanha ao meio dia eu vou almocar</h1>
     </main>
   );
 }

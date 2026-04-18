@@ -12,8 +12,7 @@ use validator::Validate;
 pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPublic>> {
     
     let rows: Vec<UserPublic> = sqlx::query_as(
-    // Altere para incluir os 3 campos:
-"SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter FROM users
+"SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter, avatar_url FROM users
         WHERE deleted_at IS NULL")
     .fetch_all(&*state.db)
     .await
@@ -25,7 +24,7 @@ pub async fn list_users(State(state): State<Arc<AppState>>) -> Json<Vec<UserPubl
 pub async fn fetch_user(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> Json<UserPublic> {
     
     let row: UserPublic = sqlx::query_as(
-        "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter, created_at FROM users WHERE id = $1")
+        "SELECT id, nome, email, role_id, superior_id, team_id, dias_ferias_disponiveis, birthday, phone_number, headquarter, avatar_url, created_at FROM users WHERE id = $1")
     .bind(id)
     .fetch_one(&*state.db)
     .await
@@ -49,12 +48,13 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     }
 
     let team_id = payload.team_id.unwrap_or(1);
+    let avatar_url = payload.avatar_url.clone().unwrap_or_else(|| "/images/default-avatar.svg".to_string());
 
     // Insert into DB
     let row: UserPrivate = sqlx::query_as(
-        "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id, birthday, phone_number, headquarter)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter"
+        "INSERT INTO users (nome, email, password_hash, role_id, superior_id, dias_ferias_disponiveis, team_id, birthday, phone_number, headquarter, avatar_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter, avatar_url"
     )
     .bind(&payload.nome)
     .bind(&payload.email)
@@ -66,6 +66,7 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .bind(&payload.birthday)
     .bind(&payload.phone_number)
     .bind(&payload.headquarter)
+    .bind(&avatar_url)
     .fetch_one(&*state.db)
     .await
     .expect("Failed to insert user");
@@ -111,9 +112,10 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
              team_id = $6,
              birthday = $7,
              phone_number = $8,
-             headquarter = $9
-         WHERE id = $10
-         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter"
+             headquarter = $9,
+             avatar_url = $10
+         WHERE id = $11
+         RETURNING id, nome, email, password_hash, role_id, superior_id, team_id, dias_ferias_disponiveis, created_at, birthday, phone_number, headquarter, avatar_url"
     )
     .bind(&payload.nome)
     .bind(&payload.email)
@@ -124,6 +126,7 @@ pub async fn alter_user(State(state): State<Arc<AppState>>, Path(_id): Path<i32>
     .bind(&payload.birthday)
     .bind(&payload.phone_number)
     .bind(&payload.headquarter)
+    .bind(&payload.avatar_url)
     .bind(_id)
     .fetch_one(&*state.db)
     .await

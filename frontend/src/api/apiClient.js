@@ -76,6 +76,10 @@ export const apiClient = {
         return await response.json();
       }
 
+      if (contentType && contentType.includes("image")) {
+        return response.blob();
+      }
+
       return true;
     } catch (err) {
       console.error("Falha na ligação:", err);

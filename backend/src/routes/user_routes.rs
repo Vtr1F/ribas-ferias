@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::{routing::get, Router};
 
-use crate::{handlers::user_handler, state::AppState};
+use crate::{handlers::image_handler, handlers::user_handler, state::AppState};
 
 pub fn routes() -> Router<Arc<AppState>> {
     Router::new()
@@ -10,6 +10,7 @@ pub fn routes() -> Router<Arc<AppState>> {
             "/",
             get(user_handler::list_users).post(user_handler::add_user),
         )
+        .route("/{id}/image", get(image_handler::get_user_image))
         .route(
             "/{id}",
             get(user_handler::fetch_user)

@@ -7,3 +7,9 @@
   font-family: 'Questrial', sans-serif;
   color: #333;
 }
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

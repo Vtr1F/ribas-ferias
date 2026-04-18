@@ -1,4 +1,3 @@
-
 import { apiClient } from './apiClient';
 
 export const UserRoutes = {
@@ -21,5 +20,10 @@ export const UserRoutes = {
 
   removeUser: (id) => {
     return apiClient.request(`/api/users/${id}`,`DELETE`);
+  },
+
+  getUserImage: (id) => {
+    return apiClient.request(`/api/users/${id}/image`, `GET`);
   }
+   
 };

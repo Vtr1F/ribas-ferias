@@ -29,6 +29,8 @@
 }
 .sidebar-profile {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
 .profile-img {
   width: 50px;

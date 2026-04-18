@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import { LoginRoute } from '../api/loginRoute'; // Assuming you have a getMe or profile call here
+import { LoginRoute } from '../api/loginRoute';
 
 const AuthContext = createContext();
 

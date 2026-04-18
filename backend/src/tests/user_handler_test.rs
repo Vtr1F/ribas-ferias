@@ -15,6 +15,7 @@ mod tests {
             birthday: None,
             phone_number: None,
             headquarter: None,
+            avatar_url: None,
         };
 
         let result = payload.validate();
@@ -32,9 +33,8 @@ mod tests {
             birthday: None,
             phone_number: None,
             headquarter: None,
+            avatar_url: None,
         };
-        
-
 
         let result = payload.validate();
         assert!(result.is_err());
@@ -51,6 +51,7 @@ mod tests {
             birthday: Some(NaiveDate::from_ymd_opt(1990, 1, 1).unwrap()),
             phone_number: Some("+1234567890".to_string()),
             headquarter: Some("Lisbon".to_string()),
+            avatar_url: Some("https://example.com/avatar.jpg".to_string()),
         };
 
         let result = payload.validate();
@@ -69,6 +70,7 @@ mod tests {
             birthday: None,
             phone_number: None,
             headquarter: None,
+            avatar_url: None,
         };
 
         let result = payload.validate();
@@ -87,6 +89,7 @@ mod tests {
             birthday: None,
             phone_number: None,
             headquarter: None,
+            avatar_url: None,
         };
 
         let result = payload.validate();
@@ -105,6 +108,7 @@ mod tests {
             birthday: Some(NaiveDate::from_ymd_opt(1990, 1, 1).unwrap()),
             phone_number: Some("+1234567890".to_string()),
             headquarter: Some("Lisbon".to_string()),
+            avatar_url: Some("https://example.com/avatar.jpg".to_string()),
         };
 
         let result = payload.validate();
@@ -123,6 +127,7 @@ mod tests {
             birthday: None,
             phone_number: None,
             headquarter: None,
+            avatar_url: None,
         };
 
         let result = payload.validate();
