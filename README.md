@@ -42,3 +42,9 @@ Added Password Reset and Request using JWT and Mail Service USING SMTP
 
 03/04 <br/>
 Added Cookies for JWT and Role Validation for Restricted Pages
+
+04/04 <br/>
+Admin can Now create new Users
+
+05/04 <br/>
+Users can alter their personal information
