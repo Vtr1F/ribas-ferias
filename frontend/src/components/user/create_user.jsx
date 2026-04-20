@@ -4,6 +4,7 @@ import './create_user.css';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROLES } from '../../constants/roles.js';
+import UserAvatar from '../user_avatar/user_avatar';
 
 const CreateUser = () => {
   const navigate = useNavigate();
@@ -191,7 +192,7 @@ const CreateUser = () => {
             </div>
             {selectedSuperior && (
               <div className="superior-avatar-small">
-                {selectedSuperior.nome?.charAt(0).toUpperCase() || '?'}
+                <UserAvatar userId={selectedSuperior.id} name={selectedSuperior.nome} size="small" />
               </div>
             )}
             <input
@@ -232,7 +233,7 @@ const CreateUser = () => {
                       onClick={() => handleSelectSuperior(superior)}
                     >
                       <div className="superior-option-avatar">
-                        {superior.nome?.charAt(0).toUpperCase() || '?'}
+                        <UserAvatar userId={superior.id} name={superior.nome} size="small" />
                       </div>
                       <div className="superior-option-info">
                         <span className="superior-option-name">{superior.nome}</span>

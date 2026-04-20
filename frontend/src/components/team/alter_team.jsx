@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
 import ConfirmModal from '../confirm_modal';
+import UserAvatar from '../user_avatar/user_avatar';
 import './alter_team.css';
 
 const AlterTeam = ({ team, onClose, onSave }) => {
@@ -194,7 +195,7 @@ const AlterTeam = ({ team, onClose, onSave }) => {
                 </div>
                 {selectedLeader && (
                   <div className="leader-avatar-small">
-                    {selectedLeader.nome?.charAt(0).toUpperCase() || '?'}
+                    <UserAvatar userId={selectedLeader.id} name={selectedLeader.nome} size="small" />
                   </div>
                 )}
                 <input
@@ -235,7 +236,7 @@ const AlterTeam = ({ team, onClose, onSave }) => {
                           onClick={() => handleSelectLeader(leader)}
                         >
                           <div className="leader-option-avatar">
-                            {leader.nome?.charAt(0).toUpperCase() || '?'}
+                            <UserAvatar userId={leader.id} name={leader.nome} size="small" />
                           </div>
                           <div className="leader-option-info">
                             <span className="leader-option-name">{leader.nome}</span>

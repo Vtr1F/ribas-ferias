@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { ROLES } from '../../constants/roles';
 import ConfirmModal from '../confirm_modal';
+import UserAvatar from '../user_avatar/user_avatar';
 import './remove_from_team.css';
 
 const RemoveFromTeam = ({ team, users, onClose, onSave }) => {
@@ -86,7 +87,7 @@ const RemoveFromTeam = ({ team, users, onClose, onSave }) => {
                     )}
                   </div>
                   <div className="user-avatar">
-                    {user.nome?.charAt(0).toUpperCase() || '?'}
+                    <UserAvatar userId={user.id} name={user.nome} size="small" />
                   </div>
                   <div className="user-info">
                     <span className="user-name">{user.nome}</span>

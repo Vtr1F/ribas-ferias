@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
+import UserAvatar from '../user_avatar/user_avatar';
 import './create_team.css';
 
 const CreateTeam = ({ onSuccess, onClose }) => {
@@ -152,7 +153,7 @@ const CreateTeam = ({ onSuccess, onClose }) => {
             {selectedLeader && (
               <>
                 <div className="leader-avatar-small">
-                  {selectedLeader.nome?.charAt(0).toUpperCase() || '?'}
+                  <UserAvatar userId={selectedLeader.id} name={selectedLeader.nome} size="small" />
                 </div>
               </>
             )}
@@ -194,7 +195,7 @@ const CreateTeam = ({ onSuccess, onClose }) => {
                       onClick={() => handleSelectLeader(leader)}
                     >
                       <div className="leader-option-avatar">
-                        {leader.nome?.charAt(0).toUpperCase() || '?'}
+                        <UserAvatar userId={leader.id} name={leader.nome} size="small" />
                       </div>
                       <div className="leader-option-info">
                         <span className="leader-option-name">{leader.nome}</span>
