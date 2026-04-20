@@ -4,6 +4,7 @@ import { TeamRoutes } from '../api/teamRoutes';
 import './alter_user.css';
 import RemoveButton from './remove_button/remove_button';
 import ConfirmModal from './confirm_modal';
+import UserAvatar from './user_avatar/user_avatar';
 import {ROLES} from '../constants/roles.js';
 
 
@@ -68,7 +69,8 @@ const AlterUser = ({ user, onClose, onSave }) => {
       team_id: currentUser.team_id,
       birthday: birthdayValue,
       phone_number: currentUser.phone_number,
-      headquarter: currentUser.headquarter
+      headquarter: currentUser.headquarter,
+      avatar_url: currentUser.avatar_url
     };
 
     try {
@@ -125,7 +127,7 @@ const AlterUser = ({ user, onClose, onSave }) => {
 
         <div className="alter-user-profile">
           <div className="profile-avatar">
-            {user.nome?.charAt(0).toUpperCase() || '?'}
+            <UserAvatar userId={user.id} name={user.nome} size="large" />
           </div>
         </div>
 

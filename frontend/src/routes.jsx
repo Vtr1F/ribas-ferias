@@ -27,7 +27,7 @@ const AppLayout = () => (
 
 export const router = createBrowserRouter([
   {
-    path: "/login",element: (
+    path: "/login", element: (
       <Suspense fallback={<Loading />}>
         <Login />
       </Suspense>
@@ -79,7 +79,7 @@ export const router = createBrowserRouter([
         path: "users",
         element: (
             <Suspense fallback={<Loading />}>
-                {/* Only Admin (1) and Team Leader (2) can */}
+              {/* Only Admin (1) and Team Leader (2) can */}
               <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
                 <Users />
               </ProtectedRoute>
@@ -102,7 +102,7 @@ export const router = createBrowserRouter([
             </Suspense>
          ),
        },
-       {
+      {
         path: "users/:userId",
         element: (
             <Suspense fallback={<Loading />}>
@@ -119,7 +119,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        index: true, // This handles the base "/" path
+        index: true,
         element: <Navigate to="/dashboard" replace />,
       },
     ],

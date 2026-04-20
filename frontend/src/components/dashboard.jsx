@@ -3,6 +3,7 @@ import MonthCard from './month_card';
 import { RequestRoutes } from '../api/requestRoutes'; 
 import { UserRoutes } from '../api/userRoutes';
 import { useAuth } from '../context/auth-context'; 
+import Header from './header/header';
 import './dashboard.css'; 
 
 function Dashboard() {
@@ -61,6 +62,7 @@ function Dashboard() {
 
   return (
     <main className="dashboard-container">
+      <Header />
       <header className="calendar-header">
         <div className="header-left">
           <div className="title-section">

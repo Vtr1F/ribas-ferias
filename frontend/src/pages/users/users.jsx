@@ -10,6 +10,8 @@ import CreateTeam from '../../components/team/create_team';
 import AlterTeam from '../../components/team/alter_team';
 import AddToTeam from '../../components/team/add_to_team';
 import RemoveFromTeam from '../../components/team/remove_from_team';
+import Header from '../../components/header/header';
+import UserAvatar from '../../components/user_avatar';
 import './users.css';
 
 const Users = () => {
@@ -123,7 +125,7 @@ const Users = () => {
     <div key={u.id} className="user-card">
       <div className="user-info">
         <div className="user-avatar" onClick={() => navigate(`/users/${u.id}`)}>
-          {u.nome?.charAt(0).toUpperCase() || '?'}
+          <UserAvatar userId={u.id} name={u.nome} />
         </div>
         <div className="user-details">
           <span className="user-name">{u.nome}</span>
@@ -149,6 +151,7 @@ const Users = () => {
 
   return (
     <div className="users-page">
+      <Header />
       {selectedUser && (
         <AlterUser
           user={selectedUser}
@@ -156,7 +159,9 @@ const Users = () => {
           onSave={fetchData}
         />
       )}
-      <h1>Gestão de Utilizadores</h1>
+      <div className="page-header">
+        <h1>Gestão de Utilizadores</h1>
+      </div>
       
       <Stats users={allUsers} />
 

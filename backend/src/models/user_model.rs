@@ -17,6 +17,7 @@ pub struct UserPrivate {
     pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
+    pub avatar_url: Option<String>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -36,6 +37,7 @@ pub struct CreateUser {
     pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
+    pub avatar_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, FromRow)]
@@ -50,6 +52,7 @@ pub struct UserPublic {
     pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
+    pub avatar_url: Option<String>,
 }
 
 #[derive(Deserialize, Validate, FromRow)]
@@ -66,6 +69,7 @@ pub struct UpdateUser {
     pub birthday: Option<NaiveDate>,
     pub phone_number: Option<String>,
     pub headquarter: Option<String>,
+    pub avatar_url: Option<String>,
 }
 
 impl UserPrivate {
@@ -81,6 +85,7 @@ impl UserPrivate {
             birthday: self.birthday,
             phone_number: self.phone_number,
             headquarter: self.headquarter,
+            avatar_url: self.avatar_url,
         }
     }
 }

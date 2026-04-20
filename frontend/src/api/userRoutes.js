@@ -1,4 +1,3 @@
-
 import { apiClient } from './apiClient';
 
 export const UserRoutes = {
@@ -26,4 +25,15 @@ export const UserRoutes = {
   updatePassword: (id, data) => {
     return apiClient.request(`/api/users/password/${id}`,`PUT`,data)
   },
+
+getUserImage: (id) => {
+    return apiClient.request(`/api/users/${id}/image`, `GET`);
+  },
+
+  uploadUserImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return apiClient.request(`/api/upload`, `POST`, formData, true);
+  }
+    
 };

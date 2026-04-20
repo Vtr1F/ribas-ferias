@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
-#[derive(Serialize, Deserialize, FromRow)]
-pub struct RequestType{
+#[derive(Serialize, Deserialize, FromRow, Clone)]
+pub struct RequestType {
     pub id: i32,
-    pub name: String
+    pub name: String,
 }

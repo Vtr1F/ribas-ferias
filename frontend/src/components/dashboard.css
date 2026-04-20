@@ -30,6 +30,7 @@
 .header-actions {
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 
 .vacation-allowance{

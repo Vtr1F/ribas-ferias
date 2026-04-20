@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/auth-context';
+import { useNavigate } from 'react-router-dom';
 import './edit-profile.css'
 import { LoginRoute } from '../../api/loginRoute';
 import { UserRoutes } from '../../api/userRoutes';
 
 function EditProfile() {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [edited, setEdited] = useState(false);
     const [clicked, setClicked] = useState(false);
     const [error, setError] = useState('')
@@ -15,11 +17,48 @@ function EditProfile() {
     const [pass, setPass] = useState('');
     const [newPass, setNewPass] = useState('');
     const [comfirmPass, setComfirmPass] = useState('');
+    const fileInputRef = useRef(null);
+    const [avatarUrl, setAvatarUrl] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    useEffect(() => {
+        if (user?.sub) {
+            UserRoutes.getUserImage(user.sub)
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    setAvatarUrl(url);
+                })
+                .catch(() => {});
+        }
+    }, [user]);
     
     const handleButton = () => {
         setClicked(true);
     }
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        setUploading(true);
+        try {
+            const result = await UserRoutes.uploadUserImage(file);
+            if (!result.err) {
+                const newAvatarUrl = URL.createObjectURL(file);
+                setAvatarUrl(newAvatarUrl);
+            }
+        } catch (err) {
+            console.error('Erro ao carregar imagem:', err);
+            setError('Erro ao carregar imagem');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleEditUser = async (e) => {
         e.preventDefault();
@@ -35,7 +74,8 @@ function EditProfile() {
             team_id: rawUser.team_id,
             birthday: rawUser.birthday,
             phone_number: (telemovel ?  telemovel : rawUser.phone_number),
-            headquarter: (localidade ?  localidade : rawUser.headquarter)
+            headquarter: (localidade ?  localidade : rawUser.headquarter),
+            avatar_url: rawUser.avatar_url,
         };
             const response = await UserRoutes.alterUser(user.sub, data);
             
@@ -85,6 +125,29 @@ function EditProfile() {
     <div className="create-user-page">
             <div className="create-user-card">
                 <h2>Editar Perfil</h2>
+                
+                <div className="avatar-upload-section">
+                    <div className="avatar-preview" onClick={handleAvatarClick}>
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="Avatar" />
+                        ) : (
+                            <div className="avatar-placeholder">?</div>
+                        )}
+                        <div className="avatar-overlay">
+                            <span className="pen-icon">&#9998;</span>
+                        </div>
+                    </div>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        style={{ display: 'none' }}
+                    />
+                    <p className="avatar-hint">Clique na foto para alterar</p>
+                    {uploading && <p className="uploading-text">A carregar...</p>}
+                </div>
+
                 <form onSubmit={handleEditUser}>
                     <label>
                         Nome

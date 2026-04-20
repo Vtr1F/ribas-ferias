@@ -1,0 +1,1 @@
+UPDATE users SET avatar_url = '/images/default-avatar.svg' WHERE avatar_url IS NULL OR avatar_url = '';

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { ROLES } from '../../constants/roles';
+import UserAvatar from '../user_avatar/user_avatar';
 import './add_to_team.css';
 
 const AddToTeam = ({ team, onClose, onSave }) => {
@@ -163,7 +164,7 @@ const AddToTeam = ({ team, onClose, onSave }) => {
                           onClick={() => handleSelectUser(user)}
                         >
                           <div className="user-option-avatar">
-                            {user.nome?.charAt(0).toUpperCase() || '?'}
+                            <UserAvatar userId={user.id} name={user.nome} size="small" />
                           </div>
                           <div className="user-option-info">
                             <span className="user-option-name">{user.nome}</span>
@@ -186,7 +187,7 @@ const AddToTeam = ({ team, onClose, onSave }) => {
                 {selectedUsers.map(user => (
                   <div key={user.id} className="selected-user">
                     <div className="selected-user-avatar">
-                      {user.nome?.charAt(0).toUpperCase() || '?'}
+                      <UserAvatar userId={user.id} name={user.nome} size="small" />
                     </div>
                     <span className="selected-user-name">{user.nome}</span>
                     <button type="button" className="remove-user" onClick={() => handleRemoveUser(user.id)}>

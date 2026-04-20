@@ -15,6 +15,7 @@ use axum::{
 
 use crate::{
     handlers::auth_handler::{auth_middleware, check_auth, logout, refresh_token},
+    handlers::image_handler::upload_image,
     state::AppState,
 };
 
@@ -26,6 +27,7 @@ pub fn create_routes(state: Arc<AppState>) -> Router<()> {
         .nest("/types", request_type_routes::routes())
         .nest("/requests", request_routes::routes())
         .nest("/team", team_routes::routes())
+        .route("/upload", post(upload_image))
         .layer(middleware::from_fn_with_state(
             state.jwt_secret.clone(),
             auth_middleware,

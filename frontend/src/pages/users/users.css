@@ -4,6 +4,13 @@
   font-family: 'Questrial', sans-serif;
 }
 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .users-container {
   background-color: #efefef;
   border-radius: 45px;
@@ -105,6 +112,14 @@
   font-size: 18px;
   font-weight: bold;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .user-details {

@@ -38,7 +38,7 @@ const handleGlobalLogout = () => {
 
 export const apiClient = {
   
-  request: async (endpoint, method = 'GET', body = null) => {
+  request: async (endpoint, method = 'GET', body = null, isFormData = false) => {
     
       const isLoginPage = endpoint.includes('/login');
       const exp = getExp();
@@ -53,14 +53,14 @@ export const apiClient = {
 
       const options = {
         method: method.toUpperCase(), 
-        headers: {
+        headers: isFormData ? {} : {
           'Content-Type': 'application/json',
         },
         credentials: 'include'
       };
 
       if (body) { 
-        options.body = JSON.stringify(body);
+        options.body = isFormData ? body : JSON.stringify(body);
       }
     
     try {
@@ -74,6 +74,10 @@ export const apiClient = {
 
       if (contentType && contentType.includes("application/json")) {
         return await response.json();
+      }
+
+      if (contentType && contentType.includes("image")) {
+        return response.blob();
       }
 
       return true;
