@@ -99,11 +99,9 @@ pub async fn upload_image(
 
     let url = format!("/api/images/{}", unique_filename);
 
-    sqlx::query!(
-        "UPDATE users SET avatar_url = $1 WHERE id = $2",
-        &url,
-        claims.sub
-    )
+    sqlx::query("UPDATE users SET avatar_url = $1 WHERE id = $2")
+    .bind(&url)
+    .bind(claims.sub)
     .execute(&*state.db)
     .await
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;

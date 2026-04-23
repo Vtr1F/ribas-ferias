@@ -1,14 +1,10 @@
 #[cfg(test)]
 mod tests {
-    use crate::models::request_model::{RequestInput, Status};
-    use crate::models::request_type_model::RequestType;
+    use crate::models::request_model::{RequestInput, RequestType, Status};
 
     #[test]
     fn test_request_type_serialization() {
-        let rt = RequestType {
-            id: 1,
-            name: "Ferias".to_string(),
-        };
+        let rt = RequestType::Vacation;
         let json = serde_json::to_string(&rt).unwrap();
         assert!(json.contains("\"id\":1"));
         assert!(json.contains("\"name\":\"Ferias\""));
@@ -22,8 +18,8 @@ mod tests {
 
     #[test]
     fn test_status_accepted() {
-        let status = Status::Accepted;
-        assert!(matches!(status, Status::Accepted));
+        let status = Status::Approved;
+        assert!(matches!(status, Status::Approved));
     }
 
     #[test]
@@ -69,8 +65,8 @@ mod tests {
 
     #[test]
     fn test_status_deserialize() {
-        let json = r#""Accepted""#;
+        let json = r#""Approved""#;
         let status: Status = serde_json::from_str(json).unwrap();
-        assert!(matches!(status, Status::Accepted));
+        assert!(matches!(status, Status::Approved));
     }
 }

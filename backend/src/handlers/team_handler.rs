@@ -1,3 +1,4 @@
+use std::mem;
 use std::sync::Arc;
 
 use axum::{extract::Path, Json, extract::State, http::StatusCode};
@@ -29,16 +30,16 @@ pub async fn fetch_teams(
 
     let mut teams: Vec<Team> = Vec::new();
 
+
     for row in rows {
         let members: Vec<User> = serde_json::from_value(row.members).unwrap_or_default();
-
         teams.push(Team {
             id: row.id,
             team_name: row.team_name,
             description: row.description,
             leader_id: row.leader_id,
             created_at: row.created_at,
-            members,
+            members: sqlx::types::Json(members),
         });
     }
 
@@ -101,7 +102,7 @@ pub async fn fetch_team(
         description: team_row.description,
         leader_id: team_row.leader_id,
         created_at: team_row.created_at,
-        members,
+        members: sqlx::types::Json(members),
     };
 
     Ok(Json(team))
