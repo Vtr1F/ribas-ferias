@@ -1,5 +1,6 @@
 pub mod password_reset_routes;
 pub mod request_routes;
+pub mod request_type_routes;
 pub mod role_routes;
 pub mod team_routes;
 pub mod user_routes;
@@ -23,6 +24,7 @@ pub fn create_routes(state: Arc<AppState>) -> Router<()> {
         .route("/check", get(check_auth))
         .nest("/users", user_routes::routes())
         .nest("/roles", role_routes::routes())
+        .nest("/types", request_type_routes::routes())
         .nest("/requests", request_routes::routes())
         .nest("/team", team_routes::routes())
         .route("/upload", post(upload_image))
