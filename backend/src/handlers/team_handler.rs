@@ -1,14 +1,13 @@
+use std::mem;
 use std::sync::Arc;
 
 use axum::{extract::Path, Json, extract::State, http::StatusCode};
 use crate::models::team_model::{Team, CreateTeam, TeamResponse, TeamWithUsers, MemberWithUser, User};
 use crate::state::AppState;
 
-
 pub async fn fetch_teams(
     State(state): State<Arc<AppState>>,
-) -> Json<Vec<Team>> {
-
+) -> Result<Json<Vec<Team>>, (StatusCode, String)> {
     let rows: Vec<TeamResponse> = sqlx::query_as(
         r#"
         SELECT
@@ -17,7 +16,19 @@ pub async fn fetch_teams(
             t.description,
             t.leader_id,
             t.created_at,
-            t.members
+            -- This subquery calculates the members on the fly
+            COALESCE(
+                (SELECT jsonb_agg(jsonb_build_object(
+                    'id', u.id,
+                    'nome', u.nome,
+                    'email', u.email,
+                    'role_id', u.role_id
+                ))
+                FROM team_members tm
+                JOIN users u ON u.id = tm.user_id
+                WHERE tm.team_id = t.id),
+                '[]'::jsonb
+            ) AS members  -- <--- THIS ALIAS IS CRITICAL
         FROM teams t
         WHERE t.deleted_at IS NULL
         ORDER BY t.id
@@ -25,24 +36,24 @@ pub async fn fetch_teams(
     )
     .fetch_all(&*state.db)
     .await
-    .expect("Failed to fetch teams");
+    .map_err(internal_error)?;
 
     let mut teams: Vec<Team> = Vec::new();
 
     for row in rows {
+        // row.members works now because the SQL column is named "members"
         let members: Vec<User> = serde_json::from_value(row.members).unwrap_or_default();
-
         teams.push(Team {
             id: row.id,
             team_name: row.team_name,
             description: row.description,
             leader_id: row.leader_id,
             created_at: row.created_at,
-            members,
+            members: sqlx::types::Json(members),
         });
     }
 
-    Json(teams)
+    Ok(Json(teams))
 }
 
 pub async fn fetch_team(
@@ -101,7 +112,7 @@ pub async fn fetch_team(
         description: team_row.description,
         leader_id: team_row.leader_id,
         created_at: team_row.created_at,
-        members,
+        members: sqlx::types::Json(members),
     };
 
     Ok(Json(team))
@@ -207,7 +218,7 @@ pub async fn add_to_team(
 ) -> (StatusCode, Json<TeamResponse>) {
 
     sqlx::query(
-        "INSERT INTO team_members (team_id, user_id, leader) VALUES ($1, $2, FALSE)"
+        "UPDATE team_members SET team_id = $1, user_id = $2, leader = FALSE WHERE user_id=$2"
     )
     .bind(team_id)
     .bind(user_id)
@@ -231,6 +242,25 @@ pub async fn add_to_team(
     .fetch_one(&*state.db)
     .await
     .expect("Failed to fetch team");
+
+     let row: TeamResponse = sqlx::query_as(
+        r#"
+        SELECT 
+            t.id, t.team_name, t.description, t.leader_id, t.created_at,
+            COALESCE(
+                (SELECT jsonb_agg(jsonb_build_object('id', u.id, 'nome', u.nome, 'email', u.email, 'role_id', u.role_id))
+                FROM team_members tm
+                JOIN users u ON u.id = tm.user_id
+                WHERE tm.team_id = t.id),
+                '[]'::jsonb
+            ) as members
+        FROM teams t WHERE t.id = $1
+        "#
+    )
+    .bind(team_id)
+    .fetch_one(&*state.db)
+    .await
+    .expect("Failed to fetch updated team");
 
     (StatusCode::OK, Json(row))
 }
@@ -268,13 +298,34 @@ pub async fn remove_from_team(
         .ok();
     }
 
-    sqlx::query(
-        "UPDATE users SET team_id = 1 WHERE id = $1"
+    if team_id != 1 {
+        sqlx::query(
+            "UPDATE users SET team_id = 1 WHERE id = $1"
+        )
+        .bind(user_id)
+        .execute(&*state.db)
+        .await
+        .expect("Failed to update user team_id");
+    }
+    
+    let row: TeamResponse = sqlx::query_as(
+        r#"
+        SELECT 
+            t.id, t.team_name, t.description, t.leader_id, t.created_at,
+            COALESCE(
+                (SELECT jsonb_agg(jsonb_build_object('id', u.id, 'nome', u.nome, 'email', u.email, 'role_id', u.role_id))
+                FROM team_members tm
+                JOIN users u ON u.id = tm.user_id
+                WHERE tm.team_id = t.id),
+                '[]'::jsonb
+            ) as members
+        FROM teams t WHERE t.id = $1
+        "#
     )
-    .bind(user_id)
-    .execute(&*state.db)
+    .bind(team_id)
+    .fetch_one(&*state.db)
     .await
-    .expect("Failed to update user team_id");
+    .expect("Failed to fetch updated team");
 
     sqlx::query(
         "INSERT INTO team_members (team_id, user_id, leader) VALUES (1, $1, FALSE) ON CONFLICT DO NOTHING"
