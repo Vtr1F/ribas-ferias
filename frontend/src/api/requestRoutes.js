@@ -30,4 +30,10 @@ export const RequestRoutes = {
   sendRejectRequest: (id) => {
     return apiClient.request(`/api/requests/${id}/reject`,`GET`);
   },
+
+  uploadFormFile: (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.request(`/api/upload`, `POST`, formData, true);
+  }
 };

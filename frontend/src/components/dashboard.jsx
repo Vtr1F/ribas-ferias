@@ -141,19 +141,15 @@ function Dashboard() {
     e.preventDefault();
     
     // Use FormData for file uploads
-    const formData = new FormData();
-    formData.append('reason', reason);
-    formData.append('request_type', absenceType);
-    if (file) formData.append('file', file);
-    formData.append('user', user.sub);
-    console.log(formData);
-    console.log("Submitting Absence:", { reason, absenceType, fileName: file?.name });
+    if (file) RequestRoutes.uploadFormFile(file);
     const data = {
       user: user.sub,
       reason: reason,
       request_type: absenceType,
       days: selectedDays
     }
+
+    await RequestRoutes.addRequest(data);
 
     setShowAbsenceOverlay(false);
     // Reset form

@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use lettre::message::MultiPart;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::Type;
