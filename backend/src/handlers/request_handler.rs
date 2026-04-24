@@ -210,7 +210,7 @@ pub async fn add_request(
             request_type
         "#)
     .bind(payload.user)
-    .bind(payload.request_type_id)
+    .bind(payload.request_type)
     .bind(payload.reason)
     .bind(payload.days.as_slice())
     .fetch_one(&*state.db)

@@ -32,13 +32,13 @@ mod tests {
     fn test_request_input_creation() {
         let input = RequestInput {
             user: 1,
-            request_type_id: 1,
+            request_type: RequestType::Vacation,
             reason: Some("Vacation time".to_string()),
             days: vec![1, 2, 3],
         };
 
         assert_eq!(input.user, 1);
-        assert_eq!(input.request_type_id, 1);
+        assert_eq!(input.request_type, RequestType::Vacation);
         assert_eq!(input.reason, Some("Vacation time".to_string()));
         assert_eq!(input.days, vec![1, 2, 3]);
     }
@@ -47,7 +47,7 @@ mod tests {
     fn test_request_input_empty_reason() {
         let input = RequestInput {
             user: 1,
-            request_type_id: 1,
+            request_type: RequestType::Vacation,
             reason: None,
             days: vec![1],
         };

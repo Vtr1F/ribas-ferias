@@ -7,6 +7,12 @@
   padding: 0 5px;
 }
 
+.selected {
+  background-color: #6593a7 !important; /* Matches 'Disponível' */
+  color: white;
+  font-weight: bold;
+}
+
 .month-label {
   color: #1a1a1a;
 }

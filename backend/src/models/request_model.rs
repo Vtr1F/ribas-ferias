@@ -17,7 +17,7 @@ pub struct Request {
 #[derive(Deserialize)]
 pub struct RequestInput {
     pub user: i32,
-    pub request_type_id: i32,
+    pub request_type: RequestType,
     pub reason: Option<String>,
     pub days: Vec<i32>,
 }
@@ -30,7 +30,7 @@ pub enum Status {
     Approved,
 }
 
-#[derive(Serialize, Deserialize, Type, Debug)]
+#[derive(Serialize, Deserialize, Type, Debug, Clone, PartialEq)]
 #[sqlx(type_name = "request_type")]
 pub enum RequestType {
     Vacation,
