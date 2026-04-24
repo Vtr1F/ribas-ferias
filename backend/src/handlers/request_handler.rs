@@ -198,7 +198,7 @@ pub async fn add_request(
     // Insert request with default status = 'pending'
     let row: Request = sqlx::query_as(
         r#"
-        INSERT INTO requests (user_id, request_type_id, reason, days, status)
+        INSERT INTO requests (user_id, request_type, reason, days, status)
         VALUES ($1, $2, $3, $4, 'Pending')
         RETURNING
             id,

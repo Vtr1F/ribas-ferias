@@ -122,7 +122,7 @@ function Dashboard() {
     const data = {
       user: user.sub,
       request_type: "Vacation",
-      days: selectedDays
+      days: selectedDays.map(day => parseInt(day, 10))
     }
     await RequestRoutes.addRequest(data);
     setShowOverlay(false);
@@ -146,7 +146,7 @@ function Dashboard() {
       user: user.sub,
       reason: reason,
       request_type: absenceType,
-      days: selectedDays
+      days: selectedDays.map(day => parseInt(day, 10))
     }
 
     await RequestRoutes.addRequest(data);
@@ -154,7 +154,7 @@ function Dashboard() {
     setShowAbsenceOverlay(false);
     // Reset form
     setReason('');
-    setAbsenceType('Doença');
+    setAbsenceType(ABSENCE.SICK);
     setFile(null);
   };
 

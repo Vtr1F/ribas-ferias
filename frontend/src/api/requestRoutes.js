@@ -34,6 +34,6 @@ export const RequestRoutes = {
   uploadFormFile: (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    return apiClient.request(`/api/upload`, `POST`, formData, true);
+    return apiClient.request(`/api/upload/files`, `POST`, formData, true);
   }
 };
