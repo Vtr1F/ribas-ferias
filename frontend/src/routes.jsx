@@ -15,6 +15,8 @@ const Login          = lazy(() => import('./pages/login'));
 const ResetPassword  = lazy(() => import('./pages/reset_password'));
 const NewPassword    = lazy(() => import('./pages/new_password'));
 const RequestHistory = lazy(() => import('./pages/request-history/request_history'));
+const TeamRequests = lazy(() => import('./pages/team-requests/team_requests'));
+
 
 const Loading = () => <div className="loading-spinner">Carregando...</div>;
 
@@ -127,6 +129,16 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+  path: "equipas",
+  element: (
+    <Suspense fallback={<Loading />}>
+      <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
+        <TeamRequests />
+      </ProtectedRoute>
+    </Suspense>
+  ),
+},
       {
         index: true,
         element: <Navigate to="/dashboard" replace />,

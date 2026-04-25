@@ -1,0 +1,332 @@
+import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../../context/auth-context';
+import { TeamRoutes } from '../../api/teamRoutes';
+import { RequestRoutes } from '../../api/requestRoutes';
+import { ROLES } from '../../constants/roles';
+import Header from '../../components/header/header';
+import UserAvatar from '../../components/user_avatar';
+import './team_requests.css';
+
+// --- Constants ---
+const TYPE_LABELS = {
+  Vacation:        'Férias',
+  SickLeave:       'Baixa Médica',
+  ParentalLeave:   'Licença Parental',
+  BereavementLeave:'Luto',
+};
+
+const TYPE_ICONS = {
+  Vacation:        '🌴',
+  SickLeave:       '🤒',
+  ParentalLeave:   '👶',
+  BereavementLeave:'🕊️',
+};
+
+const STATUS_CONFIG = {
+  Pending:  { label: 'Pendente',  className: 'tr-badge-pending'  },
+  Approved: { label: 'Aprovado',  className: 'tr-badge-approved' },
+  Rejected: { label: 'Rejeitado', className: 'tr-badge-rejected' },
+};
+
+// --- Helpers ---
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('pt-PT', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  });
+}
+
+function formatDay(dayStr) {
+  const s = String(dayStr);
+  if (s.length !== 8) return s;
+  return `${s.slice(6, 8)}/${s.slice(4, 6)}/${s.slice(0, 4)}`;
+}
+
+// --- Sub-components ---
+function StatusBadge({ status }) {
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.Pending;
+  return (
+    <span className={`tr-badge ${cfg.className}`}>
+      <span className="tr-badge-dot" />
+      {cfg.label}
+    </span>
+  );
+}
+
+function DaysList({ days }) {
+  const [expanded, setExpanded] = useState(false);
+  const MAX = 2;
+  const formatted = (days || []).map(formatDay);
+  const shown = expanded ? formatted : formatted.slice(0, MAX);
+  const rest = formatted.length - MAX;
+
+  return (
+    <div className="tr-days-list">
+      {shown.map((d, i) => <span key={i} className="tr-day-chip">{d}</span>)}
+      {!expanded && rest > 0 && (
+        <button className="tr-expand-btn" onClick={() => setExpanded(true)}>+{rest}</button>
+      )}
+      {expanded && rest > 0 && (
+        <button className="tr-expand-btn" onClick={() => setExpanded(false)}>menos</button>
+      )}
+    </div>
+  );
+}
+
+function RequestRow({ req, memberMap }) {
+  const member = memberMap[req.user_id];
+  return (
+    <div className="tr-request-row">
+      <div className="tr-req-user">
+        <UserAvatar userId={req.user_id} name={member?.nome} size="small" />
+        <span className="tr-req-name">{member?.nome ?? `#${req.user_id}`}</span>
+      </div>
+      <div className="tr-req-type">
+        <span className="tr-type-icon">{TYPE_ICONS[req.request_type] || '📋'}</span>
+        <span>{TYPE_LABELS[req.request_type] || req.request_type}</span>
+      </div>
+      <StatusBadge status={req.status} />
+      <DaysList days={req.days} />
+      <span className="tr-req-count">{req.days?.length ?? 0}d</span>
+      <span className="tr-req-date">{formatDate(req.created_at)}</span>
+      {req.reason && <span className="tr-req-reason" title={req.reason}>💬 {req.reason}</span>}
+    </div>
+  );
+}
+
+// --- Main Page ---
+export default function TeamRequests() {
+  const { user: currentUser } = useAuth();
+  const isAdmin  = currentUser?.role === ROLES.ADMIN;
+  const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
+
+  const [teams, setTeams]               = useState([]);
+  const [requestsByTeam, setRequestsByTeam] = useState({});
+  const [loadingTeams, setLoadingTeams] = useState(true);
+  const [loadingReqs, setLoadingReqs]   = useState(false);
+  const [error, setError]               = useState(null);
+  const [collapsedTeams, setCollapsedTeams] = useState({});
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [search, setSearch]             = useState('');
+
+  // Fetch teams on mount
+  useEffect(() => {
+    setLoadingTeams(true);
+    TeamRoutes.fetchTeams()
+      .then((data) => {
+        // Admin sees all teams; Leader sees only their own
+        const visible = isAdmin
+          ? data
+          : data.filter((t) => t.leader_id === currentUser?.sub);
+        setTeams(visible);
+        // Load requests for each visible team
+        fetchAllRequests(visible);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingTeams(false));
+  }, []);
+
+  const fetchAllRequests = async (teamList) => {
+    setLoadingReqs(true);
+    try {
+      const results = await Promise.all(
+        teamList.map((t) =>
+          RequestRoutes.fetchTeamRequest(t.id)
+            .then((reqs) => ({ teamId: t.id, reqs }))
+            .catch(() => ({ teamId: t.id, reqs: [] }))
+        )
+      );
+      const map = {};
+      results.forEach(({ teamId, reqs }) => { map[teamId] = reqs; });
+      setRequestsByTeam(map);
+    } finally {
+      setLoadingReqs(false);
+    }
+  };
+
+  // Build member lookup map per team
+  const memberMapByTeam = useMemo(() => {
+    const result = {};
+    teams.forEach((t) => {
+      const map = {};
+      (t.members || []).forEach((m) => { map[m.id] = m; });
+      result[t.id] = map;
+    });
+    return result;
+  }, [teams]);
+
+  // Stats across all teams
+  const allRequests = useMemo(() =>
+    Object.values(requestsByTeam).flat(), [requestsByTeam]);
+
+  const stats = {
+    total:    allRequests.length,
+    pending:  allRequests.filter((r) => r.status === 'Pending').length,
+    approved: allRequests.filter((r) => r.status === 'Approved').length,
+    rejected: allRequests.filter((r) => r.status === 'Rejected').length,
+  };
+
+  const toggleTeam = (id) =>
+    setCollapsedTeams((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  // Filter requests
+  const getFilteredReqs = (teamId) => {
+    const reqs = requestsByTeam[teamId] || [];
+    return reqs
+      .filter((r) => statusFilter === 'all' || r.status === statusFilter)
+      .filter((r) => {
+        if (!search) return true;
+        const q = search.toLowerCase();
+        const member = memberMapByTeam[teamId]?.[r.user_id];
+        return (
+          member?.nome?.toLowerCase().includes(q) ||
+          r.reason?.toLowerCase().includes(q) ||
+          TYPE_LABELS[r.request_type]?.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  };
+
+  const loading = loadingTeams || loadingReqs;
+
+  return (
+    <div className="tr-page">
+      <Header />
+
+      <div className="page-header">
+        <h1>Pedidos por Equipa</h1>
+      </div>
+
+      {/* Stats */}
+      <div className="tr-stats-grid">
+        {[
+          { label: 'Total',      value: stats.total,    mod: 'blue'   },
+          { label: 'Pendentes',  value: stats.pending,  mod: 'yellow' },
+          { label: 'Aprovados',  value: stats.approved, mod: 'green'  },
+          { label: 'Rejeitados', value: stats.rejected, mod: 'red'    },
+        ].map((s) => (
+          <div key={s.label} className={`tr-stat-card tr-stat-${s.mod}`}>
+            <span className="tr-stat-value">{loading ? '—' : s.value}</span>
+            <span className="tr-stat-label">{s.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="users-container">
+
+        {/* Filters */}
+        <div className="users-header">
+          <div className="search-wrapper">
+            <span className="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              className="users-search"
+              placeholder="Pesquisar por colaborador, motivo ou tipo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="tr-select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">Todos os estados</option>
+            <option value="Pending">Pendente</option>
+            <option value="Approved">Aprovado</option>
+            <option value="Rejected">Rejeitado</option>
+          </select>
+
+          {(statusFilter !== 'all' || search) && (
+            <button
+              className="tr-clear-btn"
+              onClick={() => { setStatusFilter('all'); setSearch(''); }}
+            >
+              Limpar
+            </button>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="users-list">
+          {loading ? (
+            <div className="tr-state-center">
+              <div className="tr-spinner" />
+              <p>A carregar pedidos...</p>
+            </div>
+          ) : error ? (
+            <p className="users-error">⚠️ {error}</p>
+          ) : teams.length === 0 ? (
+            <p className="users-no-results">Nenhuma equipa encontrada.</p>
+          ) : (
+            teams.map((team) => {
+              const filtered = getFilteredReqs(team.id);
+              const collapsed = collapsedTeams[team.id];
+              const total     = (requestsByTeam[team.id] || []).length;
+              const pending   = (requestsByTeam[team.id] || []).filter((r) => r.status === 'Pending').length;
+
+              return (
+                <div key={team.id} className="team-group">
+                  {/* Team header */}
+                  <div className="team-header">
+                    <div className="team-header-left" onClick={() => toggleTeam(team.id)}>
+                      <span className="team-toggle">{collapsed ? '▶' : '▼'}</span>
+                      <span className="team-name">{team.team_name}</span>
+                      {team.description && (
+                        <span className="team-description">{team.description}</span>
+                      )}
+                    </div>
+                    <div className="team-header-right">
+                      {pending > 0 && (
+                        <span className="tr-pending-pill">{pending} pendente{pending !== 1 ? 's' : ''}</span>
+                      )}
+                      <span className="team-member-count">{total} pedido{total !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+
+                  {/* Requests list */}
+                  {!collapsed && (
+                    <div className="tr-requests-container">
+                      {/* Table head */}
+                      {filtered.length > 0 && (
+                        <div className="tr-table-head">
+                          <span>Colaborador</span>
+                          <span>Tipo</span>
+                          <span>Estado</span>
+                          <span>Dias</span>
+                          <span>Nº</span>
+                          <span>Data</span>
+                          <span>Motivo</span>
+                        </div>
+                      )}
+
+                      {filtered.length === 0 ? (
+                        <div className="tr-empty">
+                          {(requestsByTeam[team.id] || []).length === 0
+                            ? '📭 Sem pedidos nesta equipa'
+                            : '🔍 Nenhum pedido corresponde aos filtros'}
+                        </div>
+                      ) : (
+                        filtered.map((req) => (
+                          <RequestRow
+                            key={req.id}
+                            req={req}
+                            memberMap={memberMapByTeam[team.id] || {}}
+                          />
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

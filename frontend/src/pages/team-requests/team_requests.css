@@ -1,0 +1,293 @@
+/* Imports from users.css pattern — same base layout */
+.tr-page {
+  padding: 40px;
+  min-height: 100vh;
+  font-family: 'Questrial', sans-serif;
+}
+
+/* ===== Stats ===== */
+.tr-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+  margin-right: 40px;
+}
+
+.tr-stat-card {
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tr-stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.tr-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.tr-stat-blue   { background: #eff6ff; border-color: #bfdbfe; }
+.tr-stat-blue   .tr-stat-value { color: #3b82f6; }
+.tr-stat-yellow { background: #fffbeb; border-color: #fde68a; }
+.tr-stat-yellow .tr-stat-value { color: #f59e0b; }
+.tr-stat-green  { background: #f0fdf4; border-color: #bbf7d0; }
+.tr-stat-green  .tr-stat-value { color: #10b981; }
+.tr-stat-red    { background: #fef2f2; border-color: #fecaca; }
+.tr-stat-red    .tr-stat-value { color: #ef4444; }
+
+/* ===== Filter select ===== */
+.tr-select {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 25px;
+  font-size: 15px;
+  font-family: 'Questrial', sans-serif;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tr-clear-btn {
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: none;
+  background: #fee2e2;
+  color: #ef4444;
+  font-size: 14px;
+  font-family: 'Questrial', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tr-clear-btn:hover {
+  background: #fecaca;
+}
+
+/* ===== Requests container inside team group ===== */
+.tr-requests-container {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 4px;
+}
+
+/* ===== Table head ===== */
+.tr-table-head {
+  display: grid;
+  grid-template-columns: 160px 150px 120px 1fr 50px 110px 1fr;
+  padding: 10px 18px;
+  background: #f3f4f6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  gap: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ===== Request row ===== */
+.tr-request-row {
+  display: grid;
+  grid-template-columns: 160px 150px 120px 1fr 50px 110px 1fr;
+  padding: 12px 18px;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.15s;
+}
+
+.tr-request-row:last-child {
+  border-bottom: none;
+}
+
+.tr-request-row:hover {
+  background: #f0f7ff;
+}
+
+/* ===== Row cells ===== */
+.tr-req-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tr-req-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tr-req-type {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.tr-type-icon {
+  font-size: 15px;
+}
+
+.tr-req-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  text-align: center;
+}
+
+.tr-req-date {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.tr-req-reason {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Days chips ===== */
+.tr-days-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.tr-day-chip {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+  color: #4b5563;
+  font-family: monospace;
+}
+
+.tr-expand-btn {
+  background: #e0e7ef;
+  border: none;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: #4670DB;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: 'Questrial', sans-serif;
+}
+
+/* ===== Status badges ===== */
+.tr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.tr-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tr-badge-pending  { color: #b45309; background: #fef3c7; border-color: #fcd34d; }
+.tr-badge-pending  .tr-badge-dot { background: #f59e0b; }
+.tr-badge-approved { color: #065f46; background: #d1fae5; border-color: #6ee7b7; }
+.tr-badge-approved .tr-badge-dot { background: #10b981; }
+.tr-badge-rejected { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
+.tr-badge-rejected .tr-badge-dot { background: #ef4444; }
+
+/* ===== Pending pill on team header ===== */
+.tr-pending-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ===== Empty / loading states ===== */
+.tr-empty {
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.tr-state-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  color: #9ca3af;
+  gap: 10px;
+}
+
+.tr-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4670DB;
+  border-radius: 50%;
+  animation: tr-spin 0.8s linear infinite;
+}
+
+@keyframes tr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1000px) {
+  .tr-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tr-table-head,
+  .tr-request-row {
+    grid-template-columns: 140px 1fr 110px;
+  }
+
+  .tr-table-head span:nth-child(4),
+  .tr-table-head span:nth-child(5),
+  .tr-table-head span:nth-child(6),
+  .tr-table-head span:nth-child(7),
+  .tr-request-row > *:nth-child(4),
+  .tr-request-row > *:nth-child(5),
+  .tr-request-row > *:nth-child(6),
+  .tr-request-row > *:nth-child(7) {
+    display: none;
+  }
+}
