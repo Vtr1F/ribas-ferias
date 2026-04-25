@@ -6,6 +6,7 @@ import { useAuth } from '../context/auth-context';
 import Header from './header/header';
 import { ABSENCE } from '../constants/requestTypes.js'
 import './dashboard.css'; 
+import { translateType } from '../utils/translation.js';
 
 function Dashboard() {
   const { user } = useAuth();
@@ -59,11 +60,18 @@ function Dashboard() {
   const vacationMap = useMemo(() => {
     const map = {};
     if (!requests) return map;
+
     const requestsArray = Array.isArray(requests) ? requests : [requests];
+
     requestsArray.forEach(req => {
       if (req.days && Array.isArray(req.days)) {
         req.days.forEach(dayStr => {
-          map[String(dayStr)] = req.status; 
+          // Now storing an object with both status and type
+          map[String(dayStr)] = {
+            status: req.status,
+            type: req.request_type,
+            reason: req.reason
+          }; 
         });
       }
     });
@@ -104,7 +112,7 @@ function Dashboard() {
 
     return Object.entries(groups).map(([month, days]) => (
       <div key={month} className="overlay-month-group">
-        <strong style={{ textTransform: 'capitalize' }}>{month}:</strong> {days.join(', ')}
+        <strong className="capitalize">{month}:</strong> {days.join(', ')}
       </div>
     ));
   }, [selectedDays]);
@@ -167,7 +175,7 @@ function Dashboard() {
         <div className="modal-backdrop">
           <div className="modal-content">
             <h2>Confirmar Solicitação</h2>
-            <p>Deseja solicitar férias para os seguintes dias?</p>
+            <p>Deseja solicitar <strong>{translateType("Vacation")}</strong> para os seguintes dias?</p>
             
             <div className="selected-days-list">
               {formattedSelection}
@@ -209,9 +217,10 @@ function Dashboard() {
                 > 
                   {Object.entries(ABSENCE).map(([key, value]) => (
                     <option key={key} value={value}>
-                      {getAbsenceLabel(value)}
-                    </option>)
-                  )}
+                      {/* Using the utility for the dropdown labels */}
+                      {translateType(value)}
+                    </option>
+                  ))}
                 </select>
               </label>
 

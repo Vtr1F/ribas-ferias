@@ -1,4 +1,5 @@
 import './month_card.css';
+import { translateStatus, getStatusClass, translateType } from '../utils/translation.js';
 
 const MonthCard = ({ 
   monthIndex, 
@@ -23,12 +24,13 @@ const MonthCard = ({
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}${String(monthIndex + 1).padStart(2, '0')}${String(d).padStart(2, '0')}`;
 
+    const requestData = vacationMap[dateStr]; 
+
     // Check existing status from DB
-    let statusClass = "";
-    const status = vacationMap[dateStr];
-    if (status === 'Accepted') statusClass = "status-green";
-    if (status === 'Pending') statusClass = "status-yellow";
-    if (status === 'Rejected') statusClass = "status-red";
+    const statusClass = getStatusClass(requestData?.status);
+  
+    const isAbsence = requestData?.type && requestData?.type !== "Vacation";
+    const typeClass = isAbsence ? "type-absence" : "type-vacation";
 
     // Check if user is currently selecting this day in the UI
     const isSelected = selectedDays.includes(dateStr);
@@ -37,10 +39,26 @@ const MonthCard = ({
     days.push(
       <div 
         key={d} 
-        className={`day ${statusClass} ${isSelected ? 'selected' : ''} ${isSelectable ? 'selectable' : 'locked'}`}
+        className={`day ${statusClass} ${typeClass} ${isSelected ? 'selected' : ''} ${isSelectable ? 'selectable' : 'locked'}`}
         onClick={() => isSelectable && onDateClick(dateStr)}
       >
         {d}
+        {isAbsence && <span className="absence-indicator"></span>}
+
+        {requestData && (
+          <div className="day-tooltip">
+            <div className="tooltip-header">
+                {/* Translate the type and status labels */}
+                <strong>{translateType(requestData.type)}</strong>
+                <span className={`badge ${statusClass}`}>
+                  {translateStatus(requestData.status)}
+                </span>
+            </div>
+            {requestData.reason && (
+              <div className="tooltip-reason">"<em>{requestData.reason}</em>"</div>
+            )}
+          </div>
+        )}
       </div>
     );
   }

@@ -39,3 +39,110 @@
   font-weight: bold;
 }
 
+.day {
+  position: relative; 
+}
+
+
+/* Tooltip Container */
+.day-tooltip {
+  visibility: hidden;
+  position: absolute;
+  bottom: 130%; /* Position it above the day */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  background-color: #1e293b; /* Dark slate background */
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  pointer-events: none; /* Prevents the tooltip from flickering when mouse moves over it */
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Tooltip Arrow */
+.day-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+
+/* Show on Hover */
+.day:hover .day-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 4px;
+}
+
+.tooltip-reason {
+  color: #cbd5e1;
+  line-height: 1.2;
+  font-style: italic;
+  word-wrap: break-word;
+}
+
+/* Badge inside tooltip */
+.badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badge.status-green { background: #15803d; color: white; }
+.badge.status-yellow { background: #a16207; color: white; }
+.badge.status-red { background: #b91c1c; color: white; }
+
+/* If it's an absence, we add a subtle stripe pattern over the status color */
+.day.type-absence {
+  background-image: linear-gradient(
+    45deg, 
+    rgba(255, 255, 255, 0.15) 25%, 
+    transparent 25%, 
+    transparent 50%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    rgba(255, 255, 255, 0.15) 75%, 
+    transparent 75%, 
+    transparent
+  );
+  background-size: 10px 10px;
+}
+
+/* Small dot indicator at the bottom of the day */
+.absence-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: white; /* Contrast against the green/red/yellow */
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+
+/* Different border for absences to make them stand out further */
+.day.type-absence.status-green {
+  border: 1.5px solid #3da142;
+}
+.day.type-absence.status-yellow {
+  border: 1.5px solid #a77423;
+}
