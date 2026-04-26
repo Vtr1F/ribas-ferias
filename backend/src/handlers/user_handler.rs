@@ -73,6 +73,15 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .await
     .expect("Failed to insert user");
 
+    sqlx::query(
+        "INSERT INTO team_members (team_id, user_id, leader) VALUES($1, $2, FALSE)"
+    )
+    .bind(team_id)
+    .bind(row.id)
+    .execute(&*state.db)
+    .await
+    .expect("Failed to add user to team");
+
     // Convert to public
     let public_user = row.into_public();
 
