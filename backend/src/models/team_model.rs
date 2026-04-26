@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{FromRow, prelude::Type};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
@@ -16,24 +16,24 @@ pub struct MemberWithUser {
     pub leader: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Team {
     pub id: i32,
     pub team_name: String,
     pub description: Option<String>,
     pub leader_id: Option<i32>,
-    pub members: Vec<User>,
+    pub members: sqlx::types::Json<Vec<User>>,
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct TeamWithUsers {
     pub id: i32,
     pub team_name: String,
     pub description: Option<String>,
     pub leader_id: Option<i32>,
     pub created_at: DateTime<Utc>,
-    pub members: Vec<MemberWithUser>,
+    pub members: sqlx::types::Json<Vec<MemberWithUser>>,
 }
 
 #[derive(Serialize, Deserialize)]

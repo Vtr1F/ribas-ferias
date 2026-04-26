@@ -1,25 +1,29 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
-const SetUser = lazy(() => import('./pages/set-user/set-user'));
-const EditProfile = lazy(() => import('./pages/edit-profile/edit-profile'));
-const Dashboard = lazy(() => import('./components/dashboard'));
-const Users = lazy(() => import('./pages/users/users'));
-const Profile = lazy(() => import('./components/profile'));
-const Settings = lazy(() => import('./components/settings'));
-const Login = lazy(() => import('./pages/login'));
-const ResetPassword = lazy(() => import('./pages/reset_password'));
-const NewPassword = lazy(() => import('./pages/new_password'));
+
+import SetUser        from './pages/set-user/set-user';
+import EditProfile    from './pages/edit-profile/edit-profile';
+import Dashboard      from './components/dashboard';
+import Users          from './pages/users/users';
+import Profile        from './components/profile';
+import Settings       from './components/settings';
+import RequestHistory from './pages/request-history/request_history';
+import TeamRequests  from './pages/team-requests/team_requests';
+import Login          from './pages/login';
+import ResetPassword  from './pages/reset_password';
+import NewPassword    from './pages/new_password';
+
 
 const Loading = () => <div className="loading-spinner">Carregando...</div>;
 
 const AppLayout = () => (
   <div style={{ display: 'flex', minHeight: '100vh' }}>
     <Sidebar />
-    <main style={{ flex: 1, marginLeft: '12vw'}}>
+    <main style={{ flex: 1, marginLeft: '12vw' }}>
       <Outlet />
     </main>
   </div>
@@ -27,38 +31,37 @@ const AppLayout = () => (
 
 export const router = createBrowserRouter([
   {
-    path: "/login", element: (
+    path: "/login",
+    element: (
       <Suspense fallback={<Loading />}>
         <Login />
       </Suspense>
     ),
   },
-  
   {
     path: "/forgot-password",
     element: (
-        <Suspense fallback={<Loading />}>
-            <ResetPassword />
-        </Suspense>
+      <Suspense fallback={<Loading />}>
+        <ResetPassword />
+      </Suspense>
     ),
   },
   {
     path: "/new-password",
     element: (
-        <Suspense fallback={<Loading />}>
-            <NewPassword />
-        </Suspense>
+      <Suspense fallback={<Loading />}>
+        <NewPassword />
+      </Suspense>
     ),
   },
   {
     path: "/set-password",
     element: (
-        <Suspense fallback={<Loading />}>
-            <SetUser />
-        </Suspense>
+      <Suspense fallback={<Loading />}>
+        <SetUser />
+      </Suspense>
     ),
   },
-
   {
     path: "/",
     element: (
@@ -70,52 +73,70 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-            <Suspense fallback={<Loading />}>
-                <Dashboard />
-            </Suspense>
+          <Suspense fallback={<Loading />}>
+            <Dashboard />
+          </Suspense>
         ),
       },
       {
         path: "users",
         element: (
-            <Suspense fallback={<Loading />}>
-              {/* Only Admin (1) and Team Leader (2) can */}
-              <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
-                <Users />
-              </ProtectedRoute>
-            </Suspense>
+          <Suspense fallback={<Loading />}>
+            {/* Only Admin (1) and Team Leader (2) can */}
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
+              <Users />
+            </ProtectedRoute>
+          </Suspense>
         ),
       },
       {
         path: "profile",
         element: (
-            <Suspense fallback={<Loading />}>
-                <Profile />
-            </Suspense>
+          <Suspense fallback={<Loading />}>
+            <Profile />
+          </Suspense>
         ),
       },
       {
         path: "users/edit-profile",
         element: (
-            <Suspense fallback={<Loading />}>
-                <EditProfile />
-            </Suspense>
-         ),
-       },
+          <Suspense fallback={<Loading />}>
+            <EditProfile />
+          </Suspense>
+        ),
+      },
       {
         path: "users/:userId",
         element: (
-            <Suspense fallback={<Loading />}>
-                <Profile />
-            </Suspense>
+          <Suspense fallback={<Loading />}>
+            <Profile />
+          </Suspense>
         ),
       },
       {
         path: "settings",
         element: (
-            <Suspense fallback={<Loading />}>
-                <Settings />
-            </Suspense>
+          <Suspense fallback={<Loading />}>
+            <Settings />
+          </Suspense>
+        ),
+      },
+      {
+        path: "historico",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <RequestHistory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "equipas",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
+              <TeamRequests />
+            </ProtectedRoute>
+          </Suspense>
         ),
       },
       {

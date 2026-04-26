@@ -4,7 +4,9 @@ import { RequestRoutes } from '../api/requestRoutes';
 import { UserRoutes } from '../api/userRoutes';
 import { useAuth } from '../context/auth-context'; 
 import Header from './header/header';
+import { ABSENCE } from '../constants/requestTypes.js'
 import './dashboard.css'; 
+import { translateType } from '../utils/translation.js';
 
 function Dashboard() {
   const { user } = useAuth();
@@ -12,24 +14,44 @@ function Dashboard() {
   const [requests, setRequests] = useState(null);
   const [vacationDays, setVacationDays] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [showAbsenceOverlay, setShowAbsenceOverlay] = useState(false);
+  const [reason, setReason] = useState('');
+  const [absenceType, setAbsenceType] = useState(ABSENCE.SICK);
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
+
+  // --- NEW STATE FOR MODAL ---
+  const [showOverlay, setShowOverlay] = useState(false);
 
   const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; 
 
+  const getAbsenceLabel = (value) => {
+    const labels = {
+      [ABSENCE.SICK]: "Baixa Médica / Doença",
+      [ABSENCE.PAR]: "Licença Parental",
+      [ABSENCE.BER]: "Dias de Nojo",
+      [ABSENCE.OTR]: "Outro"
+    };
+    return labels[value] || value;
+  };
+
   useEffect(() => {
     if (user?.sub || user?.id) {
-      fetchData(user.sub || user.id);
+      const userId = user.sub || user.id;
+      fetchData(userId);
+      const interval = setInterval(() => fetchData(userId), 30000);
+      return () => clearInterval(interval);
     }
   }, [user]);
 
   const fetchData = async (userId) => {
     try {
-      setLoading(true);
+      if (!requests) setLoading(true);
       const [requestsData, userData] = await Promise.all([
         RequestRoutes.fetchUserRequest(userId),
         UserRoutes.fetchUser(userId)
       ]);
-      const test= await RequestRoutes.fetchRequests();
-      console.log(JSON.stringify(test, null, 2))
       setRequests(requestsData);
       setVacationDays(userData?.dias_ferias_disponiveis ?? 0);
     } catch (err) {
@@ -39,39 +61,264 @@ function Dashboard() {
     }
   };
 
-  const vacationMap = useMemo(() => {
+  const { vacationMap, usedDaysCount } = useMemo(() => {
     const map = {};
-    if (!requests) return map;
+    let usedCount = 0;
+    if (!requests) return { vacationMap: map, usedDaysCount: 0 };
 
-    // Garante que tratamos tanto um objeto único como um array de pedidos
     const requestsArray = Array.isArray(requests) ? requests : [requests];
 
     requestsArray.forEach(req => {
       if (req.days && Array.isArray(req.days)) {
         req.days.forEach(dayStr => {
-          // Mapeia a data para o status específico desse pedido
-          map[String(dayStr)] = req.status; 
+          map[String(dayStr)] = {
+            status: req.status,
+            type: req.request_type
+          };
+
+          const status = req.status?.toLowerCase();
+          
+          // AGORA: Conta QUALQUER tipo de pedido (Vacation, Parental, etc.)
+          // que esteja Approved ou Pending
+          if (status === "approved" || status === "accepted" || status === "pending") {
+            usedCount++;
+          }
         });
       }
     });
-    return map;
+    return { vacationMap: map, usedDaysCount: usedCount };
   }, [requests]);
 
-  const nextYear = () => setCurrentYear(prev => (prev < 2200 ? prev + 1 : prev));
-  const prevYear = () => setCurrentYear(prev => (prev > 1900 ? prev - 1 : prev));
+
+  const handleDateClick = (dateStr) => {
+    setSelectedDays(prev => 
+      prev.includes(dateStr) 
+        ? prev.filter(d => d !== dateStr) 
+        : [...prev, dateStr]
+    );
+  };
+
+    // --- LOGIC TO FORMAT DATES FOR THE MODAL ---
+    const formattedSelection = useMemo(() => {
+    if (selectedDays.length === 0) return "Nenhum dia selecionado.";
+
+    const groups = {};
+
+    // Sort the strings first so the days appear in order
+    const sortedDays = [...selectedDays].sort();
+
+    sortedDays.forEach(dateStr => {
+      // Manually parse YYYYMMDD
+      const year = parseInt(dateStr.substring(0, 4));
+      const month = parseInt(dateStr.substring(4, 6)) - 1; // Month is 0-indexed
+      const day = parseInt(dateStr.substring(6, 8));
+
+      const date = new Date(year, month, day);
+      
+      // Get the month name (e.g., "fevereiro")
+      const monthName = date.toLocaleString('pt-PT', { month: 'long' });
+      
+      if (!groups[monthName]) groups[monthName] = [];
+      groups[monthName].push(day);
+    });
+
+    return Object.entries(groups).map(([month, days]) => (
+      <div key={month} className="overlay-month-group">
+        <strong className="capitalize">{month}:</strong> {days.join(', ')}
+      </div>
+    ));
+  }, [selectedDays]);
+
+  const handleRequestVacation = () => {
+  if (selectedDays.length === 0) {
+    setError("Selecione dias primeiro.");
+    setTimeout(() => setError(''), 6000);
+    return;
+  }
+
+  if (selectedDays.length > vacationDays) {
+    setError(`Limite excedido! Só tem ${vacationDays} dias disponíveis.`);
+    setTimeout(() => setError(''), 4000);
+    return;
+  }
+
+  setShowOverlay(true);
+};
+
+  const confirmRequest = async () => {
+    console.log("Final submission for:", selectedDays);
+    const data = {
+      user: user.sub,
+      request_type: "Vacation",
+      days: selectedDays.map(day => parseInt(day, 10))
+    }
+    await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
+
+    setShowOverlay(false);
+    setSelectedDays([]); // Clear selection after success
+  };
+
+  const handleAbscence = () => {
+    setShowAbsenceOverlay(true);
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const submitAbsence = async (e) => {
+    e.preventDefault();
+    
+    // Use FormData for file uploads
+    if (file) RequestRoutes.uploadFormFile(file);
+    const data = {
+      user: user.sub,
+      reason: reason.trim(),
+      request_type: absenceType,
+      days: selectedDays.map(day => parseInt(day, 10))
+    }
+
+    await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
+
+    setShowAbsenceOverlay(false);
+    // Reset form
+    setReason('');
+    setAbsenceType(ABSENCE.SICK);
+    setFile(null);
+  };
 
   return (
     <main className="dashboard-container">
+      {/* Pop-up de Erro com Classes CSS */}
+      {error && (
+        <div className="error-popup-container">
+          <span>⚠️ {error}</span>
+          <button 
+            className="error-popup-close" 
+            onClick={() => setError('')}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <Header />
+      
+      {/* --- OVERLAY MODAL --- */}
+      {showOverlay && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h2>Confirmar Solicitação</h2>
+            <p>Deseja solicitar <strong>{translateType("Vacation")}</strong> para os seguintes dias?</p>
+            
+            <div className="selected-days-list">
+              {formattedSelection}
+            </div>
+
+            <div className="modal-info">
+              Total de dias: <strong>{selectedDays.length}</strong>
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={() => setShowOverlay(false)}>Cancelar</button>
+              <button className="btn-primary" onClick={confirmRequest}>Confirmar Pedido</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAbsenceOverlay && (
+        <div className="modal-backdrop">
+          <div className="modal-content absence-modal">
+            <h2>Solicitar Ausência</h2>
+            <p>Deseja solicitar ausência para os seguintes dias?</p>
+
+            <div className="selected-days-list">
+              {formattedSelection}
+            </div>
+
+            <div className="modal-info">
+              Total de dias: <strong>{selectedDays.length}</strong>
+            </div>
+            <form onSubmit={submitAbsence}>
+              
+              <label className="form-label">
+                Tipo de Ausência
+                <select 
+                  className="modal-input" 
+                  value={absenceType} 
+                  onChange={(e) => setAbsenceType(e.target.value)}
+                > 
+                  {Object.entries(ABSENCE).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {/* Using the utility for the dropdown labels */}
+                      {translateType(value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="form-label">
+                Motivo / Justificação
+                <textarea 
+                  className="modal-input textarea" 
+                  required 
+                  placeholder="Descreva brevemente o motivo..."
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                />
+              </label>
+
+              <label className="form-label">
+                  Anexar Ficheiro (Opcional)
+                  <div className="file-upload-container">
+                    {/* 1. The hidden input */}
+                    <input 
+                      type="file" 
+                      id="file-upload" 
+                      className="hidden-file-input" 
+                      onChange={handleFileChange} 
+                    />
+                    
+                    {/* 2. The visible "button" (actually a label) */}
+                    <label htmlFor="file-upload" className="custom-file-button">
+                      <span>{file ? 'Alterar Ficheiro' : 'Selecionar Ficheiro'}</span>
+                    </label>
+
+                    {/* 3. Display the filename so the user has feedback */}
+                    {file && (
+                      <div className="file-name-badge">
+                        <span className="file-icon">📎</span>
+                        {file.name}
+                        <button type="button" className="remove-file" onClick={() => setFile(null)}>✕</button>
+                      </div>
+                    )}
+                  </div>
+                </label>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-secondary" onClick={() => setShowAbsenceOverlay(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary">
+                  Enviar Solicitação
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <header className="calendar-header">
         <div className="header-left">
           <div className="title-section">
             <h1>Calendário</h1>
           </div>
           <div className="year-switcher">
-            <button onClick={prevYear} className="year-btn">‹</button>
+            <button onClick={() => setCurrentYear(y => y-1)} className="year-btn">‹</button>
             <span className="year-display">{currentYear}</span>
-            <button onClick={nextYear} className="year-btn">›</button>
+            <button onClick={() => setCurrentYear(y => y+1)} className="year-btn">›</button>
           </div>
         </div>
 
@@ -79,8 +326,8 @@ function Dashboard() {
           <div className="vacation-allowance">
             Dias Disponíveis: <strong>{vacationDays}</strong>
           </div>
-          <button className="btn-request">+ Solicitar Ferias</button>
-          <button className="btn-request">+ Solicitar Ausencia</button>
+          <button className="btn-request" onClick={handleRequestVacation}>+ Solicitar Ferias</button>
+          <button className="btn-request" onClick={handleAbscence}>+ Solicitar Ausencia</button>
         </div>
       </header>
 
@@ -92,8 +339,10 @@ function Dashboard() {
             <MonthCard 
               key={`${currentYear}-${m}`} 
               monthIndex={m} 
-              year={currentYear} 
+              year={currentYear}
               vacationMap={vacationMap} 
+              selectedDays={selectedDays} 
+              onDateClick={handleDateClick}
             />
           ))
         )}

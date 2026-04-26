@@ -1,9 +1,9 @@
 pub mod password_reset_routes;
 pub mod request_routes;
-pub mod request_type_routes;
 pub mod role_routes;
 pub mod team_routes;
 pub mod user_routes;
+pub mod upload_routes;
 
 use std::sync::Arc;
 
@@ -15,7 +15,6 @@ use axum::{
 
 use crate::{
     handlers::auth_handler::{auth_middleware, check_auth, logout, refresh_token},
-    handlers::image_handler::upload_image,
     state::AppState,
 };
 
@@ -24,10 +23,9 @@ pub fn create_routes(state: Arc<AppState>) -> Router<()> {
         .route("/check", get(check_auth))
         .nest("/users", user_routes::routes())
         .nest("/roles", role_routes::routes())
-        .nest("/types", request_type_routes::routes())
         .nest("/requests", request_routes::routes())
         .nest("/team", team_routes::routes())
-        .route("/upload", post(upload_image))
+        .nest("/upload", upload_routes::routes())
         .layer(middleware::from_fn_with_state(
             state.jwt_secret.clone(),
             auth_middleware,
