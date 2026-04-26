@@ -163,7 +163,7 @@ const Users = () => {
         <h1>Gestão de Utilizadores</h1>
       </div>
       
-      <Stats users={allUsers} />
+      {(isAdmin || isLeader) && <Stats users={allUsers} />}
 
       <div className="users-container">
         <div className="users-header">
@@ -300,7 +300,7 @@ const Users = () => {
                   </div>
                   <div className="team-header-right">
                     <span className="team-member-count">{group.users.length} membros</span>
-                    {isAdmin && group.id !== 'no-team' && (
+                    {isAdmin && group.id !== 'no-team' && group.id !== 1 && (
                       <button 
                         className="remove-from-team-btn" 
                         onClick={(e) => { e.stopPropagation(); setRemoveFromTeam(group); }}
