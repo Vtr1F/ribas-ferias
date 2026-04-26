@@ -21,6 +21,7 @@ Library Needed <br/>
 Cargo install sqlx <br/>
 Cargo install sqlx-cli <br/>
 cargo install dotenv <br/>
+npm install -D vitest <br/>
 
 Changelog
 
@@ -48,3 +49,6 @@ Admin can Now create new Users
 
 05/04 <br/>
 Users can alter their personal information
+
+26/04
+Front End Unit Testing added
