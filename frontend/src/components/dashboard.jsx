@@ -70,7 +70,7 @@ function Dashboard() {
           map[String(dayStr)] = {
             status: req.status,
             type: req.request_type,
-            reason: req.reason
+            reason: req.reason.trim()
           }; 
         });
       }
@@ -152,7 +152,7 @@ function Dashboard() {
     if (file) RequestRoutes.uploadFormFile(file);
     const data = {
       user: user.sub,
-      reason: reason,
+      reason: reason.trim(),
       request_type: absenceType,
       days: selectedDays.map(day => parseInt(day, 10))
     }
