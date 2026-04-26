@@ -52,7 +52,7 @@
   border-radius: 8px;
   font-weight: bold;
   font-size: 14px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Questrial', sans-serif;
   cursor: pointer;
   width: 100%;
 }
@@ -89,6 +89,71 @@
   cursor: pointer;
   color: #333;
   padding: 10px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+  font-family: 'Questrial', sans-serif;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.success-state {
+  text-align: center;
+  padding: 20px;
+}
+
+.success-icon {
+  font-size: 3rem;
+  color: #22c55e;
+  margin-bottom: 15px;
+}
+
+/* Override for the date input to look clean in login */
+input[type="date"].modal-input {
+    width: 100%;
+    box-sizing: border-box;
+  font-family: 'Questrial', sans-serif;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;   /* Stacks text on top of input */
+  align-items: flex-start;  /* Aligns text to the left */
+  text-align: left;         /* Extra safety for text alignment */
+  gap: 8px;                 /* Space between the label text and the box */
+  width: 100%;
+  margin-bottom: 20px;      /* Space between different form fields */ 
+  font-family: 'Questrial', sans-serif;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #d8dce8;
+  background: #fbfdff;
+  outline: none;
+  transition: all 0.2s ease;
+  
+  /* Crucial: ensures the padding doesn't make the box wider than 100% */
+  box-sizing: border-box; 
+  font-family: 'Questrial', sans-serif;
+}
+
+.modal-input:focus {
+  border-color: #3b6dff;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(59, 109, 255, 0.1);
+  font-family: 'Questrial', sans-serif;
 }
 
 .back-arrow:hover {

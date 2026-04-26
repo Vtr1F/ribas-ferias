@@ -67,15 +67,13 @@ pub async fn reset_password(
     eprintln!("DEBUG: Password hashed, hash length: {}", hashed.len());
 
     // 3. Update DB
-    update_user_password(&*state.db, &user_id, &hashed)
+    update_user_password(&*state.db, &user_id, &hashed, payload.birth)
     .await
     .map_err(|e| {
         eprintln!("DEBUG: Database error: {}", e);
         (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
     })?;
-
     eprintln!("DEBUG: Password updated successfully");
-
 
     Ok(StatusCode::NO_CONTENT)
 }
