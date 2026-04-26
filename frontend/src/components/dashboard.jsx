@@ -147,18 +147,7 @@ function Dashboard() {
 };
 
   const confirmRequest = async () => {
-    console.log("Final submission for:", selectedDays);
-    const data = {
-      user: user.sub,
-      request_type: "Vacation",
-      days: selectedDays.map(day => parseInt(day, 10))
-    }
-    await RequestRoutes.addRequest(data);
-    await fetchData(user.sub || user.id);
 
-    setShowOverlay(false);
-    setSelectedDays([]); // Clear selection after success
-  };
     if (isSubmitting) return;
 
     try {
@@ -399,5 +388,5 @@ function Dashboard() {
     </main>
   );
 
-
+}
 export default Dashboard;
