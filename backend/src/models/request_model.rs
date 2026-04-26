@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::Type;
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow, Clone)]
 pub struct Request {
     pub id: i32,
     pub user_id: i32,
@@ -23,7 +23,7 @@ pub struct RequestInput {
     pub days: Vec<i32>,
 }
 
-#[derive(Serialize, Deserialize, Type, Debug)]
+#[derive(Serialize, Deserialize, Type, Debug, Clone)]
 #[sqlx(type_name = "request_status")]
 pub enum Status {
     Pending,
