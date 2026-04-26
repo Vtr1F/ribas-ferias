@@ -19,6 +19,7 @@ function Dashboard() {
   const [reason, setReason] = useState('');
   const [absenceType, setAbsenceType] = useState(ABSENCE.SICK);
   const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
 
   // --- NEW STATE FOR MODAL ---
   const [showOverlay, setShowOverlay] = useState(false);
@@ -37,13 +38,16 @@ function Dashboard() {
 
   useEffect(() => {
     if (user?.sub || user?.id) {
-      fetchData(user.sub || user.id);
+      const userId = user.sub || user.id;
+      fetchData(userId);
+      const interval = setInterval(() => fetchData(userId), 30000);
+      return () => clearInterval(interval);
     }
   }, [user]);
 
   const fetchData = async (userId) => {
     try {
-      setLoading(true);
+      if (!requests) setLoading(true);
       const [requestsData, userData] = await Promise.all([
         RequestRoutes.fetchUserRequest(userId),
         UserRoutes.fetchUser(userId)
@@ -57,26 +61,39 @@ function Dashboard() {
     }
   };
 
-  const vacationMap = useMemo(() => {
+  const { vacationMap, usedDaysCount } = useMemo(() => {
     const map = {};
-    if (!requests) return map;
+    let usedCount = 0;
+    if (!requests) return { vacationMap: map, usedDaysCount: 0 };
 
     const requestsArray = Array.isArray(requests) ? requests : [requests];
 
     requestsArray.forEach(req => {
       if (req.days && Array.isArray(req.days)) {
         req.days.forEach(dayStr => {
-          // Now storing an object with both status and type
           map[String(dayStr)] = {
             status: req.status,
-            type: req.request_type,
-            reason: req.reason
-          }; 
+            type: req.request_type
+          };
+
+          const status = req.status?.toLowerCase();
+          
+          // AGORA: Conta QUALQUER tipo de pedido (Vacation, Parental, etc.)
+          // que esteja Approved ou Pending
+          if (status === "approved" || status === "accepted" || status === "pending") {
+            usedCount++;
+          }
         });
       }
     });
-    return map;
+    return { vacationMap: map, usedDaysCount: usedCount };
   }, [requests]);
+
+// 2. CÁLCULO ATUALIZADO
+const remainingVacationDays = useMemo(() => {
+  const balance = vacationDays - usedDaysCount;
+  return balance > 0 ? balance : 0;
+}, [vacationDays, usedDaysCount]);
 
   const handleDateClick = (dateStr) => {
     setSelectedDays(prev => 
@@ -118,12 +135,21 @@ function Dashboard() {
   }, [selectedDays]);
 
   const handleRequestVacation = () => {
-    if (selectedDays.length === 0) {
-        alert("Por favor, selecione pelo menos um dia no calendário.");
-        return;
-    }
-    setShowOverlay(true);
-  };
+  if (selectedDays.length === 0) {
+    setError("Selecione dias primeiro.");
+    setTimeout(() => setError(''), 6000);
+    return;
+  }
+
+  // Use 'remainingVacationDays' aqui, não o vacationDays da DB
+  if (selectedDays.length > remainingVacationDays) {
+    setError(`Limite excedido! Só tem ${remainingVacationDays} dias disponíveis.`);
+    setTimeout(() => setError(''), 4000);
+    return;
+  }
+
+  setShowOverlay(true);
+};
 
   const confirmRequest = async () => {
     console.log("Final submission for:", selectedDays);
@@ -133,6 +159,8 @@ function Dashboard() {
       days: selectedDays.map(day => parseInt(day, 10))
     }
     await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
+
     setShowOverlay(false);
     setSelectedDays([]); // Clear selection after success
   };
@@ -158,6 +186,7 @@ function Dashboard() {
     }
 
     await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
 
     setShowAbsenceOverlay(false);
     // Reset form
@@ -168,6 +197,18 @@ function Dashboard() {
 
   return (
     <main className="dashboard-container">
+      {/* Pop-up de Erro com Classes CSS */}
+      {error && (
+        <div className="error-popup-container">
+          <span>⚠️ {error}</span>
+          <button 
+            className="error-popup-close" 
+            onClick={() => setError('')}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <Header />
       
       {/* --- OVERLAY MODAL --- */}
@@ -289,7 +330,8 @@ function Dashboard() {
 
         <div className="header-actions">
           <div className="vacation-allowance">
-            Dias Disponíveis: <strong>{vacationDays}</strong>
+            {/* MOSTRAR O SALDO REAL (REMAINING) */}
+            Dias Disponíveis: <strong>{remainingVacationDays}</strong>
           </div>
           <button className="btn-request" onClick={handleRequestVacation}>+ Solicitar Ferias</button>
           <button className="btn-request" onClick={handleAbscence}>+ Solicitar Ausencia</button>
