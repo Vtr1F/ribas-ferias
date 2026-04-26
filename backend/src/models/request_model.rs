@@ -37,5 +37,6 @@ pub enum RequestType {
     Vacation,
     SickLeave,
     ParentalLeave,
-    BereavementLeave
+    BereavementLeave,
+    Other
 }

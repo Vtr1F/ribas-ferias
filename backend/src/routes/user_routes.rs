@@ -8,7 +8,8 @@ pub fn routes() -> Router<Arc<AppState>> {
     Router::new()
         .route(
             "/",
-            get(user_handler::list_users).post(user_handler::add_user),
+            get(user_handler::list_users)
+            .post(user_handler::add_user),
         )
         .route("/{id}/image", get(image_handler::get_user_image))
         .route(

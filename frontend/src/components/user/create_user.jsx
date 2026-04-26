@@ -114,9 +114,9 @@ const CreateUser = () => {
       const data = {
         nome,
         email,
-        role_id: parseInt(role_id, 10),
-        superior_id: superior_id ? parseInt(superior_id, 10) : null,
-        team_id: team_id ? parseInt(team_id, 10) : null
+        role_id: parseInt(role_id),
+        superior_id: superior_id ? parseInt(superior_id) : null,
+        team_id: team_id ? parseInt(team_id) : null
         
       };
       const response = await UserRoutes.addUser(data);

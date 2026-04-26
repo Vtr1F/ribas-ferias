@@ -1,4 +1,3 @@
-use std::mem;
 use std::sync::Arc;
 
 use axum::{extract::Path, Json, extract::State, http::StatusCode};
@@ -235,7 +234,7 @@ pub async fn add_to_team(
     .await
     .expect("Failed to update user team_id");
 
-    let row: TeamResponse = sqlx::query_as(
+    let _row: TeamResponse = sqlx::query_as(
         "SELECT id, team_name, description, leader_id, members, created_at FROM teams WHERE id = $1"
     )
     .bind(team_id)
@@ -308,7 +307,7 @@ pub async fn remove_from_team(
         .expect("Failed to update user team_id");
     }
     
-    let row: TeamResponse = sqlx::query_as(
+    let _row: TeamResponse = sqlx::query_as(
         r#"
         SELECT 
             t.id, t.team_name, t.description, t.leader_id, t.created_at,
