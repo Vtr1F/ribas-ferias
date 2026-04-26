@@ -1,21 +1,21 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
 
-const SetUser        = lazy(() => import('./pages/set-user/set-user'));
-const EditProfile    = lazy(() => import('./pages/edit-profile/edit-profile'));
-const Dashboard      = lazy(() => import('./components/dashboard'));
-const Users          = lazy(() => import('./pages/users/users'));
-const Profile        = lazy(() => import('./components/profile'));
-const Settings       = lazy(() => import('./components/settings'));
-const Login          = lazy(() => import('./pages/login'));
-const ResetPassword  = lazy(() => import('./pages/reset_password'));
-const NewPassword    = lazy(() => import('./pages/new_password'));
-const RequestHistory = lazy(() => import('./pages/request-history/request_history'));
-const TeamRequests = lazy(() => import('./pages/team-requests/team_requests'));
+import SetUser        from './pages/set-user/set-user';
+import EditProfile    from './pages/edit-profile/edit-profile';
+import Dashboard      from './components/dashboard';
+import Users          from './pages/users/users';
+import Profile        from './components/profile';
+import Settings       from './components/settings';
+import RequestHistory from './pages/request-history/request_history';
+import TeamRequests  from './pages/team-requests/team_requests';
+import Login          from './pages/login';
+import ResetPassword  from './pages/reset_password';
+import NewPassword    from './pages/new_password';
 
 
 const Loading = () => <div className="loading-spinner">Carregando...</div>;
@@ -130,15 +130,15 @@ export const router = createBrowserRouter([
         ),
       },
       {
-  path: "equipas",
-  element: (
-    <Suspense fallback={<Loading />}>
-      <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
-        <TeamRequests />
-      </ProtectedRoute>
-    </Suspense>
-  ),
-},
+        path: "equipas",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.TEAM_LEADER]}>
+              <TeamRequests />
+            </ProtectedRoute>
+          </Suspense>
+        ),
+      },
       {
         index: true,
         element: <Navigate to="/dashboard" replace />,
