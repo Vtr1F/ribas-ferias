@@ -37,7 +37,7 @@ const Stats = ({ users }) => {
         );
       }
 
-      const feriasMarcados = filteredRequests.filter(r => r.status === 'Accepted').length;
+      const feriasMarcados = filteredRequests.filter(r => r.status === 'Approved').length;
 
       setStats({
         totalColaboradores: filteredUsers.length,
