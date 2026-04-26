@@ -89,11 +89,6 @@ function Dashboard() {
     return { vacationMap: map, usedDaysCount: usedCount };
   }, [requests]);
 
-// 2. CÁLCULO ATUALIZADO
-const remainingVacationDays = useMemo(() => {
-  const balance = vacationDays - usedDaysCount;
-  return balance > 0 ? balance : 0;
-}, [vacationDays, usedDaysCount]);
 
   const handleDateClick = (dateStr) => {
     setSelectedDays(prev => 
@@ -141,9 +136,8 @@ const remainingVacationDays = useMemo(() => {
     return;
   }
 
-  // Use 'remainingVacationDays' aqui, não o vacationDays da DB
-  if (selectedDays.length > remainingVacationDays) {
-    setError(`Limite excedido! Só tem ${remainingVacationDays} dias disponíveis.`);
+  if (selectedDays.length > vacationDays) {
+    setError(`Limite excedido! Só tem ${vacationDays} dias disponíveis.`);
     setTimeout(() => setError(''), 4000);
     return;
   }
@@ -330,8 +324,7 @@ const remainingVacationDays = useMemo(() => {
 
         <div className="header-actions">
           <div className="vacation-allowance">
-            {/* MOSTRAR O SALDO REAL (REMAINING) */}
-            Dias Disponíveis: <strong>{remainingVacationDays}</strong>
+            Dias Disponíveis: <strong>{vacationDays}</strong>
           </div>
           <button className="btn-request" onClick={handleRequestVacation}>+ Solicitar Ferias</button>
           <button className="btn-request" onClick={handleAbscence}>+ Solicitar Ausencia</button>
