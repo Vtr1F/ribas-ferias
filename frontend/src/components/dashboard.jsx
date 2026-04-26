@@ -70,7 +70,7 @@ function Dashboard() {
           map[String(dayStr)] = {
             status: req.status,
             type: req.request_type,
-            reason: req.reason.trim()
+            reason: req.reason
           }; 
         });
       }
