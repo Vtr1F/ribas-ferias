@@ -19,6 +19,7 @@ function Dashboard() {
   const [reason, setReason] = useState('');
   const [absenceType, setAbsenceType] = useState(ABSENCE.SICK);
   const [file, setFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- NEW STATE FOR MODAL ---
   const [showOverlay, setShowOverlay] = useState(false);
@@ -126,17 +127,30 @@ function Dashboard() {
   };
 
   const confirmRequest = async () => {
-    console.log("Final submission for:", selectedDays);
-    const data = {
-      user: user.sub,
-      request_type: "Vacation",
-      days: selectedDays.map(day => parseInt(day, 10))
-    }
-    await RequestRoutes.addRequest(data);
-    setShowOverlay(false);
-    setSelectedDays([]); // Clear selection after success
-  };
+    if (isSubmitting) return;
 
+    try {
+      setIsSubmitting(true);
+      console.log("Final submission for:", selectedDays);
+      const data = {
+        user: user.sub,
+        request_type: "Vacation",
+        days: selectedDays.map(day => parseInt(day, 10))
+      };
+
+      await RequestRoutes.addRequest(data);
+
+      await fetchData(user.sub || user.id);
+      setShowOverlay(false);
+      setSelectedDays([]); // Clear selection after success
+  
+    } catch (err) {
+      alert("Erro ao enviar pedido. Tente novamente.");
+    } finally {
+      setIsSubmitting(false); // Reset cooldown
+
+    }
+  };
   const handleAbscence = () => {
     setShowAbsenceOverlay(true);
   };
@@ -147,23 +161,32 @@ function Dashboard() {
 
   const submitAbsence = async (e) => {
     e.preventDefault();
-    
-    // Use FormData for file uploads
-    if (file) RequestRoutes.uploadFormFile(file);
-    const data = {
-      user: user.sub,
-      reason: reason.trim(),
-      request_type: absenceType,
-      days: selectedDays.map(day => parseInt(day, 10))
+    if (isSubmitting) return;
+    try {
+      setIsSubmitting(true);
+      // Use FormData for file uploads
+      if (file) RequestRoutes.uploadFormFile(file);
+      const data = {
+        user: user.sub,
+        reason: reason.trim(),
+        request_type: absenceType,
+        days: selectedDays.map(day => parseInt(day, 10))
+      }
+
+      await RequestRoutes.addRequest(data);
+
+      await fetchData(user.sub || user.id);
+
+      setShowAbsenceOverlay(false);
+      // Reset form
+      setReason('');
+      setAbsenceType(ABSENCE.SICK);
+      setFile(null);
+    } catch (err) {
+      alert("Erro ao enviar ausência.");
+    } finally {
+      setIsSubmitting(false); // Reset cooldown
     }
-
-    await RequestRoutes.addRequest(data);
-
-    setShowAbsenceOverlay(false);
-    // Reset form
-    setReason('');
-    setAbsenceType(ABSENCE.SICK);
-    setFile(null);
   };
 
   return (
@@ -187,7 +210,7 @@ function Dashboard() {
 
             <div className="modal-actions">
               <button className="btn-secondary" onClick={() => setShowOverlay(false)}>Cancelar</button>
-              <button className="btn-primary" onClick={confirmRequest}>Confirmar Pedido</button>
+              <button className="btn-primary" onClick={confirmRequest}>{isSubmitting ? "A processar..." : "Confirmar Pedido"}</button>
             </div>
           </div>
         </div>
@@ -267,7 +290,7 @@ function Dashboard() {
                   Cancelar
                 </button>
                 <button type="submit" className="btn-primary">
-                  Enviar Solicitação
+                  {isSubmitting ? "A processar..." : "Confirmar Pedido"}
                 </button>
               </div>
             </form>
