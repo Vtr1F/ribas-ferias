@@ -159,6 +159,8 @@ const remainingVacationDays = useMemo(() => {
       days: selectedDays.map(day => parseInt(day, 10))
     }
     await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
+
     setShowOverlay(false);
     setSelectedDays([]); // Clear selection after success
   };
@@ -184,6 +186,7 @@ const remainingVacationDays = useMemo(() => {
     }
 
     await RequestRoutes.addRequest(data);
+    await fetchData(user.sub || user.id);
 
     setShowAbsenceOverlay(false);
     // Reset form
