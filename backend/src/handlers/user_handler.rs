@@ -191,3 +191,39 @@ pub async fn alter_password(State(state): State<Arc<AppState>>,  Path(_id): Path
     Ok(StatusCode::NO_CONTENT)
 }
 
+pub async fn add_user_dias_disponiveis(
+    State(state): State<Arc<AppState>>,
+    user_id: i32,
+    days: i32,
+) -> Result<(), (StatusCode, String)> {
+    sqlx::query(
+        "UPDATE users SET dias_ferias_disponiveis = dias_ferias_disponiveis + $1 WHERE id = $2"
+    )
+    .bind(days)
+    .bind(user_id)
+    .execute(&*state.db)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+
+    Ok(())
+}
+
+pub async fn remove_user_dias_disponiveis(
+    State(state): State<Arc<AppState>>,
+    user_id: i32,
+    days: i32,
+) -> Result<(), (StatusCode, String)> {
+    sqlx::query(
+        "UPDATE users SET dias_ferias_disponiveis = dias_ferias_disponiveis - $1 WHERE id = $2"
+    )
+    .bind(days)
+    .bind(user_id)
+    .execute(&*state.db)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+
+    Ok(())
+}
+
+
+

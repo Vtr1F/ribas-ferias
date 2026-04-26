@@ -7,6 +7,7 @@ use crate::models::team_model::{Team};
 use crate::state::AppState;
 
 use crate::models::request_model::{ Request, RequestInput, RequestType, Status};
+use crate::handlers::user_handler::{remove_user_dias_disponiveis, add_user_dias_disponiveis};
 use sqlx;
 
 pub async fn fetch_requests(
@@ -195,6 +196,8 @@ pub async fn add_request(
     Json(payload): Json<RequestInput>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
+    
+
     // Insert request with default status = 'pending'
     let row: Request = sqlx::query_as(
         r#"
@@ -218,6 +221,12 @@ pub async fn add_request(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let rtype: RequestType = row.request_type;
+
+    if rtype == RequestType::Vacation {
+        let days_count = row.days.len() as i32;
+        remove_user_dias_disponiveis(State(state.clone()), row.user_id, days_count)
+            .await?;
+    }
 
     let new_request = Request {
         id: row.id,
@@ -303,8 +312,14 @@ pub async fn reject_request(
     .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    
 
     let rtype: RequestType = row.request_type;
+    if rtype == RequestType::Vacation {
+        let days_count = row.days.len() as i32;
+        add_user_dias_disponiveis(State(state.clone()), row.user_id, days_count)
+            .await?;
+    }
 
     let request = Request {
         id: row.id,
