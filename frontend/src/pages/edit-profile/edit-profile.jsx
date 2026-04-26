@@ -96,6 +96,11 @@ function EditProfile() {
         e.preventDefault();
         setError();
         const rawUser = await UserRoutes.fetchUser(user.sub);
+        
+        if (/\s/.test(new_password)) {
+            return setError("Password não pode conter espaços")
+        }
+
         if (newPass != comfirmPass){
             setError('Passwords não Coincidem');
             return;

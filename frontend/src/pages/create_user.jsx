@@ -12,7 +12,7 @@ function CreateUser() {
             <h2>Criar Novo Utilizador</h2>
                 <form onSubmit={handleLogin}>
                     <input type="email" 
-                        value= {email} onChange={(e) => setEmail(e.target.value)} 
+                        value= {email} onChange={(e) => setEmail(e.target.value.trim())} 
                         placeholder="Email" required />
                     <button type="submit">Enviar Email</button>
                 </form>
