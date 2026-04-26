@@ -28,6 +28,8 @@ const Users = () => {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [addToTeam, setAddToTeam] = useState(null);
   const [removeFromTeam, setRemoveFromTeam] = useState(null);
+  const [showTeamFilter, setShowTeamFilter] = useState(false);
+  const [selectedTeamFilters, setSelectedTeamFilters] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -79,28 +81,33 @@ const Users = () => {
   }, [allUsers, searchTerm]);
 
   const groups = useMemo(() => {
-    const grouped = [];
+    let availableTeams = [];
 
     if (!isAdmin && !isLeader) {
-      const myTeamUsers = filteredUsers.filter(u => u.team_id === currentUser?.team_id);
-      return [{ id: 'my-team', team_name: 'Minha Equipa', users: myTeamUsers }];
+      availableTeams = teams.filter(t => t.id === currentUser?.team_id);
+    } else {
+      teams.forEach(team => {
+        const isMyTeam = team.leader_id === currentUser?.sub;
+        if (isAdmin || (isLeader && isMyTeam)) {
+          availableTeams.push(team);
+        }
+      });
     }
 
-    teams.forEach(team => {
-      const isMyTeam = team.leader_id === currentUser?.sub;
+    if (selectedTeamFilters.length > 0) {
+      availableTeams = availableTeams.filter(t => selectedTeamFilters.includes(t.id));
+    }
 
-      if (isAdmin || (isLeader && isMyTeam)) {
-        const teamUsers = filteredUsers.filter(u => u.team_id === team.id);
-
-        grouped.push({
-          ...team,
-          users: teamUsers
-        });
-      }
+    const grouped = availableTeams.map(team => {
+      const teamUsers = filteredUsers.filter(u => u.team_id === team.id);
+      return {
+        ...team,
+        users: teamUsers
+      };
     });
 
     return grouped;
-  }, [filteredUsers, teams, isAdmin, isLeader, currentUser]);
+  }, [filteredUsers, teams, isAdmin, isLeader, currentUser, selectedTeamFilters]);
 
   const toggleTeam = (teamId) => {
     setCollapsedTeams(prev => ({ ...prev, [teamId]: !prev[teamId] }));
@@ -182,6 +189,52 @@ const Users = () => {
               className="users-search"
             />
           </div>
+          {(isAdmin || isLeader) && teams.length > 0 && (
+            <div className="team-filter-wrapper">
+              <button 
+                className={`team-filter-btn ${selectedTeamFilters.length > 0 ? 'active' : ''}`}
+                onClick={() => setShowTeamFilter(!showTeamFilter)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filtrar Equipas
+                {selectedTeamFilters.length > 0 && (
+                  <span className="filter-count">{selectedTeamFilters.length}</span>
+                )}
+              </button>
+              {showTeamFilter && (
+                <div className="team-filter-dropdown">
+                  <div className="team-filter-list">
+                    {teams.map(team => (
+                      <label key={team.id} className="team-filter-option">
+                        <input
+                          type="checkbox"
+                          checked={selectedTeamFilters.includes(team.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedTeamFilters(prev => [...prev, team.id]);
+                            } else {
+                              setSelectedTeamFilters(prev => prev.filter(id => id !== team.id));
+                            }
+                          }}
+                        />
+                        <span>{team.team_name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {selectedTeamFilters.length > 0 && (
+                    <button 
+                      className="clear-filters-btn"
+                      onClick={() => setSelectedTeamFilters([])}
+                    >
+                      Limpar Filtros
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           {isAdmin && (
             <>
               <button 
