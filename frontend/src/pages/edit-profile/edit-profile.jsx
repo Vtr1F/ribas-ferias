@@ -66,15 +66,15 @@ function EditProfile() {
         const rawUser = await UserRoutes.fetchUser(user.sub);
         try {
         const data = {
-            nome: (nome ?  nome : rawUser.nome),
+            nome: (nome ?  nome.trim() : rawUser.nome),
             email: rawUser.email,
             dias_ferias_disponiveis: rawUser.dias_ferias_disponiveis,
             role_id: rawUser.role_id,
             superior_id: rawUser.superior_id,
             team_id: rawUser.team_id,
             birthday: rawUser.birthday,
-            phone_number: (telemovel ?  telemovel : rawUser.phone_number),
-            headquarter: (localidade ?  localidade : rawUser.headquarter),
+            phone_number: (telemovel ?  telemovel.trim() : rawUser.phone_number),
+            headquarter: (localidade ?  localidade.trim() : rawUser.headquarter),
             avatar_url: rawUser.avatar_url,
         };
             const response = await UserRoutes.alterUser(user.sub, data);
@@ -96,6 +96,11 @@ function EditProfile() {
         e.preventDefault();
         setError();
         const rawUser = await UserRoutes.fetchUser(user.sub);
+
+        if (/\s/.test(new_password)) {
+            return setError("Password não pode conter espaços")
+        }
+
         if (newPass != comfirmPass){
             setError('Passwords não Coincidem');
             return;

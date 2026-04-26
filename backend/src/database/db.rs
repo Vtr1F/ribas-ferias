@@ -1,6 +1,7 @@
 
+use chrono::NaiveDate;
 use sqlx::{Pool, Postgres};
-use crate::{models::user_model::User};
+use crate::models::{ user_model::User};
 
 pub async fn create_pool(url: &str) -> Pool<Postgres> {
     Pool::<Postgres>::connect(url)
@@ -28,15 +29,18 @@ pub async fn update_user_password(
     db: &Pool<Postgres>,
     user_id: &i32,
     new_hash: &str,
+    birth: Option<NaiveDate>
 ) -> Result<(), sqlx::Error> {
     sqlx::query(
         "
         UPDATE users
-        SET password_hash = $1
-        WHERE id = $2
+        SET password_hash = $1,
+            birthday = COALESCE($2, birthday)
+        WHERE id = $3
         ",
     )
     .bind(new_hash)
+    .bind(birth) // SQLx binds None as NULL, COALESCE handles the rest
     .bind(user_id)
     .execute(db)
     .await?;

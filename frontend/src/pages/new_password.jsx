@@ -26,6 +26,9 @@ function NewPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (/\s/.test(new_password)) {
+      return setError("Password não pode conter espaços")
+    }
     if (new_password !== confirmPassword) {
       return setError("As passwords não coincidem");
     }

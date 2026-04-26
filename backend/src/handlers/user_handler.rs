@@ -1,5 +1,5 @@
 
-use crate::{handlers::auth_handler::generate_reset_token, models::{role_model::Role, user_model::{CreateUser, UpdateUser, UserPrivate,User, UserPublic}}, utils::hash_password};
+use crate::{ handlers::auth_handler::generate_reset_token, models::{user_model::{CreateUser, UpdateUser, User, UserPrivate, UserPublic}}, utils::hash_password};
 use axum::{Json, extract::Path, http::StatusCode};
 use axum::extract::State;
 use crate::state::AppState;
@@ -72,6 +72,15 @@ pub async fn add_user(State(state): State<Arc<AppState>>,Json(payload): Json<Cre
     .fetch_one(&*state.db)
     .await
     .expect("Failed to insert user");
+
+    sqlx::query(
+        "INSERT INTO team_members (team_id, user_id, leader) VALUES($1, $2, FALSE)"
+    )
+    .bind(team_id)
+    .bind(row.id)
+    .execute(&*state.db)
+    .await
+    .expect("Failed to add user to team");
 
     // Convert to public
     let public_user = row.into_public();
@@ -178,8 +187,8 @@ pub async fn remove_user(
 pub async fn alter_password(State(state): State<Arc<AppState>>,  Path(_id): Path<i32>, Json(payload): Json<User>) 
     ->  Result<StatusCode, (StatusCode, String)>  {
     let hashed = hash_password(&payload.password_hash).await;
-    
-    update_user_password(&*state.db, &_id, &hashed)
+
+    update_user_password(&*state.db, &_id, &hashed, None)
     .await
     .map_err(|e| {
         eprintln!("DEBUG: Database error: {}", e);

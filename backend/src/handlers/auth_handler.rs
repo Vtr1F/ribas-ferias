@@ -1,14 +1,14 @@
 use std::sync::Arc;
-use axum_extra::extract::{CookieJar, cookie::{self, Cookie, SameSite}};
+use axum_extra::extract::{CookieJar, cookie::{Cookie, SameSite}};
 use chrono::{Utc, Duration};
 use time::Duration as TimeDuration;
 
 use argon2::{Argon2, PasswordVerifier, password_hash::PasswordHash};
 use axum::{
-    Extension, Json, body::Body, extract::{Request, State}, http::{StatusCode, header}, middleware::Next, response::{IntoResponse, Response}
+    Extension, Json, extract::{Request, State}, http::{StatusCode}, middleware::Next, response::{IntoResponse, Response}
 };
 use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}, team_model::User, user_model::UserPrivate}, state::AppState};
+use crate::{models::{auth_model::{Claims, LoginRequest, ResetClaims}}, state::AppState};
 use std::fmt::Debug;
 
 const TOKEN_EXPIRATION_MINUTES: i64 = 30; //30 minutes for testing, can be changed to 60 or more for production

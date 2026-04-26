@@ -3,29 +3,27 @@ use std::sync::Arc;
 use axum::extract::{Path, State};
 use axum::http::{StatusCode};
 use axum::{Json};
+use crate::models::team_model::{Team};
 use crate::state::AppState;
 
-use crate::models::request_type_model::{RequestType};
-use crate::models::request_model::{Request, RequestInput, Status};
+use crate::models::request_model::{ Request, RequestInput, RequestType, Status};
 use sqlx;
 
 pub async fn fetch_requests(
     State(state): State<Arc<AppState>>,
 ) -> Json<Vec<Request>> {
 
-    let rows = sqlx::query!(
+    let rows: Vec<Request> = sqlx::query_as(
         r#"
         SELECT 
             r.id,
             r.user_id,
             r.reason,
             r.days,
-            r.status as "status: Status",
+            r.status,
             r.created_at,
-            rt.id AS rt_id,
-            rt.type AS rt_name
+            r.request_type
         FROM requests r
-        JOIN request_types rt ON rt.id = r.request_type_id
         ORDER BY r.id
         "#
     )
@@ -37,15 +35,12 @@ pub async fn fetch_requests(
         .into_iter()
         .map(|r| Request {
             id: r.id,
-            user: r.user_id,
+            user_id: r.user_id,
             reason: r.reason,
-            days: r.days.unwrap_or_default(),
+            days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: RequestType {
-                id: r.rt_id,
-                name: r.rt_name,
-            },
+            request_type: r.request_type
         })
         .collect();
 
@@ -58,24 +53,22 @@ pub async fn fetch_user_requests(
     Path(user_id): Path<i32>,
 ) -> Json<Vec<Request>> {
 
-    let rows = sqlx::query!(
+    let rows: Vec<Request> = sqlx::query_as(
         r#"
         SELECT 
             r.id,
             r.user_id,
             r.reason,
             r.days,
-            r.status as "status: Status",
+            r.status,
             r.created_at,
-            rt.id AS rt_id,
-            rt.type AS rt_name
+            r.request_type
         FROM requests r
-        JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.user_id = $1
         ORDER BY r.id
-        "#,
-        user_id
+        "#
     )
+    .bind(user_id)
     .fetch_all(&*state.db)
     .await
     .expect("Failed to fetch user requests");
@@ -84,15 +77,12 @@ pub async fn fetch_user_requests(
         .into_iter()
         .map(|r| Request {
             id: r.id,
-            user: r.user_id,
+            user_id: r.user_id,
             reason: r.reason,
-            days: r.days.unwrap_or_default(),
+            days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: RequestType {
-                id: r.rt_id,
-                name: r.rt_name,
-            },
+            request_type: r.request_type
         })
         .collect();
 
@@ -105,48 +95,39 @@ pub async fn fetch_team_requests(
     Path(team_id): Path<i32>,
 ) -> Result<Json<Vec<Request>>, (StatusCode, String)> {
 
-    let team = sqlx::query!(
-        r#"SELECT members FROM teams WHERE id = $1"#,
-        team_id
+    let team: Team = sqlx::query_as(
+        "SELECT id, team_name, description, leader_id, members, created_at FROM teams WHERE id = $1"
     )
-    .fetch_optional(&*state.db)
+    .bind(team_id)
+    .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    let Some(team) = team else {
-        return Err((StatusCode::NOT_FOUND, "Team not found".into()));
-    };
-
-    let members: Vec<serde_json::Value> = serde_json::from_value(team.members.unwrap_or(serde_json::json!([]))).unwrap_or_default();
-
-    if members.is_empty() {
-        return Ok(Json(vec![]));
-    }
-
-    let member_ids: Vec<i32> = members.iter().filter_map(|m| m.get("id").and_then(|v| v.as_i64()).map(|v| v as i32)).collect();
+    let member_ids: Vec<i32> = team.members.0
+    .iter()
+    .map(|user| user.id)
+    .collect();
 
     if member_ids.is_empty() {
         return Ok(Json(vec![]));
     }
 
-    let rows = sqlx::query!(
+    let rows: Vec<Request> = sqlx::query_as(
         r#"
         SELECT 
             r.id,
             r.user_id,
             r.reason,
             r.days,
-            r.status as "status: Status",
+            r.status,
             r.created_at,
-            rt.id AS rt_id,
-            rt.type AS rt_name
+            r.request_type
         FROM requests r
-        JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.user_id = ANY($1)
         ORDER BY r.id
-        "#,
-        &member_ids
+        "#
     )
+    .bind(&member_ids)
     .fetch_all(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -156,15 +137,12 @@ pub async fn fetch_team_requests(
         .into_iter()
         .map(|r| Request {
             id: r.id,
-            user: r.user_id,
+            user_id: r.user_id,
             reason: r.reason,
-            days: r.days.unwrap_or_default(),
+            days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: RequestType {
-                id: r.rt_id,
-                name: r.rt_name,
-            },
+            request_type: r.request_type
         })
         .collect();
 
@@ -177,42 +155,35 @@ pub async fn fetch_request(
     Path(request_id): Path<i32>,
 ) -> Result<Json<Request>, (StatusCode, String)> {
 
-    let row= sqlx::query!(
+    let r: Request= sqlx::query_as(
         r#"
         SELECT 
             r.id,
             r.user_id,
             r.reason,
             r.days,
-            r.status as "status: Status",
+            r.status,
             r.created_at,
-            rt.id AS rt_id,
-            rt.type AS rt_name
+            r.request_type
         FROM requests r
-        JOIN request_types rt ON rt.id = r.request_type_id
         WHERE r.id = $1
-        "#,
-        request_id
+        "#
     )
-    .fetch_optional(&*state.db)
+    .bind(request_id)
+    .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    let Some(r) = row else {
-        return Err((StatusCode::NOT_FOUND, "Request not found".into()));
-    };
+    let rtype: RequestType = r.request_type;
 
     let request = Request {
         id: r.id,
-        user: r.user_id,
+        user_id: r.user_id,
         reason: r.reason,
-        days: r.days.unwrap_or_default(),
+        days: r.days,
         status: r.status,
         created_at: r.created_at,
-        request_type: RequestType {
-            id: r.rt_id,
-            name: r.rt_name,
-        },
+        request_type: rtype
     };
 
     Ok(Json(request))
@@ -225,48 +196,37 @@ pub async fn add_request(
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
     // Insert request with default status = 'pending'
-    let row = sqlx::query!(
+    let row: Request = sqlx::query_as(
         r#"
-        INSERT INTO requests (user_id, request_type_id, reason, days, status)
+        INSERT INTO requests (user_id, request_type, reason, days, status)
         VALUES ($1, $2, $3, $4, 'Pending')
         RETURNING
             id,
             user_id,
             reason,
             days,
-            status as "status: Status",
+            status,
             created_at,
-            request_type_id
-        "#,
-        payload.user,
-        payload.request_type_id,
-        payload.reason,
-        payload.days.as_slice(),
-    )
+            request_type
+        "#)
+    .bind(payload.user)
+    .bind(payload.request_type)
+    .bind(payload.reason)
+    .bind(payload.days.as_slice())
     .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    // Fetch request type info
-    let rt = sqlx::query!(
-        r#"SELECT id, type FROM request_types WHERE id = $1"#,
-        row.request_type_id
-    )
-    .fetch_one(&*state.db)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let rtype: RequestType = row.request_type;
 
     let new_request = Request {
         id: row.id,
-        user: row.user_id,
+        user_id: row.user_id,
         reason: row.reason,
-        days: row.days.unwrap_or_default(),
+        days: row.days,
         status: row.status,
         created_at: row.created_at,
-        request_type: RequestType {
-            id: rt.id,
-            name: rt.r#type,
-        },
+        request_type: rtype
     };
 
     Ok((StatusCode::OK, Json(new_request)))
@@ -279,52 +239,39 @@ pub async fn accept_request(
     Path(request_id): Path<i32>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
-    // 1. Update the request status
-    let row = sqlx::query!(
+    let accepted = Status::Approved;
+
+    let r: Request = sqlx::query_as(
         r#"
         UPDATE requests
-        SET status = 'Accepted'
-        WHERE id = $1
+        SET status = $1
+        WHERE id = $2
         RETURNING
             id,
             user_id,
             reason,
             days,
-            status as "status: Status",
+            status,
             created_at,
-            request_type_id
-        "#,
-        request_id
+            request_type
+        "#
     )
-    .fetch_optional(&*state.db)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-
-    let Some(r) = row else {
-        return Err((StatusCode::NOT_FOUND, "Request not found".into()));
-    };
-
-    // 2. Fetch request type info
-    let rt = sqlx::query!(
-        r#"SELECT id, type FROM request_types WHERE id = $1"#,
-        r.request_type_id
-    )
+    .bind(accepted)
+    .bind(request_id)
     .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
+
     // 3. Build final response struct
     let request = Request {
         id: r.id,
-        user: r.user_id,
+        user_id: r.user_id,
         reason: r.reason,
-        days: r.days.unwrap_or_default(),
+        days: r.days,
         status: r.status,
         created_at: r.created_at,
-        request_type: RequestType {
-            id: rt.id,
-            name: rt.r#type,
-        },
+        request_type: r.request_type
     };
 
     Ok((StatusCode::OK, Json(request)))
@@ -336,52 +283,37 @@ pub async fn reject_request(
     Path(request_id): Path<i32>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
-    // 1. Update the request status to "Rejected"
-    let row = sqlx::query!(
-        r#"
+    let rejected = Status::Rejected;
+    let row: Request = sqlx::query_as(
+    r#"
         UPDATE requests
-        SET status = 'Rejected'
-        WHERE id = $1
+        SET status = $1
+        WHERE id = $2
         RETURNING
             id,
             user_id,
             reason,
             days,
-            status as "status: Status",
+            status,
             created_at,
-            request_type_id
-        "#,
-        request_id
-    )
-    .fetch_optional(&*state.db)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-
-    let Some(r) = row else {
-        return Err((StatusCode::NOT_FOUND, "Request not found".into()));
-    };
-
-    // 2. Fetch the request type
-    let rt = sqlx::query!(
-        r#"SELECT id, type FROM request_types WHERE id = $1"#,
-        r.request_type_id
-    )
+            request_type
+        "#)
+    .bind(rejected)
+    .bind(request_id)
     .fetch_one(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    // 3. Build the final response
+    let rtype: RequestType = row.request_type;
+
     let request = Request {
-        id: r.id,
-        user: r.user_id,
-        reason: r.reason,
-        days: r.days.unwrap_or_default(),
-        status: r.status,
-        created_at: r.created_at,
-        request_type: RequestType {
-            id: rt.id,
-            name: rt.r#type,
-        },
+        id: row.id,
+        user_id: row.user_id,
+        reason: row.reason,
+        days: row.days,
+        status: row.status,
+        created_at: row.created_at,
+        request_type: rtype,
     };
 
     Ok((StatusCode::OK, Json(request)))

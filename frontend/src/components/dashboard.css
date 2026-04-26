@@ -266,3 +266,217 @@
 .year-btn:active {
   transform: scale(0.9);
 }
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  font-family: 'Questrial', sans-serif;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+/* Modal Box */
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  font-family: 'Questrial', sans-serif;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: #121f3f;
+  font-size: 1.5rem;
+}
+
+/* List of days inside the modal */
+.selected-days-list {
+  background: #f8faff;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e0e6ed;
+    font-family: 'Questrial', sans-serif;
+
+}
+
+.overlay-month-group {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #444;
+    font-family: 'Questrial', sans-serif;
+}
+
+.modal-info {
+  margin-bottom: 25px;
+  font-size: 1rem;
+}
+
+/* Modal Buttons */
+.modal-actions {
+    font-family: 'Questrial', sans-serif;
+
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Questrial', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary {
+  font-family: 'Questrial', sans-serif;
+  background: #f1f3f9;
+  color: #555;
+}
+
+.btn-secondary:hover {
+  background: #e2e6f0;
+  font-family: 'Questrial', sans-serif;
+}
+
+.btn-primary {
+  background: #3b6dff;
+  font-family: 'Questrial', sans-serif;
+  color: white;
+}
+
+.btn-primary:hover {
+  font-family: 'Questrial', sans-serif;
+  background: #1d53d7;
+  transform: translateY(-1px);
+}
+
+/* Absence Modal specific adjustments */
+.absence-modal {
+  max-width: 550px;
+}
+
+.form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #121f3f;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #d8dce8;
+  background: #fbfdff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.modal-input:focus {
+  border-color: #4f7cff;
+  box-shadow: 0 0 0 4px rgba(79, 124, 255, 0.1);
+}
+
+.textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.file-input-wrapper {
+  padding: 10px;
+  background: #f8faff;
+  border: 1px dashed #cbd2e0;
+  border-radius: 12px;
+}
+
+.file-input-wrapper input[type="file"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Ensure the modal content aligns its header */
+.modal-content h2 {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+/* Completely hide the default browser button */
+.hidden-file-input {
+  display: none;
+}
+
+/* Style the label to look like your existing primary buttons */
+.custom-file-button {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #f1f3f9; /* Start with a neutral look */
+  color: #3b6dff;
+  border: 1.8px solid #3b6dff;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.custom-file-button:hover {
+  background: #3b6dff;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Style the filename feedback area */
+.file-name-badge {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #eef2ff;
+  border-radius: 8px;
+  color: #1d53d7;
+  font-size: 0.9rem;
+  width: fit-content;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: #ff5a6e;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 4px;
+}
+
+.remove-file:hover {
+  color: #d43f52;
+}
