@@ -92,6 +92,7 @@ function Dashboard() {
 
 
   const handleDateClick = (dateStr) => {
+    if (vacationMap[dateStr]) return;
     setSelectedDays(prev => 
       prev.includes(dateStr) 
         ? prev.filter(d => d !== dateStr) 
