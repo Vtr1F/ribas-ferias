@@ -5,21 +5,22 @@ import { RequestRoutes } from '../../api/requestRoutes';
 import { ROLES } from '../../constants/roles';
 import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
+import ConfirmModal from '../../components/confirm_modal'; // Ajusta o caminho se necessário
 import './team_requests.css';
 
 // --- Constants ---
 const TYPE_LABELS = {
-  Vacation:        'Férias',
-  SickLeave:       'Baixa Médica',
-  ParentalLeave:   'Licença Parental',
-  BereavementLeave:'Luto',
+  Vacation:         'Férias',
+  SickLeave:        'Baixa Médica',
+  ParentalLeave:    'Licença Parental',
+  BereavementLeave: 'Luto',
 };
 
 const TYPE_ICONS = {
-  Vacation:        '🌴',
-  SickLeave:       '🤒',
-  ParentalLeave:   '👶',
-  BereavementLeave:'🕊️',
+  Vacation:         '🌴',
+  SickLeave:        '🤒',
+  ParentalLeave:    '👶',
+  BereavementLeave: '🕊️',
 };
 
 const STATUS_CONFIG = {
@@ -63,11 +64,85 @@ function DaysList({ days }) {
     <div className="tr-days-list">
       {shown.map((d, i) => <span key={i} className="tr-day-chip">{d}</span>)}
       {!expanded && rest > 0 && (
-        <button className="tr-expand-btn" onClick={() => setExpanded(true)}>+{rest}</button>
+        <button className="tr-expand-btn" onClick={(e) => { e.stopPropagation(); setExpanded(true); }}>+{rest}</button>
       )}
       {expanded && rest > 0 && (
-        <button className="tr-expand-btn" onClick={() => setExpanded(false)}>menos</button>
+        <button className="tr-expand-btn" onClick={(e) => { e.stopPropagation(); setExpanded(false); }}>menos</button>
       )}
+    </div>
+  );
+}
+
+function RequestDetailOverlay({ req, member, onClose, onDecision, isLoading }) {
+  if (!req) return null;
+
+  return (
+    <div className="tr-modal-overlay" onClick={onClose}>
+      <div className="tr-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="tr-modal-header">
+          <h2>Detalhes do Pedido</h2>
+          <button className="tr-close-btn" onClick={onClose}>&times;</button>
+        </div>
+
+        <div className="tr-modal-body">
+          <div className="tr-detail-user">
+            <UserAvatar userId={req.user_id} name={member?.nome} size="large" />
+            <div className="tr-detail-user-info">
+              <h3>{member?.nome || `Utilizador #${req.user_id}`}</h3>
+              <p>{member?.email || 'Sem email disponível'}</p>
+            </div>
+          </div>
+
+          <div className="tr-detail-grid">
+            <div className="tr-detail-item">
+              <strong>Tipo:</strong>
+              <span> {TYPE_ICONS[req.request_type]} {TYPE_LABELS[req.request_type] || req.request_type}</span>
+            </div>
+            <div className="tr-detail-item">
+              <strong>Estado:</strong> <StatusBadge status={req.status} />
+            </div>
+            <div className="tr-detail-item">
+              <strong>Submetido em:</strong> {formatDate(req.created_at)}
+            </div>
+            <div className="tr-detail-item">
+              <strong>Duração:</strong> {req.days?.length} dias
+            </div>
+          </div>
+
+          <div className="tr-detail-days-section">
+            <strong>Dias Solicitados:</strong>
+            <div className="tr-detail-days-grid">
+              {req.days?.map(d => <span key={d} className="tr-day-chip">{formatDay(d)}</span>)}
+            </div>
+          </div>
+
+          {req.reason && (
+            <div className="tr-detail-reason">
+              <strong>Motivo / Justificação:</strong>
+              <p>{req.reason}</p>
+            </div>
+          )}
+        </div>
+
+        {req.status === 'Pending' && (
+          <div className="tr-modal-footer">
+            <button 
+              className="tr-btn-reject" 
+              disabled={isLoading}
+              onClick={() => onDecision(req.id, 'reject')}
+            >
+              {isLoading ? 'A processar...' : 'Rejeitar'}
+            </button>
+            <button 
+              className="tr-btn-approve" 
+              disabled={isLoading}
+              onClick={() => onDecision(req.id, 'accept')}
+            >
+              {isLoading ? 'A processar...' : 'Aprovar'}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -107,23 +182,13 @@ export default function TeamRequests() {
   const [collapsedTeams, setCollapsedTeams] = useState({});
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch]             = useState('');
+  
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
-  // Fetch teams on mount
-  useEffect(() => {
-    setLoadingTeams(true);
-    TeamRoutes.fetchTeams()
-      .then((data) => {
-        // Admin sees all teams; Leader sees only their own
-        const visible = isAdmin
-          ? data
-          : data.filter((t) => t.leader_id === currentUser?.sub);
-        setTeams(visible);
-        // Load requests for each visible team
-        fetchAllRequests(visible);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoadingTeams(false));
-  }, []);
+  // Estados para o Modal de Confirmação
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingDecision, setPendingDecision] = useState(null);
 
   const fetchAllRequests = async (teamList) => {
     setLoadingReqs(true);
@@ -143,6 +208,53 @@ export default function TeamRequests() {
     }
   };
 
+  const triggerDecision = (requestId, decisionType) => {
+    setPendingDecision({ id: requestId, type: decisionType });
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDecision = async () => {
+    if (!pendingDecision) return;
+    
+    const { id, type } = pendingDecision;
+    const actionText = type === 'accept' ? 'aprovar' : 'rejeitar';
+    
+    setIsActionLoading(true);
+    setShowConfirm(false);
+
+    try {
+      if (type === 'accept') {
+        await RequestRoutes.sendAcceptRequest(id);
+      } else {
+        await RequestRoutes.sendRejectRequest(id);
+      }
+      
+      await fetchAllRequests(teams); 
+      setSelectedRequest(null);
+    } catch (err) {
+      alert(`Erro ao ${actionText} o pedido. Por favor, tente novamente.`);
+      console.error(err);
+    } finally {
+      setIsActionLoading(false);
+      setPendingDecision(null);
+    }
+  };
+
+  // Fetch teams on mount
+  useEffect(() => {
+    setLoadingTeams(true);
+    TeamRoutes.fetchTeams()
+      .then((data) => {
+        const visible = isAdmin
+          ? data
+          : data.filter((t) => t.leader_id === currentUser?.sub);
+        setTeams(visible);
+        fetchAllRequests(visible);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoadingTeams(false));
+  }, []);
+
   // Build member lookup map per team
   const memberMapByTeam = useMemo(() => {
     const result = {};
@@ -161,7 +273,7 @@ export default function TeamRequests() {
   const stats = {
     total:    allRequests.length,
     pending:  allRequests.filter((r) => r.status === 'Pending').length,
-    approved: allRequests.filter((r) => r.status === 'Approved').length,
+    approved: allRequests.filter((r) => r.status === 'Approved' || r.status === 'Accepted').length,
     rejected: allRequests.filter((r) => r.status === 'Rejected').length,
   };
 
@@ -196,7 +308,6 @@ export default function TeamRequests() {
         <h1>Pedidos por Equipa</h1>
       </div>
 
-      {/* Stats */}
       <div className="tr-stats-grid">
         {[
           { label: 'Total',      value: stats.total,    mod: 'blue'   },
@@ -212,8 +323,6 @@ export default function TeamRequests() {
       </div>
 
       <div className="users-container">
-
-        {/* Filters */}
         <div className="users-header">
           <div className="search-wrapper">
             <span className="search-icon">
@@ -251,9 +360,8 @@ export default function TeamRequests() {
           )}
         </div>
 
-        {/* Content */}
         <div className="users-list">
-          {loading ? (
+          {loading && !teams.length ? (
             <div className="tr-state-center">
               <div className="tr-spinner" />
               <p>A carregar pedidos...</p>
@@ -271,7 +379,6 @@ export default function TeamRequests() {
 
               return (
                 <div key={team.id} className="team-group">
-                  {/* Team header */}
                   <div className="team-header">
                     <div className="team-header-left" onClick={() => toggleTeam(team.id)}>
                       <span className="team-toggle">{collapsed ? '▶' : '▼'}</span>
@@ -288,10 +395,8 @@ export default function TeamRequests() {
                     </div>
                   </div>
 
-                  {/* Requests list */}
                   {!collapsed && (
                     <div className="tr-requests-container">
-                      {/* Table head */}
                       {filtered.length > 0 && (
                         <div className="tr-table-head">
                           <span>Colaborador</span>
@@ -312,11 +417,16 @@ export default function TeamRequests() {
                         </div>
                       ) : (
                         filtered.map((req) => (
-                          <RequestRow
-                            key={req.id}
-                            req={req}
-                            memberMap={memberMapByTeam[team.id] || {}}
-                          />
+                          <div 
+                            key={req.id} 
+                            className="tr-row-clickable" 
+                            onClick={() => setSelectedRequest({ req, member: memberMapByTeam[team.id]?.[req.user_id] })}
+                          >
+                            <RequestRow
+                              req={req}
+                              memberMap={memberMapByTeam[team.id] || {}}
+                            />
+                          </div>
                         ))
                       )}
                     </div>
@@ -327,6 +437,29 @@ export default function TeamRequests() {
           )}
         </div>
       </div>
+
+      {/* MODAL DE DETALHES */}
+      {selectedRequest && (
+        <RequestDetailOverlay 
+          req={selectedRequest.req}
+          member={selectedRequest.member}
+          isLoading={isActionLoading}
+          onClose={() => setSelectedRequest(null)}
+          onDecision={triggerDecision}
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        title={pendingDecision?.type === 'accept' ? "Aprovar Pedido" : "Rejeitar Pedido"}
+        message={`Tem a certeza que deseja ${pendingDecision?.type === 'accept' ? 'aprovar' : 'rejeitar'} este pedido?`}
+        onConfirm={handleConfirmDecision}
+        onCancel={() => {
+          setShowConfirm(false);
+          setPendingDecision(null);
+        }}
+        confirmClass={pendingDecision?.type === 'accept' ? 'btn-success' : 'btn-danger'}
+      />
     </div>
   );
 }
