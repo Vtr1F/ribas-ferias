@@ -8,6 +8,7 @@ use crate::state::AppState;
 
 use crate::models::request_model::{ Request, RequestInput, RequestType, Status};
 use crate::handlers::user_handler::{remove_user_dias_disponiveis, add_user_dias_disponiveis};
+use crate::handlers::notification_handler::notify_leader_and_admins;
 use sqlx;
 
 pub async fn fetch_requests(
@@ -235,8 +236,23 @@ pub async fn add_request(
         days: row.days,
         status: row.status,
         created_at: row.created_at,
-        request_type: rtype
+        request_type: rtype.clone()
     };
+
+    let request_type_str = match rtype.clone() {
+        RequestType::Vacation => "Férias",
+        RequestType::SickLeave => "Doença",
+        RequestType::ParentalLeave => "Parental",
+        RequestType::BereavementLeave => "Falecimento",
+        RequestType::Other => "Outro",
+    };
+
+    let _ = notify_leader_and_admins(
+        state.clone(),
+        row.user_id,
+        row.id,
+        request_type_str,
+    ).await;
 
     Ok((StatusCode::OK, Json(new_request)))
 }
