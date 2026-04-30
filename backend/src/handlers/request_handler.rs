@@ -205,8 +205,8 @@ pub async fn fetch_request(
 
 pub async fn add_request(
     State(state): State<Arc<AppState>>,
-    Json(payload): Json<RequestInput>,
     Extension(claims): Extension<Claims>,
+    Json(payload): Json<RequestInput>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
    let row: Request = if payload.file_path.is_some() {

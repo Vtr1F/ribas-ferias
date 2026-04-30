@@ -53,6 +53,12 @@ function StatusBadge({ status }) {
   );
 }
 
+function Download(filePath) {
+  // This turns "uploads/1_2871.pdf" into "1_2871.pdf"
+  const fileName = filePath.split(/[\\/]/).pop(); 
+  RequestRoutes.downloadFile(fileName);
+}
+
 function DaysList({ days }) {
   const [expanded, setExpanded] = useState(false);
   const MAX = 2;
@@ -106,6 +112,16 @@ function RequestDetailOverlay({ req, member, onClose, onDecision, isLoading }) {
             </div>
             <div className="tr-detail-item">
               <strong>Duração:</strong> {req.days?.length} dias
+            </div>
+            <div className="tr-detail-item">
+              {req.file_path && (
+            <button 
+              className="tr-btn-approve" 
+              disabled={isLoading}
+              onClick={() => Download(req.file_path)}
+            >
+              {isLoading ? 'A processar...' : 'Download'}
+            </button>) }
             </div>
           </div>
 

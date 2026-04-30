@@ -220,15 +220,6 @@ function Dashboard() {
     } finally {
       setIsSubmitting(false);
     }
-
-    await RequestRoutes.addRequest(data);
-    await fetchData(user.sub);
-
-    setShowAbsenceOverlay(false);
-    // Reset form
-    setReason('');
-    setAbsenceType(ABSENCE.SICK);
-    setFile(null);
   };
 
   return (

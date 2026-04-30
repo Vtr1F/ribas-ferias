@@ -72,6 +72,19 @@ export const apiClient = {
 
       const contentType = response.headers.get("content-type");
 
+      if (contentType && (contentType.includes("application/pdf") || contentType.includes("octet-stream"))) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = endpoint.split('/').pop(); // Suggest the filename
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        return true;
+      }
+
       if (contentType && contentType.includes("application/json")) {
         return await response.json();
       }
