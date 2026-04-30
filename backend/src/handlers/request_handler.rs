@@ -1,11 +1,15 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use axum::extract::{Path, State};
 use axum::http::{StatusCode};
-use axum::{Json};
+use axum::{Extension, Json};
+use bytes::Bytes;
+use serde_json::json;
+use crate::models::auth_model::Claims;
 use crate::models::team_model::{Team};
 use crate::state::AppState;
-
+use tokio::fs;
 use crate::models::request_model::{ Request, RequestInput, RequestType, Status};
 use crate::handlers::user_handler::{remove_user_dias_disponiveis, add_user_dias_disponiveis};
 use sqlx;
@@ -23,7 +27,8 @@ pub async fn fetch_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         ORDER BY r.id
         "#
@@ -41,7 +46,8 @@ pub async fn fetch_requests(
             days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: r.request_type
+            request_type: r.request_type,
+            file_path: r.file_path
         })
         .collect();
 
@@ -63,7 +69,8 @@ pub async fn fetch_user_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.user_id = $1
         ORDER BY r.id
@@ -83,7 +90,8 @@ pub async fn fetch_user_requests(
             days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: r.request_type
+            request_type: r.request_type,
+            file_path: r.file_path
         })
         .collect();
 
@@ -122,7 +130,8 @@ pub async fn fetch_team_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.user_id = ANY($1)
         ORDER BY r.id
@@ -143,7 +152,8 @@ pub async fn fetch_team_requests(
             days: r.days,
             status: r.status,
             created_at: r.created_at,
-            request_type: r.request_type
+            request_type: r.request_type,
+            file_path: r.file_path
         })
         .collect();
 
@@ -165,7 +175,8 @@ pub async fn fetch_request(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.id = $1
         "#
@@ -184,7 +195,8 @@ pub async fn fetch_request(
         days: r.days,
         status: r.status,
         created_at: r.created_at,
-        request_type: rtype
+        request_type: rtype,
+        file_path: r.file_path
     };
 
     Ok(Json(request))
@@ -194,14 +206,44 @@ pub async fn fetch_request(
 pub async fn add_request(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<RequestInput>,
+    Extension(claims): Extension<Claims>,
 ) -> Result<(StatusCode, Json<Request>), (StatusCode, String)> {
 
-    
+   let row: Request = if payload.file_path.is_some() {
+    let upload_dir = "uploads";
+    let user_id = claims.sub;
 
-    // Insert request with default status = 'pending'
-    let row: Request = sqlx::query_as(
-        r#"
-        INSERT INTO requests (user_id, request_type, reason, days, status)
+    if let Err(e) = fs::create_dir_all(upload_dir).await {
+        return Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string()));
+    }
+    
+    // Note: Debug formatting {:?} in a filename is risky, 
+    // better to use .as_deref() or similar if file_path is Option<String>
+    let path = std::path::Path::new(upload_dir)
+        .join(format!("{}_{}", user_id, payload.file_path.as_deref().unwrap_or("file")));
+
+    sqlx::query_as(r#" 
+        INSERT INTO requests (user_id, request_type, reason, days, status, file_path)
+        VALUES ($1, $2, $3, $4, 'Pending', $5)
+        RETURNING
+            id,
+            user_id,
+            reason,
+            days,
+            status,
+            created_at,
+            request_type,
+            file_path "#)
+        .bind(payload.user)
+        .bind(payload.request_type)
+        .bind(payload.reason)
+        .bind(payload.days.as_slice())
+        .bind(path.to_str())
+        .fetch_one(&*state.db)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))? // Returns Request
+    } else {
+        sqlx::query_as(r#" INSERT INTO requests (user_id, request_type, reason, days, status)
         VALUES ($1, $2, $3, $4, 'Pending')
         RETURNING
             id,
@@ -210,15 +252,16 @@ pub async fn add_request(
             days,
             status,
             created_at,
-            request_type
-        "#)
-    .bind(payload.user)
-    .bind(payload.request_type)
-    .bind(payload.reason)
-    .bind(payload.days.as_slice())
-    .fetch_one(&*state.db)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+            request_type,
+            file_path "#)
+            .bind(payload.user)
+            .bind(payload.request_type)
+            .bind(payload.reason)
+            .bind(payload.days.as_slice())
+            .fetch_one(&*state.db)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))? // Returns Request
+    };
 
     let rtype: RequestType = row.request_type;
 
@@ -235,13 +278,12 @@ pub async fn add_request(
         days: row.days,
         status: row.status,
         created_at: row.created_at,
-        request_type: rtype
+        request_type: rtype,
+        file_path: row.file_path
     };
 
     Ok((StatusCode::OK, Json(new_request)))
 }
-
-
 
 pub async fn accept_request(
     State(state): State<Arc<AppState>>,
@@ -280,7 +322,8 @@ pub async fn accept_request(
         days: r.days,
         status: r.status,
         created_at: r.created_at,
-        request_type: r.request_type
+        request_type: r.request_type,
+        file_path: None
     };
 
     Ok((StatusCode::OK, Json(request)))
@@ -329,6 +372,7 @@ pub async fn reject_request(
         status: row.status,
         created_at: row.created_at,
         request_type: rtype,
+        file_path: None
     };
 
     Ok((StatusCode::OK, Json(request)))
@@ -349,7 +393,8 @@ pub async fn get_conflicting_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.id = $1
         "#

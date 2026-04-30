@@ -12,7 +12,8 @@ pub struct Request {
     pub reason: Option<String>,
     pub days: Vec<i32>,
     pub status: Status, //Every request should be created with pending
-    pub created_at: DateTime<Utc>
+    pub created_at: DateTime<Utc>,
+    pub file_path: Option<String>
 }
 
 #[derive(Deserialize)]
@@ -21,6 +22,7 @@ pub struct RequestInput {
     pub request_type: RequestType,
     pub reason: Option<String>,
     pub days: Vec<i32>,
+    pub file_path: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Type, Debug, Clone)]

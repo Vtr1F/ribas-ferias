@@ -192,7 +192,8 @@ function Dashboard() {
         user: user.sub,
         reason: reason.trim(),
         request_type: absenceType,
-        days: selectedDays.map(day => parseInt(day, 10))
+        days: selectedDays.map(day => parseInt(day, 10)),
+        file_path: (file ? file.name : null)
       }
 
       await RequestRoutes.addRequest(data);
@@ -204,6 +205,7 @@ function Dashboard() {
       setReason('');
       setAbsenceType(ABSENCE.SICK);
       setFile(null);
+      setSelectedDays([]);
     } catch (err) {
       alert("Erro ao enviar ausência.");
     } finally {
@@ -211,7 +213,7 @@ function Dashboard() {
     }
 
     await RequestRoutes.addRequest(data);
-    await fetchData(user.sub || user.id);
+    await fetchData(user.sub);
 
     setShowAbsenceOverlay(false);
     // Reset form
