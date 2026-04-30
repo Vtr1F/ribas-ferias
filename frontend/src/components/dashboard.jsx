@@ -133,7 +133,7 @@ function Dashboard() {
 
   const handleRequestVacation = () => {
   if (selectedDays.length === 0) {
-    setError("Selecione dias primeiro.");
+    setError("Selecione os dias no calendário primeiro");
     setTimeout(() => setError(''), 6000);
     return;
   }
@@ -174,6 +174,13 @@ function Dashboard() {
     }
   };
   const handleAbscence = () => {
+    // Validação para garantir que existem dias selecionados antes de abrir o modal
+    if (selectedDays.length === 0) {
+      setError("Selecione os dias no calendário primeiro");
+      setTimeout(() => setError(''), 4000); // Remove o erro após 4 segundos
+      return;
+    }
+
     setShowAbsenceOverlay(true);
   };
 
@@ -184,10 +191,12 @@ function Dashboard() {
   const submitAbsence = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
     try {
       setIsSubmitting(true);
-      // Use FormData for file uploads
-      if (file) RequestRoutes.uploadFormFile(file);
+      
+      if (file) await RequestRoutes.uploadFormFile(file);
+
       const data = {
         user: user.sub,
         reason: reason.trim(),
@@ -197,19 +206,19 @@ function Dashboard() {
       }
 
       await RequestRoutes.addRequest(data);
-
       await fetchData(user.sub || user.id);
 
+      // Fechar modal e resetar estados
       setShowAbsenceOverlay(false);
-      // Reset form
       setReason('');
       setAbsenceType(ABSENCE.SICK);
       setFile(null);
       setSelectedDays([]);
+
     } catch (err) {
-      alert("Erro ao enviar ausência.");
+      alert("Erro ao enviar pedido de ausência.");
     } finally {
-      setIsSubmitting(false); // Reset cooldown
+      setIsSubmitting(false);
     }
 
     await RequestRoutes.addRequest(data);

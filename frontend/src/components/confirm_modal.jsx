@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './confirm_modal.css';
 
-const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
+const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmClass }) => {
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -21,7 +21,12 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel }) => {
           <button className="cancel-btn" onClick={onCancel} disabled={loading}>
             Cancelar
           </button>
-          <button className="confirm-btn" onClick={handleConfirm} disabled={loading}>
+          <button 
+            /* Aqui usamos a classe dinâmica que vem do TeamRequests */
+            className={`confirm-btn ${confirmClass || ''}`} 
+            onClick={handleConfirm} 
+            disabled={loading}
+          >
             {loading ? 'A processar...' : 'Confirmar'}
           </button>
         </div>
