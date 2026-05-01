@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useAuth } from '../../context/auth-context';
+import { useSearchParams } from 'react-router-dom';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { RequestRoutes } from '../../api/requestRoutes';
 import { ROLES } from '../../constants/roles';
@@ -15,6 +16,7 @@ import RequestRow from '../../components/request_row';
 // --- Main Page ---
 export default function TeamRequests() {
   const { user: currentUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin  = currentUser?.role === ROLES.ADMIN;
   const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
 
@@ -26,13 +28,14 @@ export default function TeamRequests() {
   const [collapsedTeams, setCollapsedTeams] = useState({});
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch]             = useState('');
-  
+
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
   // Estados para o Modal de Confirmação
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDecision, setPendingDecision] = useState(null);
+  const fetchedRequestIdRef = useRef(null);
 
   const fetchAllRequests = async (teamList) => {
     setLoadingReqs(true);
@@ -98,6 +101,33 @@ export default function TeamRequests() {
       .catch((err) => setError(err.message))
       .finally(() => setLoadingTeams(false));
   }, []);
+
+  // Handle URL parameter for opening request overlay from notification
+  useEffect(() => {
+    const requestId = searchParams.get('request');
+    if (requestId && requestId !== fetchedRequestIdRef.current && teams.length > 0) {
+      fetchedRequestIdRef.current = requestId;
+      // Fetch the specific request details
+      RequestRoutes.fetchRequest(requestId)
+        .then((req) => {
+          if (req) {
+            // Find member info from loaded teams
+            const teamData = teams.find(t => 
+              (t.members || []).some(m => m.id === req.user_id)
+            );
+            const member = teamData?.members?.find(m => m.id === req.user_id);
+            setSelectedRequest({ req, member });
+          }
+          // Clean up URL parameter
+          setSearchParams({});
+        })
+        .catch((err) => {
+          console.error('Failed to fetch request from notification', err);
+          setSearchParams({});
+          fetchedRequestIdRef.current = null; // Reset on error
+        });
+    }
+  }, [searchParams, teams]);
 
   // Build member lookup map per team
   const memberMapByTeam = useMemo(() => {

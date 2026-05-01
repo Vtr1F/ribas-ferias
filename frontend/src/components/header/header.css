@@ -80,6 +80,16 @@
   transition: background 0.2s;
 }
 
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-text {
+  flex: 1;
+}
+
 .notification-item:hover {
   background: #f9f9f9;
 }

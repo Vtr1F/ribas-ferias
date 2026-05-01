@@ -35,7 +35,8 @@ function Header() {
     if (!showNotifs && userId) {
       try {
         const notifs = await fetchNotifications(userId);
-        setNotifications(notifs);
+        // Only show unread notifications (lida === false) and not from current user
+        setNotifications(notifs.filter(notif => !notif.lida && String(notif.request_user_id) !== String(userId)));
       } catch (err) {
         console.error('Failed to fetch notifications', err);
       }
@@ -84,10 +85,21 @@ function Header() {
                     className={`notification-item ${!notif.lida ? 'unread' : ''}`}
                     onClick={() => handleNotificationClick(notif)}
                   >
-                    <p>{notif.mensagem}</p>
-                    <span className="notification-date">
-                      {new Date(notif.created_at).toLocaleDateString('pt-PT')}
-                    </span>
+                    <div className="notification-content">
+                      {notif.request_user_id && String(notif.request_user_id) !== String(userId) && (
+                        <UserAvatar 
+                          userId={notif.request_user_id} 
+                          name={notif.request_user_nome} 
+                          size="small" 
+                        />
+                      )}
+                      <div className="notification-text">
+                        <p>{notif.mensagem}</p>
+                        <span className="notification-date">
+                          {new Date(notif.created_at).toLocaleDateString('pt-PT')}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))
               )}

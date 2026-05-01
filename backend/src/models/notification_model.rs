@@ -9,7 +9,10 @@ pub struct Notification {
     pub mensagem: String,
     pub lida: bool,
     pub link_pedido: Option<i32>,
-    pub created_at: DateTime<Utc>
+    pub created_at: DateTime<Utc>,
+    // Request creator info (from JOIN)
+    pub request_user_id: Option<i32>,
+    pub request_user_nome: Option<String>,
 }
 
 #[derive(Deserialize)]

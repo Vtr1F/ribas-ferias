@@ -14,10 +14,13 @@ pub async fn fetch_notifications(
 ) -> Result<Json<Vec<Notification>>, (StatusCode, String)> {
     let rows: Vec<Notification> = sqlx::query_as(
         r#"
-        SELECT id, user_id, mensagem, lida, link_pedido, created_at
-        FROM notifications
-        WHERE user_id = $1
-        ORDER BY created_at DESC
+        SELECT n.id, n.user_id, n.mensagem, n.lida, n.link_pedido, n.created_at,
+               r.user_id as request_user_id, u.nome as request_user_nome
+        FROM notifications n
+        LEFT JOIN requests r ON n.link_pedido = r.id
+        LEFT JOIN users u ON r.user_id = u.id
+        WHERE n.user_id = $1
+        ORDER BY n.created_at DESC
         "#
     )
     .bind(user_id)
@@ -39,10 +42,13 @@ pub async fn fetch_unread_notifications(
 ) -> Result<Json<Vec<Notification>>, (StatusCode, String)> {
     let rows: Vec<Notification> = sqlx::query_as(
         r#"
-        SELECT id, user_id, mensagem, lida, link_pedido, created_at
-        FROM notifications
-        WHERE user_id = $1 AND lida = FALSE
-        ORDER BY created_at DESC
+        SELECT n.id, n.user_id, n.mensagem, n.lida, n.link_pedido, n.created_at,
+               r.user_id as request_user_id, u.nome as request_user_nome
+        FROM notifications n
+        LEFT JOIN requests r ON n.link_pedido = r.id
+        LEFT JOIN users u ON r.user_id = u.id
+        WHERE n.user_id = $1 AND n.lida = FALSE
+        ORDER BY n.created_at DESC
         "#
     )
     .bind(user_id)
@@ -59,7 +65,11 @@ pub async fn count_unread_notifications(
 ) -> Result<Json<i32>, (StatusCode, String)> {
     let rows = sqlx::query(
         r#"
-        SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND lida = FALSE
+        SELECT COUNT(*) as count 
+        FROM notifications n
+        LEFT JOIN requests r ON n.link_pedido = r.id
+        WHERE n.user_id = $1 AND n.lida = FALSE 
+        AND (r.user_id IS NULL OR r.user_id != $1)
         "#
     )
     .bind(user_id)
@@ -152,10 +162,10 @@ pub async fn notify_leader_and_admins(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let leader_id = user.1;
-    let team_id = user.2.unwrap_or(1);
 
+    // Notify leader (if exists and is not the request creator)
     if let Some(leader) = leader_id {
-        if leader != 0 {
+        if leader != 0 && leader != request_user_id {
             let leader_notif = NotificationInput {
                 user_id: leader,
                 mensagem: format!("Novo pedido de {} pendente para aprovação", request_type),
@@ -165,9 +175,11 @@ pub async fn notify_leader_and_admins(
         }
     }
 
+    // Notify all admins except the request creator
     let admin_ids: Vec<(i32,)> = sqlx::query_as(
-        "SELECT id FROM users WHERE role_id = 1"
+        "SELECT id FROM users WHERE role_id = 1 AND id != $1"
     )
+    .bind(request_user_id)
     .fetch_all(&*state.db)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
