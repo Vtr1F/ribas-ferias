@@ -1,5 +1,9 @@
 use std::path::PathBuf;
 use std::sync::Arc;
+use axum::body::Body;
+use axum::extract::Path;
+use axum::http::{Response, header};
+use axum::response::IntoResponse;
 use axum::{
     extract::State,
     http::StatusCode,
@@ -67,4 +71,41 @@ pub async fn upload_file(
             Err(StatusCode::INTERNAL_SERVER_ERROR)
         }
     }
+}
+
+pub async fn download_file(
+    Extension(claims): Extension<Claims>,
+    Path(filename): Path<String>, // The filename sent from the frontend
+) -> Result<impl IntoResponse, StatusCode> {
+    
+    let upload_dir = "uploads";
+
+    // 1. Reconstruct the exact path used during upload
+    // Note: In a production app, you'd usually pull this path from the DB 
+    // using a Request ID to ensure the user is authorized for THIS specific file.
+    let path = std::path::Path::new(upload_dir)
+        .join(format!("{}", filename));
+
+    // Check if the file exists and read it
+    let content = match fs::read(&path).await {
+        Ok(bytes) => bytes,
+        Err(_) => return Err(StatusCode::NOT_FOUND), // File not found or permission issue
+    };
+
+    // Guess the MIME type (optional but recommended)
+    // You can use the 'mime_guess' crate or hardcode it if you only allow PDFs
+    let content_type = "application/octet-stream"; 
+
+    let response = Response::builder()
+        .header(header::CONTENT_TYPE, content_type)
+        // 'attachment' forces the browser to download. 
+        // 'filename' is what the user will see in their "Downloads" folder.
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"{}\"", filename),
+        )
+        .body(Body::from(content))
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(response)
 }

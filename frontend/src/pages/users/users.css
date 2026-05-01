@@ -472,3 +472,115 @@
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+.team-filter-wrapper {
+  position: relative;
+  margin-left: 10px;
+}
+
+.team-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-family: 'Questrial', sans-serif;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+}
+
+.team-filter-btn:hover {
+  background: #f8f8f8;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+.team-filter-btn.active {
+  background: #4a90d9;
+  color: #fff;
+}
+
+.filter-count {
+  background: #fff;
+  color: #4a90d9;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.team-filter-btn.active .filter-count {
+  background: #fff;
+  color: #4a90d9;
+}
+
+.team-filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 220px;
+  animation: filterDropIn 0.2s ease;
+}
+
+@keyframes filterDropIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.team-filter-list {
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.team-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.team-filter-option:hover {
+  background: #f5f5f5;
+}
+
+.team-filter-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4a90d9;
+  cursor: pointer;
+}
+
+.team-filter-option span {
+  font-size: 14px;
+  color: #333;
+}
+
+.clear-filters-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid #eee;
+  background: none;
+  color: #4a90d9;
+  font-size: 13px;
+  font-family: 'Questrial', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clear-filters-btn:hover {
+  background: #f5f5f5;
+}

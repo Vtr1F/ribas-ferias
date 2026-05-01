@@ -4,6 +4,7 @@ pub mod role_routes;
 pub mod team_routes;
 pub mod user_routes;
 pub mod upload_routes;
+pub mod notification_routes;
 
 use std::sync::Arc;
 
@@ -25,6 +26,7 @@ pub fn create_routes(state: Arc<AppState>) -> Router<()> {
         .nest("/roles", role_routes::routes())
         .nest("/requests", request_routes::routes())
         .nest("/team", team_routes::routes())
+        .nest("/notifications", notification_routes::routes())
         .nest("/upload", upload_routes::routes())
         .layer(middleware::from_fn_with_state(
             state.jwt_secret.clone(),

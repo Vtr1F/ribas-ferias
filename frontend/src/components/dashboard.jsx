@@ -19,6 +19,7 @@ function Dashboard() {
   const [reason, setReason] = useState('');
   const [absenceType, setAbsenceType] = useState(ABSENCE.SICK);
   const [file, setFile] = useState(null);
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- NEW STATE FOR MODAL ---
@@ -38,13 +39,16 @@ function Dashboard() {
 
   useEffect(() => {
     if (user?.sub || user?.id) {
-      fetchData(user.sub || user.id);
+      const userId = user.sub || user.id;
+      fetchData(userId);
+      const interval = setInterval(() => fetchData(userId), 30000);
+      return () => clearInterval(interval);
     }
   }, [user]);
 
   const fetchData = async (userId) => {
     try {
-      setLoading(true);
+      if (!requests) setLoading(true);
       const [requestsData, userData] = await Promise.all([
         RequestRoutes.fetchUserRequest(userId),
         UserRoutes.fetchUser(userId)
@@ -58,28 +62,37 @@ function Dashboard() {
     }
   };
 
-  const vacationMap = useMemo(() => {
+  const { vacationMap, usedDaysCount } = useMemo(() => {
     const map = {};
-    if (!requests) return map;
+    let usedCount = 0;
+    if (!requests) return { vacationMap: map, usedDaysCount: 0 };
 
     const requestsArray = Array.isArray(requests) ? requests : [requests];
 
     requestsArray.forEach(req => {
       if (req.days && Array.isArray(req.days)) {
         req.days.forEach(dayStr => {
-          // Now storing an object with both status and type
           map[String(dayStr)] = {
             status: req.status,
-            type: req.request_type,
-            reason: req.reason
-          }; 
+            type: req.request_type
+          };
+
+          const status = req.status?.toLowerCase();
+          
+          // AGORA: Conta QUALQUER tipo de pedido (Vacation, Parental, etc.)
+          // que esteja Approved ou Pending
+          if (status === "approved" || status === "accepted" || status === "pending") {
+            usedCount++;
+          }
         });
       }
     });
-    return map;
+    return { vacationMap: map, usedDaysCount: usedCount };
   }, [requests]);
 
+
   const handleDateClick = (dateStr) => {
+    if (vacationMap[dateStr]) return;
     setSelectedDays(prev => 
       prev.includes(dateStr) 
         ? prev.filter(d => d !== dateStr) 
@@ -119,14 +132,23 @@ function Dashboard() {
   }, [selectedDays]);
 
   const handleRequestVacation = () => {
-    if (selectedDays.length === 0) {
-        alert("Por favor, selecione pelo menos um dia no calendário.");
-        return;
-    }
-    setShowOverlay(true);
-  };
+  if (selectedDays.length === 0) {
+    setError("Selecione os dias no calendário primeiro");
+    setTimeout(() => setError(''), 6000);
+    return;
+  }
+
+  if (selectedDays.length > vacationDays) {
+    setError(`Limite excedido! Só tem ${vacationDays} dias disponíveis.`);
+    setTimeout(() => setError(''), 4000);
+    return;
+  }
+
+  setShowOverlay(true);
+};
 
   const confirmRequest = async () => {
+
     if (isSubmitting) return;
 
     try {
@@ -152,6 +174,13 @@ function Dashboard() {
     }
   };
   const handleAbscence = () => {
+    // Validação para garantir que existem dias selecionados antes de abrir o modal
+    if (selectedDays.length === 0) {
+      setError("Selecione os dias no calendário primeiro");
+      setTimeout(() => setError(''), 4000); // Remove o erro após 4 segundos
+      return;
+    }
+
     setShowAbsenceOverlay(true);
   };
 
@@ -162,35 +191,51 @@ function Dashboard() {
   const submitAbsence = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
     try {
       setIsSubmitting(true);
-      // Use FormData for file uploads
-      if (file) RequestRoutes.uploadFormFile(file);
+      
+      if (file) await RequestRoutes.uploadFormFile(file);
+
       const data = {
         user: user.sub,
         reason: reason.trim(),
         request_type: absenceType,
-        days: selectedDays.map(day => parseInt(day, 10))
+        days: selectedDays.map(day => parseInt(day, 10)),
+        file_path: (file ? file.name : null)
       }
 
       await RequestRoutes.addRequest(data);
-
       await fetchData(user.sub || user.id);
 
+      // Fechar modal e resetar estados
       setShowAbsenceOverlay(false);
-      // Reset form
       setReason('');
       setAbsenceType(ABSENCE.SICK);
       setFile(null);
+      setSelectedDays([]);
+
     } catch (err) {
-      alert("Erro ao enviar ausência.");
+      alert("Erro ao enviar pedido de ausência.");
     } finally {
-      setIsSubmitting(false); // Reset cooldown
+      setIsSubmitting(false);
     }
   };
 
   return (
     <main className="dashboard-container">
+      {/* Pop-up de Erro com Classes CSS */}
+      {error && (
+        <div className="error-popup-container">
+          <span>⚠️ {error}</span>
+          <button 
+            className="error-popup-close" 
+            onClick={() => setError('')}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <Header />
       
       {/* --- OVERLAY MODAL --- */}
@@ -345,6 +390,6 @@ function Dashboard() {
       </footer>
     </main>
   );
-}
 
+}
 export default Dashboard;

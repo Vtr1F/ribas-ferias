@@ -6,3 +6,4 @@ pub mod auth_handler;
 pub mod password_reset_handler;
 pub mod image_handler;
 pub mod file_handler;
+pub mod notification_handler;

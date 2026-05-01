@@ -31,9 +31,22 @@ export const RequestRoutes = {
     return apiClient.request(`/api/requests/${id}/reject`,`GET`);
   },
 
+  fetchConflictingRequests: (id) => {
+    return apiClient.request(`/api/requests/${id}/conflicts`,`GET`);
+  },
+
+  fetchAllConflictingRequests: (id) => {
+    return apiClient.request(`/api/requests/conflicts/all`,`GET`);
+  },
+
+
   uploadFormFile: (file) => {
     const formData = new FormData();
     formData.append('file', file);
     return apiClient.request(`/api/upload/files`, `POST`, formData, true);
+  },
+
+  downloadFile: (file) => {
+    return apiClient.request(`/api/upload/files/${file}`, `GET`);
   }
 };

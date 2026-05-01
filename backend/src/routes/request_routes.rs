@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{routing::get, Router};
 
 use crate::{
-    handlers::request_handler::{self, fetch_request, fetch_team_requests, fetch_user_requests},
+    handlers::request_handler::{self, fetch_request, fetch_team_requests, fetch_user_requests, get_conflicting_requests, get_all_conflicting_requests},
     state::AppState,
 };
 
@@ -17,4 +17,6 @@ pub fn routes() -> Router<Arc<AppState>> {
         .route("/team/{id}", get(fetch_team_requests))
         .route("/{id}/accept", get(request_handler::accept_request))
         .route("/{id}/reject", get(request_handler::reject_request))
+        .route("/{id}/conflicts", get(get_conflicting_requests))
+        .route("/conflicts/all", get(get_all_conflicting_requests))
 }
