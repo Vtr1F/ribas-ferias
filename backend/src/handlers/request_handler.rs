@@ -304,7 +304,8 @@ pub async fn accept_request(
             days,
             status,
             created_at,
-            request_type
+            request_type,
+            file_path
         "#
     )
     .bind(accepted)
@@ -348,7 +349,8 @@ pub async fn reject_request(
             days,
             status,
             created_at,
-            request_type
+            request_type,
+            file_path
         "#)
     .bind(rejected)
     .bind(request_id)
