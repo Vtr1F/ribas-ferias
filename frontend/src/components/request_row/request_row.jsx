@@ -5,13 +5,15 @@ import { formatDate } from '../../utils/formatters';
 import DaysList from './days_list';
 import './request_row.css';
 
-const RequestRow = ({ req, memberMap }) => {
+const RequestRow = ({ req, memberMap, showUserInfo = true, showDate = true }) => {
   const member = memberMap[req.user_id];
   return (
     <div className="tr-request-row">
       <div className="tr-req-user">
         <UserAvatar userId={req.user_id} name={member?.nome} size="small" />
-        <span className="tr-req-name">{member?.nome ?? `#${req.user_id}`}</span>
+        {showUserInfo && (
+          <span className="tr-req-name">{member?.nome ?? `#${req.user_id}`}</span>
+        )}
       </div>
       <div className="tr-req-type">
         <span className="tr-type-icon">{TYPE_ICONS[req.request_type] || '📋'}</span>
@@ -20,7 +22,7 @@ const RequestRow = ({ req, memberMap }) => {
       <StatusBadge status={req.status} />
       <DaysList days={req.days} />
       <span className="tr-req-count">{req.days?.length ?? 0}d</span>
-      <span className="tr-req-date">{formatDate(req.created_at)}</span>
+      {showDate && <span className="tr-req-date">{formatDate(req.created_at)}</span>}
       {req.reason && <span className="tr-req-reason" title={req.reason}>💬 {req.reason}</span>}
     </div>
   );

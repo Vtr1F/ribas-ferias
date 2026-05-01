@@ -1,12 +1,19 @@
 /* RequestRow styles */
 .tr-request-row {
   display: grid;
-  grid-template-columns: 160px 150px 120px 1fr 50px 110px 1fr;
+  grid-template-columns: 50px 160px 150px 120px 1fr 50px 110px 1fr;
   padding: 12px 18px;
   align-items: center;
   gap: 8px;
   border-bottom: 1px solid #f3f4f6;
   transition: background 0.15s;
+}
+
+.tr-req-number {
+  font-size: 12px;
+  color: #9ca3af;
+  font-family: monospace;
+  padding-top: 3px;
 }
 
 .tr-request-row:last-child {

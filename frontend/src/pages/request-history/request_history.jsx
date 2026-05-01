@@ -1,157 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/auth-context";
 import { RequestRoutes } from "../../api/requestRoutes";
-import UserAvatar from "../../components/user_avatar";
 import Header from '../../components/header/header';
 import "./request_history.css";
+import RequestDetailOverlay from '../../components/request_detail_overlay';
+import RequestHistoryRow from "../../components/request_history_row";
 
-// --- Constants ---
-const TYPE_LABELS = {
-  Vacation: "Férias",
-  SickLeave: "Baixa Médica",
-  ParentalLeave: "Licença Parental",
-  BereavementLeave: "Luto",
-};
 
-const TYPE_ICONS = {
-  Vacation: "🌴",
-  SickLeave: "🤒",
-  ParentalLeave: "👶",
-  BereavementLeave: "🕊️",
-};
 
-const STATUS_CONFIG = {
-  Pending:  { label: "Pendente",  className: "badge-pending"  },
-  Approved: { label: "Aprovado",  className: "badge-approved" },
-  Rejected: { label: "Rejeitado", className: "badge-rejected" },
-};
-
-// --- Helpers ---
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString("pt-PT", {
-    day: "2-digit", month: "short", year: "numeric",
-  });
-}
-
-function formatDay(dayStr) {
-  if (!dayStr || String(dayStr).length !== 8) return dayStr;
-  const s = String(dayStr);
-  return `${s.slice(6, 8)}/${s.slice(4, 6)}/${s.slice(0, 4)}`;
-}
-
-// --- Sub-components ---
-function StatusBadge({ status }) {
-  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.Pending;
-  return (
-    <span className={`rh-badge ${cfg.className}`}>
-      <span className="rh-badge-dot" />
-      {cfg.label}
-    </span>
-  );
-}
-
-//Download
-function Download(filePath) {
-  const fileName = filePath.split(/[\\/]/).pop(); 
-  RequestRoutes.downloadFile(fileName);
-}
-
-function DaysList({ days }) {
-  const [expanded, setExpanded] = useState(false);
-  const MAX = 3;
-  const formatted = (days || []).map(formatDay);
-  const shown = expanded ? formatted : formatted.slice(0, MAX);
-  const rest = formatted.length - MAX;
-
-  return (
-    <div className="rh-days-list">
-      {shown.map((d, i) => (
-        <span key={i} className="rh-day-chip">{d}</span>
-      ))}
-      {!expanded && rest > 0 && (
-        <button className="rh-expand-btn" onClick={() => setExpanded(true)}>
-          +{rest} mais
-        </button>
-      )}
-      {expanded && rest > 0 && (
-        <button className="rh-expand-btn" onClick={() => setExpanded(false)}>
-          menos
-        </button>
-      )}
-    </div>
-  );
-}
-
-function RequestDetailOverlay({ req, member, onClose }) {
-  if (!req) return null;
-
-  const displayName = member?.nome || member?.name || "O meu perfil";
-
-  return (
-    <div className="tr-modal-overlay" onClick={onClose}>
-      <div className="tr-modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="tr-modal-header">
-          <h2>Detalhes do Pedido</h2>
-          <button className="tr-close-btn" onClick={onClose}>&times;</button>
-        </div>
-
-        <div className="tr-modal-body">
-          <div className="tr-detail-user">
-            <UserAvatar 
-              userId={req.user_id} 
-              name={displayName} 
-              size="large" 
-            />
-            <div className="tr-detail-user-info">
-              <h3>{displayName}</h3>
-            </div>
-          </div>
-
-          <div className="tr-detail-grid">
-            <div className="tr-detail-item">
-              <strong>Tipo:</strong>
-              <span> {TYPE_ICONS[req.request_type]} {TYPE_LABELS[req.request_type] || req.request_type}</span>
-            </div>
-            <div className="tr-detail-item">
-              <strong>Estado:</strong> <StatusBadge status={req.status} />
-            </div>
-            <div className="tr-detail-item">
-              <strong>Submetido em:</strong> {formatDate(req.created_at)}
-            </div>
-            <div className="tr-detail-item">
-              <strong>Duração:</strong> {req.days?.length} dias
-            </div>
-            {req.file_path && (
-               <div className="tr-detail-item">
-                <strong>Anexo:</strong>
-                <button 
-                  className="rh-btn-download" 
-                  onClick={() => Download(req.file_path)}
-                >
-                  Download
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="tr-detail-days-section">
-            <strong>Dias Solicitados:</strong>
-            <div className="tr-detail-days-grid">
-              {req.days?.map(d => <span key={d} className="tr-day-chip">{formatDay(d)}</span>)}
-            </div>
-          </div>
-
-          {req.reason && (
-            <div className="tr-detail-reason">
-              <strong>Motivo / Justificação:</strong>
-              <p>{req.reason}</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // --- Main Page ---
 export default function RequestHistory() {
@@ -184,14 +40,25 @@ export default function RequestHistory() {
       .finally(() => setLoading(false));
   }, [userId]);
 
+  // Map request ID to its number (oldest = #1, going up to newest)
+  const requestNumberMap = useMemo(() => {
+    const sorted = [...requests].sort(
+      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    );
+    const map = {};
+    sorted.forEach((req, idx) => {
+      map[req.id] = idx + 1;
+    });
+    return map;
+  }, [requests]);
+
   const filtered = requests.filter((r) => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (typeFilter !== "all" && r.request_type !== typeFilter) return false;
     if (search) {
       const q = search.toLowerCase();
       const matchReason = r.reason?.toLowerCase().includes(q);
-      const matchType   = TYPE_LABELS[r.request_type]?.toLowerCase().includes(q);
-      if (!matchReason && !matchType) return false;
+      if (!matchReason) return false;
     }
     return true;
   });
@@ -290,11 +157,13 @@ export default function RequestHistory() {
             {/* Table head */}
             <div className="rh-table-head">
               <span>#</span>
+              <span>Avatar</span>
               <span>Tipo</span>
               <span>Estado</span>
               <span>Dias</span>
-              <span>Nº Dias</span>
-              <span>Data Pedido</span>
+              <span>Nº</span>
+              <span>Data</span>
+              <span>Motivo</span>
             </div>
 
             {/* Rows */}
@@ -310,31 +179,15 @@ export default function RequestHistory() {
               </div>
             ) : (
               filtered.map((req, idx) => (
-                <div key={req.id} className={`rh-table-row ${idx % 2 === 0 ? "" : "rh-row-alt"}`}
-                onClick={() => setSelectedRequest(req)} style={{ cursor: 'pointer' }}>
-                  <span className="rh-id">#{req.id}</span>
-
-                  <div className="rh-type-cell">
-                    <span className="rh-type-label">
-                      <span className="rh-type-icon">{TYPE_ICONS[req.request_type] || "📋"}</span>
-                      {TYPE_LABELS[req.request_type] || req.request_type}
-                    </span>
-                    {req.reason && (
-                      <p className="rh-reason">{req.reason}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <StatusBadge status={req.status} />
-                  </div>
-
-                  <DaysList days={req.days} />
-
-                  <span className="rh-count">
-                    {req.days?.length ?? 0} dia{req.days?.length !== 1 ? "s" : ""}
-                  </span>
-
-                  <span className="rh-date">{formatDate(req.created_at)}</span>
+                <div 
+                  key={req.id} 
+                  className="rh-row-clickable"
+                  onClick={() => setSelectedRequest(req)}
+                >
+                  <RequestHistoryRow
+                    req={req}
+                    requestNumber={requestNumberMap[req.id] || idx + 1}
+                  />
                 </div>
               ))
             )}
@@ -347,7 +200,8 @@ export default function RequestHistory() {
         <RequestDetailOverlay 
           req={selectedRequest} 
           member={user}
-          onClose={() => setSelectedRequest(null)} 
+          onClose={() => setSelectedRequest(null)}
+          showUserInfo={false}
         />
       )}
 

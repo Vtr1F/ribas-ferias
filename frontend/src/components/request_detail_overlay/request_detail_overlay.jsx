@@ -10,7 +10,7 @@ function Download(filePath) {
   RequestRoutes.downloadFile(fileName);
 }
 
-const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading }) => {
+const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, showUserInfo = true }) => {
   if (!req) return null;
 
   return (
@@ -22,13 +22,19 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading }) =
         </div>
 
         <div className="tr-modal-body">
-          <div className="tr-detail-user">
-            <UserAvatar userId={req.user_id} name={member?.nome} size="large" />
-            <div className="tr-detail-user-info">
-              <h3>{member?.nome || `Utilizador #${req.user_id}`}</h3>
-              <p>{member?.email || 'Sem email disponível'}</p>
+          {showUserInfo ? (
+            <div className="tr-detail-user">
+              <UserAvatar userId={req.user_id} name={member?.nome} size="large" />
+              <div className="tr-detail-user-info">
+                <h3>{member?.nome || `Utilizador #${req.user_id}`}</h3>
+                <p>{member?.email || 'Sem email disponível'}</p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="tr-detail-user">
+              <UserAvatar userId={req.user_id} name={member?.nome} size="large" />
+            </div>
+          )}
 
           <div className="tr-detail-grid">
             <div className="tr-detail-item">
@@ -72,7 +78,7 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading }) =
           )}
         </div>
 
-        {req.status === 'Pending' && (
+        {showUserInfo && req.status === 'Pending' && (
           <div className="tr-modal-footer">
             <button
               className="tr-btn-reject"

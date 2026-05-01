@@ -142,7 +142,7 @@
 
 .rh-table-head {
   display: grid;
-  grid-template-columns: 60px 1fr 140px 1fr 100px 120px;
+  grid-template-columns: 50px 50px 1fr 140px 1fr 100px 120px 1fr;
   padding: 10px 20px;
   background: #f9fafb;
   border-bottom: 1.5px solid #e5e7eb;
@@ -152,14 +152,15 @@
   text-transform: uppercase;
   color: #6b7280;
   gap: 8px;
+  align-items: center;
 }
 
 .rh-table-row {
   display: grid;
-  grid-template-columns: 60px 1fr 140px 1fr 100px 120px;
+  grid-template-columns: 50px 50px 1fr 140px 1fr 100px 120px 1fr;
   padding: 14px 20px;
   border-bottom: 1px solid #f3f4f6;
-  align-items: start;
+  align-items: center;
   gap: 8px;
   background: #fff;
   transition: background 0.15s;
@@ -178,11 +179,12 @@
 }
 
 /* ===== Row Cells ===== */
-.rh-id {
+.rh-request-number {
   font-size: 12px;
   color: #9ca3af;
   font-family: monospace;
   padding-top: 3px;
+  min-width: 40px;
 }
 
 .rh-type-cell {
