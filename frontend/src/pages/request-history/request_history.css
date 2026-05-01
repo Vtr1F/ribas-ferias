@@ -339,6 +339,72 @@
   margin-top: 10px;
 }
 
+/* ==== Modal-Details ====*/
+.rh-row-clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rh-row-clickable:hover {
+  background-color: #f0f7ff !important; 
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.tr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.tr-modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+/* ===== Download Button ===== */
+.rh-btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #2563eb; /* Azul primário */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.rh-btn-download:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.rh-btn-download:active {
+  transform: translateY(0);
+}
+.rh-btn-download::before {
+  content: "📥"; 
+  font-size: 1.1rem;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
   .rh-page {
