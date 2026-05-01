@@ -26,7 +26,7 @@ export const UserRoutes = {
     return apiClient.request(`/api/users/password/${id}`,`PUT`,data)
   },
 
-getUserImage: (id) => {
+  getUserImage: (id) => {
     return apiClient.request(`/api/users/${id}/image`, `GET`);
   },
 
