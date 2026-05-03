@@ -460,7 +460,8 @@ pub async fn get_conflicting_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.user_id = ANY($1)
         AND r.id != $2
@@ -468,7 +469,7 @@ pub async fn get_conflicting_requests(
         AND r.status = 'Approved'
         AND (SELECT COUNT(*) FROM UNNEST(r.days) AS day WHERE day = ANY($4)) > 0
         ORDER BY r.id
-        "#
+        "# 
     )
     .bind(&team_member_ids)
     .bind(request_id)
@@ -495,7 +496,8 @@ pub async fn get_all_conflicting_requests(
             r.days,
             r.status,
             r.created_at,
-            r.request_type
+            r.request_type,
+            r.file_path
         FROM requests r
         WHERE r.request_type = $1
         AND r.status = 'Approved'

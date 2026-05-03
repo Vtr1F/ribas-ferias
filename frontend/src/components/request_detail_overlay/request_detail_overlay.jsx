@@ -1,16 +1,63 @@
+import { useState, useEffect } from 'react';
 import { TYPE_LABELS, TYPE_ICONS } from '../../constants/requestConstants';
 import { formatDate, formatDay } from '../../utils/formatters';
 import StatusBadge from '../status_badge';
 import UserAvatar from '../user_avatar';
 import { RequestRoutes } from '../../api/requestRoutes';
+import { UserRoutes } from '../../api/userRoutes';
 import './request_detail_overlay.css';
+
 
 function Download(filePath) {
   const fileName = filePath.split(/[\\/]/).pop();
   RequestRoutes.downloadFile(fileName);
 }
 
+async function getConflicts(id){
+  return await RequestRoutes.fetchConflictingRequests(id);
+}
+
+async function getUser(id){
+  return await UserRoutes.fetchUser(id);
+}
+
+
 const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, showUserInfo = true }) => {
+  const [conflicts, setConflicts] = useState([]);
+  const [conflictsLoading, setConflictsLoading] = useState(false);
+  const [userCache, setUserCache] = useState({});
+
+  useEffect(() => {
+    const fetchConflicts = async () => {
+      if (!req?.id) return;
+      try {
+        setConflictsLoading(true);
+        const conflictsList = await getConflicts(req.id);
+        setConflicts(conflictsList || []);
+      } catch (error) {
+        console.error('Error fetching conflicts:', error);
+        setConflicts([]);
+      } finally {
+        setConflictsLoading(false);
+      }
+    };
+
+    fetchConflicts();
+  }, [req?.id]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const userIds = conflicts.map(c => c.user_id);
+      const users = await Promise.all(userIds.map(id => getUser(id)));
+      const cache = {};
+      userIds.forEach((id, idx) => {
+        cache[id] = users[idx];
+      });
+      setUserCache(cache);
+    };
+    if (conflicts.length > 0) fetchUsers();
+  }, [conflicts]);
+
   if (!req) return null;
 
   return (
@@ -69,6 +116,35 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
               {req.days?.map(d => <span key={d} className="tr-day-chip">{formatDay(d)}</span>)}
             </div>
           </div>
+
+
+          <div className="tr-conflicting-requests">
+              
+              {conflictsLoading ? (
+                <p> </p>
+              ) : conflicts.length > 0 ? (
+                <div className="tr-conflicts-list">
+                  <strong>Conflicto de Ferias:</strong>
+                  {conflicts.map(conflict => (
+                    <div key={conflict.id} className="tr-conflict-item">
+                      <div className="tr-detail-user">
+                        <UserAvatar userId={conflict.user_id} name={userCache[conflict.user_id]?.nome} size="large" />
+                          <div className="tr-detail-user-info">
+                            <h3>{userCache[conflict.user_id]?.nome || `Utilizador #${conflict.user_id}`}</h3>
+                            <p>{userCache[conflict.user_id]?.email || 'Sem email disponível'}</p>
+                        </div>
+                      </div>
+                      <span>{TYPE_ICONS[conflict.request_type]} {TYPE_LABELS[conflict.request_type] || conflict.request_type} </span>
+                      <div className="tr-detail-days-grid">
+                        {conflict.days?.map(d => <span key={d} className="tr-day-chip">{formatDay(d)}</span>)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+
 
           {req.reason && (
             <div className="tr-detail-reason">
