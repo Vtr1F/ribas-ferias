@@ -121,7 +121,7 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
           <div className="tr-conflicting-requests">
               
               {conflictsLoading ? (
-                <p>A carregar...</p>
+                <p> </p>
               ) : conflicts.length > 0 ? (
                 <div className="tr-conflicts-list">
                   <strong>Conflicto de Ferias:</strong>
