@@ -119,11 +119,12 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
 
 
           <div className="tr-conflicting-requests">
-              <strong>Conflicto de Ferias:</strong>
+              
               {conflictsLoading ? (
                 <p>A carregar...</p>
               ) : conflicts.length > 0 ? (
                 <div className="tr-conflicts-list">
+                  <strong>Conflicto de Ferias:</strong>
                   {conflicts.map(conflict => (
                     <div key={conflict.id} className="tr-conflict-item">
                       <div className="tr-detail-user">
@@ -140,9 +141,7 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p>Sem pedidos conflitantes</p>
-              )}
+              ) : null}
             </div>
 
 
