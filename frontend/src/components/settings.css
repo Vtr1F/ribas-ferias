@@ -13,3 +13,14 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.settings-accessibility {
+  margin-top: 32px;
+}
+
+.settings-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+}
