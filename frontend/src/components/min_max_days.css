@@ -1,0 +1,97 @@
+.minmax-section {
+  margin-top: 40px;
+}
+
+.minmax-section h2 {
+  font-family: 'Questrial', sans-serif;
+  color: #333;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.minmax-section .section-desc {
+  color: #888;
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+.minmax-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.minmax-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.minmax-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.minmax-field .minmax-hint {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.minmax-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.minmax-stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #555;
+}
+
+.minmax-stepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.minmax-stepper input {
+  width: 64px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 1rem;
+  font-family: 'Questrial', sans-serif;
+  color: #333;
+  outline: none;
+}
+
+.minmax-stepper input.minmax-error {
+  border-color: #dc2626;
+  background: #fff5f5;
+}
+
+.minmax-stepper .minmax-unit {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.minmax-validation-error {
+  font-size: 0.78rem;
+  color: #dc2626;
+  margin: 0;
+}
