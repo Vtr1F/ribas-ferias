@@ -14,7 +14,6 @@
 }
 
 .tr-modal-content {
-  background: white;
   width: 100%;
   max-width: 550px;
   border-radius: 20px;
@@ -164,14 +163,12 @@
 
 .tr-btn-approve {
   background: #10b981;
-  color: white;
 }
 
 .tr-btn-approve:hover { background: #059669; }
 
 .tr-btn-reject {
   background: #ef4444;
-  color: white;
 }
 
 .tr-btn-reject:hover { background: #dc2626; }

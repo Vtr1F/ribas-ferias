@@ -1,17 +1,16 @@
-/* RequestRow styles */
 .tr-request-row {
   display: grid;
   grid-template-columns: 50px 160px 150px 120px 1fr 50px 110px 1fr;
   padding: 12px 18px;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-light);
   transition: background 0.15s;
 }
 
 .tr-req-number {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-family: monospace;
   padding-top: 3px;
 }
@@ -29,7 +28,7 @@
 .tr-req-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -40,7 +39,7 @@
   align-items: center;
   gap: 5px;
   font-size: 13px;
-  color: #374151;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -51,25 +50,24 @@
 .tr-req-count {
   font-size: 13px;
   font-weight: 700;
-  color: #374151;
+  color: var(--text-primary);
   text-align: center;
 }
 
 .tr-req-date {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .tr-req-reason {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* DaysList styles */
 .tr-days-list {
   display: flex;
   flex-wrap: wrap;
@@ -77,23 +75,27 @@
 }
 
 .tr-day-chip {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 11px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-family: monospace;
 }
 
 .tr-expand-btn {
-  background: #e0e7ef;
+  background: var(--bg-tertiary);
   border: none;
   border-radius: 4px;
   padding: 1px 6px;
   font-size: 11px;
-  color: #4670DB;
+  color: var(--blue);
   cursor: pointer;
   font-weight: 700;
   font-family: 'Questrial', sans-serif;
+}
+
+.tr-expand-btn:hover {
+  background: var(--bg-hover);
 }

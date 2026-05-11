@@ -18,7 +18,7 @@ const AlterUser = ({ user, onClose, onSave }) => {
   const [fullUserData, setFullUserData] = useState(null);
 
   const getRoleBall = (roleId) => {
-    let color = '#999';
+    let color = 'var(--text-muted)';
     if (roleId === ROLES.ADMIN) color = '#e74c3c';
     else if (roleId === ROLES.TEAM_LEADER) color = '#f1c40f';
     else if (roleId === ROLES.USER) color = '#2ecc71';

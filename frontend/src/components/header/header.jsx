@@ -31,6 +31,18 @@ function Header() {
     }
   }, [userId, user?.role]);
 
+
+  const switchDarkMode = async () => {
+    const root = document.querySelector('#root > div');
+    if (localStorage.getItem("DarkMode") == "light") {
+      localStorage.setItem("DarkMode", "dark");
+      root?.setAttribute('data', 'dark');
+    } else {
+      localStorage.setItem("DarkMode", "light");
+      root?.setAttribute('data', 'light');
+    }
+  }
+
   const handleShowNotifications = async () => {
     if (!showNotifs && userId) {
       try {
@@ -61,7 +73,13 @@ function Header() {
 
   return (
     <header className="app-header">
+      
+
+          <button className="btn-request" onClick={switchDarkMode}>
+            {localStorage.getItem("DarkMode") === "dark" ? "☀️" : "🌙"}
+          </button>
       <div className="notification-container">
+        
         <button className="notification-bell" onClick={handleShowNotifications}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -69,7 +87,7 @@ function Header() {
           </svg>
           {notifCount > 0 && <span className="notification-badge">{notifCount}</span>}
         </button>
-
+    
         {showNotifs && (
           <div className="notification-dropdown">
             <div className="notification-header">
@@ -107,6 +125,8 @@ function Header() {
           </div>
         )}
       </div>
+
+
       <UserAvatar userId={userId} name={user?.nome} size="small" />
     </header>
   );
