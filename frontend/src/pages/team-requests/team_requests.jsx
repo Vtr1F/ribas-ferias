@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { RequestRoutes } from '../../api/requestRoutes';
 import { ROLES } from '../../constants/roles';
+import { SettingsManager } from '../../constants/settingsData';
 import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
 import ConfirmModal from '../../components/confirm_modal'; // Ajusta o caminho se necessário
@@ -19,6 +20,10 @@ export default function TeamRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin  = currentUser?.role === ROLES.ADMIN;
   const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
+  const daltonic = (() => {
+    try { return SettingsManager.GetSetting("DALTONISM") ?? false; }
+    catch { return false; }
+  })();
 
   const [teams, setTeams]               = useState([]);
   const [requestsByTeam, setRequestsByTeam] = useState({});
@@ -175,7 +180,7 @@ export default function TeamRequests() {
   const loading = loadingTeams || loadingReqs;
 
   return (
-    <div className="tr-page">
+    <div className={`tr-page${daltonic ? ' tr-daltonic' : ''}`}>
       <Header />
 
       <div className="page-header">
@@ -189,7 +194,7 @@ export default function TeamRequests() {
           { label: 'Aprovados',  value: stats.approved, mod: 'green'  },
           { label: 'Rejeitados', value: stats.rejected, mod: 'red'    },
         ].map((s) => (
-          <div key={s.label} className={`tr-stat-card tr-stat-${s.mod}`}>
+          <div key={s.label} className={`tr-stat-card tr-stat-${s.mod}${daltonic ? ' tr-stat-daltonic' : ''}`}>
             <span className="tr-stat-value">{loading ? '—' : s.value}</span>
             <span className="tr-stat-label">{s.label}</span>
           </div>
@@ -299,6 +304,7 @@ export default function TeamRequests() {
                             <RequestRow
                               req={req}
                               memberMap={memberMapByTeam[team.id] || {}}
+                              daltonic={daltonic}
                             />
                           </div>
                         ))
@@ -320,6 +326,7 @@ export default function TeamRequests() {
           isLoading={isActionLoading}
           onClose={() => setSelectedRequest(null)}
           onDecision={triggerDecision}
+          daltonic={daltonic}
         />
       )}
 

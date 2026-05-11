@@ -22,19 +22,19 @@
 }
 /* Vacation Status Colors */
 .day.status-green {
-  background-color: #00FF40 !important; /* Matches 'Disponível' */
+  background-color: var(--status-green, #00FF40) !important;
   color: white;
   font-weight: bold;
 }
 
 .day.status-yellow {
-  background-color: #FFB800 !important; /* Matches 'Pendente' */
+  background-color: var(--status-yellow, #FFB800) !important;
   color: white;
   font-weight: bold;
 }
 
 .day.status-red {
-  background-color: #FF3B30 !important; /* Matches 'Rejeitado' */
+  background-color: var(--status-red, #FF3B30) !important;
   color: white;
   font-weight: bold;
 }
@@ -107,9 +107,9 @@
   text-transform: uppercase;
 }
 
-.badge.status-green { background: #15803d; color: white; }
-.badge.status-yellow { background: #a16207; color: white; }
-.badge.status-red { background: #b91c1c; color: white; }
+.badge.status-green { background: var(--badge-green, #15803d); color: white; }
+.badge.status-yellow { background: var(--badge-yellow, #a16207); color: white; }
+.badge.status-red { background: var(--badge-red, #b91c1c); color: white; }
 
 /* If it's an absence, we add a subtle stripe pattern over the status color */
 .day.type-absence {

@@ -56,6 +56,15 @@
 .rh-stat-red    { background: #fef2f2; border-color: #fecaca; }
 .rh-stat-red    .rh-stat-value { color: #ef4444; }
 
+.rh-stat-daltonic.rh-stat-blue   { background: #e0f2fe; border-color: #7dd3fc; }
+.rh-stat-daltonic.rh-stat-blue   .rh-stat-value { color: #0284c7; }
+.rh-stat-daltonic.rh-stat-yellow { background: #fef3c7; border-color: #fcd34d; }
+.rh-stat-daltonic.rh-stat-yellow .rh-stat-value { color: #d97706; }
+.rh-stat-daltonic.rh-stat-green  { background: #ffedd5; border-color: #fdba74; }
+.rh-stat-daltonic.rh-stat-green  .rh-stat-value { color: #ea580c; }
+.rh-stat-daltonic.rh-stat-red    { background: #ede9fe; border-color: #c4b5fd; }
+.rh-stat-daltonic.rh-stat-red    .rh-stat-value { color: #7c3aed; }
+
 /* ===== Filters ===== */
 .rh-filters {
   display: flex;
@@ -351,6 +360,11 @@
   background-color: #f0f7ff !important; 
   transform: translateY(-1px);
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.rh-daltonic .rh-row-clickable:hover {
+  background-color: #fff7ed !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
 }
 
 .tr-modal-overlay {

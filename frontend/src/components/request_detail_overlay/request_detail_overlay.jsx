@@ -22,7 +22,7 @@ async function getUser(id){
 }
 
 
-const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, showUserInfo = true }) => {
+const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, showUserInfo = true, daltonic }) => {
   const [conflicts, setConflicts] = useState([]);
   const [conflictsLoading, setConflictsLoading] = useState(false);
   const [userCache, setUserCache] = useState({});
@@ -61,7 +61,7 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
   if (!req) return null;
 
   return (
-    <div className="tr-modal-overlay" onClick={onClose}>
+    <div className={`tr-modal-overlay${daltonic ? ' tr-daltonic' : ''}`} onClick={onClose}>
       <div className="tr-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="tr-modal-header">
           <h2>Detalhes do Pedido</h2>
@@ -89,7 +89,7 @@ const RequestDetailOverlay = ({ req, member, onClose, onDecision, isLoading, sho
               <span> {TYPE_ICONS[req.request_type]} {TYPE_LABELS[req.request_type] || req.request_type}</span>
             </div>
             <div className="tr-detail-item">
-              <strong>Estado:</strong> <StatusBadge status={req.status} />
+              <strong>Estado:</strong> <StatusBadge status={req.status} daltonic={daltonic} />
             </div>
             <div className="tr-detail-item">
               <strong>Submetido em:</strong> {formatDate(req.created_at)}

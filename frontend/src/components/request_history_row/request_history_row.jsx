@@ -5,7 +5,7 @@ import { formatDate } from '../../utils/formatters';
 import DaysList from '../request_row/days_list';
 import './request_history_row.css';
 
-const RequestHistoryRow = ({ req, requestNumber }) => {
+const RequestHistoryRow = ({ req, requestNumber, daltonic }) => {
   return (
     <div className="rhr-row">
       <div className="rhr-number">#{requestNumber}</div>
@@ -16,7 +16,7 @@ const RequestHistoryRow = ({ req, requestNumber }) => {
         <span className="rhr-type-icon">{TYPE_ICONS[req.request_type] || '📋'}</span>
         <span>{TYPE_LABELS[req.request_type] || req.request_type}</span>
       </div>
-      <StatusBadge status={req.status} />
+      <StatusBadge status={req.status} daltonic={daltonic} />
       <DaysList days={req.days} />
       <span className="rhr-count">{req.days?.length ?? 0}d</span>
       <span className="rhr-date">{formatDate(req.created_at)}</span>

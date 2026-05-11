@@ -62,7 +62,7 @@
 .delete-team-btn {
   background: none;
   border: none;
-  color: #e74c3c;
+  color: var(--clr-danger, #e74c3c);
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -73,7 +73,7 @@
 }
 
 .delete-team-btn:hover {
-  background: #fff1f0;
+  background: var(--clr-error-bg, #fff1f0);
 }
 
 .alter-team-form {
@@ -110,8 +110,8 @@
 
 .alter-team-form input:focus,
 .alter-team-form select:focus {
-  border-color: #f1c40f;
-  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
+  border-color: var(--clr-accent, #f1c40f);
+  box-shadow: 0 0 0 3px var(--clr-accent-focus, rgba(241, 196, 15, 0.2));
 }
 
 .alter-team-form input::placeholder {
@@ -121,9 +121,9 @@
 .alter-team-error {
   padding: 12px 16px;
   border-radius: 12px;
-  background: #fff1f0;
-  border: 1px solid #f5c2c0;
-  color: #9f1f1f;
+  background: var(--clr-error-bg, #fff1f0);
+  border: 1px solid var(--clr-error-border, #f5c2c0);
+  color: var(--clr-error-text, #9f1f1f);
   font-size: 0.9rem;
 }
 
@@ -153,7 +153,7 @@
   padding: 12px 24px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--clr-accent, #f1c40f) 0%, var(--clr-accent-dark, #d4a800) 100%);
   color: #1f2d4d;
   font-weight: 500;
   cursor: pointer;
@@ -162,7 +162,7 @@
 
 .alter-team-form .save-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(241, 196, 15, 0.4);
+  box-shadow: 0 4px 12px var(--clr-accent-shadow, rgba(241, 196, 15, 0.4));
 }
 
 .alter-team-form .save-btn:disabled {
@@ -186,8 +186,8 @@
 }
 
 .leader-input-container:focus-within {
-  border-color: #f1c40f;
-  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
+  border-color: var(--clr-accent, #f1c40f);
+  box-shadow: 0 0 0 3px var(--clr-accent-focus, rgba(241, 196, 15, 0.2));
 }
 
 .leader-search-icon {
@@ -201,7 +201,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--clr-accent, #f1c40f) 0%, var(--clr-accent-dark, #d4a800) 100%);
   color: #1f2d4d;
   display: flex;
   align-items: center;
@@ -237,7 +237,7 @@
 }
 
 .clear-leader:hover {
-  color: #e74c3c;
+  color: var(--clr-danger, #e74c3c);
 }
 
 .dropdown-toggle {
@@ -289,7 +289,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--clr-accent, #f1c40f) 0%, var(--clr-accent-dark, #d4a800) 100%);
   color: #1f2d4d;
   display: flex;
   align-items: center;

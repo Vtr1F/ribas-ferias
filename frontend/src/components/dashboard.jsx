@@ -7,6 +7,7 @@ import Header from './header/header';
 import { ABSENCE } from '../constants/requestTypes.js'
 import './dashboard.css'; 
 import { translateType } from '../utils/translation.js';
+import { SettingsManager, DaltonismModes } from '../constants/settingsData';
 
 const fetchUserCached = cache(async (id) => {
   return UserRoutes.fetchUser(id);
@@ -15,6 +16,35 @@ const fetchUserCached = cache(async (id) => {
 const fetchUserRequestCached = cache(async (userId) => {
   return RequestRoutes.fetchUserRequest(userId);
 });
+
+const STATUS_COLORS = {
+  approved: '#00FF40',
+  pending: '#FFB800',
+  rejected: '#FF3B30',
+};
+
+const DALTONISM_COLORS = {
+  [DaltonismModes.DEUTERANOMALY]: {
+    approved: '#0072B2',
+    pending: '#E69F00',
+    rejected: '#CC79A7',
+  },
+  [DaltonismModes.PROTONOMALY]: {
+    approved: '#0072B2',
+    pending: '#E69F00',
+    rejected: '#CC79A7',
+  },
+  [DaltonismModes.DEUTERANOPIA]: {
+    approved: '#0072B2',
+    pending: '#F0E442',
+    rejected: '#D55E00',
+  },
+  [DaltonismModes.PROTANOPIA]: {
+    approved: '#0072B2',
+    pending: '#F0E442',
+    rejected: '#D55E00',
+  },
+};
 
 function Dashboard() {
   const { user } = useAuth();
@@ -32,6 +62,16 @@ function Dashboard() {
 
   // --- NEW STATE FOR MODAL ---
   const [showOverlay, setShowOverlay] = useState(false);
+
+  const [daltonism, setDaltonism] = useState(() => {
+    try { return { enabled: SettingsManager.GetSetting("DALTONISM") ?? false, mode: SettingsManager.GetSetting("DALTONISM_MODE") ?? DaltonismModes.DEUTERANOMALY }; }
+    catch { return { enabled: false, mode: DaltonismModes.DEUTERANOMALY }; }
+  });
+
+  const statusColors = useMemo(() => {
+    if (!daltonism.enabled) return STATUS_COLORS;
+    return DALTONISM_COLORS[daltonism.mode] || STATUS_COLORS;
+  }, [daltonism]);
 
   const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; 
 
@@ -372,7 +412,17 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="calendar-main-grid">
+      <div
+        className="calendar-main-grid"
+        style={{
+          '--status-green': statusColors.approved,
+          '--status-yellow': statusColors.pending,
+          '--status-red': statusColors.rejected,
+          '--badge-green': daltonism.enabled ? statusColors.approved : '#15803d',
+          '--badge-yellow': daltonism.enabled ? statusColors.pending : '#a16207',
+          '--badge-red': daltonism.enabled ? statusColors.rejected : '#b91c1c',
+        }}
+      >
         {loading ? (
           <p>A carregar...</p>
         ) : (
@@ -391,9 +441,9 @@ function Dashboard() {
 
       <footer className="footer-legend">
         <div className="legend-group">
-          <div className="legend-pill"><span className="status-box green"></span><span>Aceite</span></div>
-          <div className="legend-pill"><span className="status-box yellow"></span><span>Pendente</span></div>
-          <div className="legend-pill"><span className="status-box red"></span><span>Rejeitado</span></div>
+          <div className="legend-pill"><span className="status-box" style={{ backgroundColor: statusColors.approved }}></span><span>Aceite</span></div>
+          <div className="legend-pill"><span className="status-box" style={{ backgroundColor: statusColors.pending }}></span><span>Pendente</span></div>
+          <div className="legend-pill"><span className="status-box" style={{ backgroundColor: statusColors.rejected }}></span><span>Rejeitado</span></div>
         </div>
       </footer>
     </main>
