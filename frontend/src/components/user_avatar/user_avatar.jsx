@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, cache } from 'react';
 import './user_avatar.css';
 import { UserRoutes } from '../../api/userRoutes';
+
+const getUserImageCached = cache(async (userId) => {
+  return UserRoutes.getUserImage(userId);
+});
 
 const UserAvatar = ({ userId, name, size = 'medium' }) => {
   const [imgUrl, setImgUrl] = useState(null);
@@ -12,7 +16,7 @@ const UserAvatar = ({ userId, name, size = 'medium' }) => {
       return;
     }
 
-    UserRoutes.getUserImage(userId)
+    getUserImageCached(userId)
       .then(blob => {
         const url = URL.createObjectURL(blob);
         setImgUrl(url);

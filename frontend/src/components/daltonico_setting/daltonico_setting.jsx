@@ -1,27 +1,53 @@
 import { useState } from 'react';
 import './daltonico_setting.css';
+import { SettingsManager, DaltonismModes } from '../../constants/settingsData';
 
 const COLORBLIND_OPTIONS = [
-  { id: 'tritanopia', label: 'Tritanopia' },
-  { id: 'protanopia', label: 'Protanopia' },
-  { id: 'deuteranopia', label: 'Deuteranopia' },
-  { id: 'achromatopsia', label: 'Achromatopsia' },
+  { id: DaltonismModes.DEUTERANOMALY, label: 'Deuteranomaly' },
+  { id: DaltonismModes.PROTONOMALY, label: 'Protonomaly' },
+  { id: DaltonismModes.DEUTERANOPIA, label: 'Deuteranopia' },
+  { id: DaltonismModes.PROTANOPIA, label: 'Protanopia' },
 ];
 
+const modeIndexMap = Object.fromEntries(
+  COLORBLIND_OPTIONS.map((opt, idx) => [opt.id, idx])
+);
+
 function DaltonicoSetting() {
-  const [enabled, setEnabled] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [enabled, setEnabled] = useState(() => {
+    try { return SettingsManager.GetSetting("DALTONISM") ?? false; }
+    catch { return false; }
+  });
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    try { return modeIndexMap[SettingsManager.GetSetting("DALTONISM_MODE")] ?? 0; }
+    catch { return 0; }
+  });
+
+  const toggleEnabled = (e) => {
+    const next = e.target.checked;
+    setEnabled(next);
+    try { SettingsManager.SaveSettings({ ...SettingsManager.GetSettings(), DALTONISM: next }); }
+    catch { /* localStorage not available */ }
+  };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? COLORBLIND_OPTIONS.length - 1 : prev - 1,
-    );
+    setCurrentIndex((prev) => {
+      const next = prev === 0 ? COLORBLIND_OPTIONS.length - 1 : prev - 1;
+      const mode = COLORBLIND_OPTIONS[next].id;
+      try { SettingsManager.SaveSettings({ ...SettingsManager.GetSettings(), DALTONISM: enabled, DALTONISM_MODE: mode }); }
+      catch { /* localStorage not available */ }
+      return next;
+    });
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) =>
-      prev === COLORBLIND_OPTIONS.length - 1 ? 0 : prev + 1,
-    );
+    setCurrentIndex((prev) => {
+      const next = prev === COLORBLIND_OPTIONS.length - 1 ? 0 : prev + 1;
+      const mode = COLORBLIND_OPTIONS[next].id;
+      try { SettingsManager.SaveSettings({ ...SettingsManager.GetSettings(), DALTONISM: enabled, DALTONISM_MODE: mode }); }
+      catch { /* localStorage not available */ }
+      return next;
+    });
   };
 
   const currentOption = COLORBLIND_OPTIONS[currentIndex];
@@ -34,7 +60,7 @@ function DaltonicoSetting() {
           <input
             type="checkbox"
             checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
+            onChange={toggleEnabled}
           />
           <span className="daltonico-toggle-slider" />
         </label>

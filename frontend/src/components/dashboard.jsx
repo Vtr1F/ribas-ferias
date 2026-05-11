@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, cache } from 'react';
 import MonthCard from './month_card'; 
 import { RequestRoutes } from '../api/requestRoutes'; 
 import { UserRoutes } from '../api/userRoutes';
@@ -7,6 +7,14 @@ import Header from './header/header';
 import { ABSENCE } from '../constants/requestTypes.js'
 import './dashboard.css'; 
 import { translateType } from '../utils/translation.js';
+
+const fetchUserCached = cache(async (id) => {
+  return UserRoutes.fetchUser(id);
+});
+
+const fetchUserRequestCached = cache(async (userId) => {
+  return RequestRoutes.fetchUserRequest(userId);
+});
 
 function Dashboard() {
   const { user } = useAuth();
@@ -50,8 +58,8 @@ function Dashboard() {
     try {
       if (!requests) setLoading(true);
       const [requestsData, userData] = await Promise.all([
-        RequestRoutes.fetchUserRequest(userId),
-        UserRoutes.fetchUser(userId)
+        fetchUserRequestCached(userId),
+        fetchUserCached(userId)
       ]);
       setRequests(requestsData);
       setVacationDays(userData?.dias_ferias_disponiveis ?? 0);
