@@ -41,6 +41,19 @@ export const SettingsManager = {
             return SettingsManager.GetSettings()[key]
         } else {
             console.log("Essa opcao nao existe");
+            
+        }
+    },
+    SaveSetting: (key,value) => {
+        if(defaultSettings[key] != null){
+            const settings = SettingsManager.GetSettings();
+            settings[key] = value;
+            SettingsManager.SaveSettings(settings);
+            return true
+        } else
+        {
+            console.log("invalid field");
+            return false
         }
     },
 
