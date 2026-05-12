@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/auth-context';
 import { useNavigate } from 'react-router-dom';
 import { SettingsManager, DaltonismModes } from '../constants/settingsData';
@@ -24,10 +24,18 @@ const Logout = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const [daltonism] = useState(() => {
+  const [settingsVersion, setSettingsVersion] = useState(0);
+
+  useEffect(() => {
+    const handler = () => setSettingsVersion(v => v + 1);
+    window.addEventListener('settings-changed', handler);
+    return () => window.removeEventListener('settings-changed', handler);
+  }, []);
+
+  const daltonism = useMemo(() => {
     try { return { enabled: SettingsManager.GetSetting("DALTONISM") ?? false, mode: SettingsManager.GetSetting("DALTONISM_MODE") ?? DaltonismModes.DEUTERANOMALY }; }
     catch { return { enabled: false, mode: DaltonismModes.DEUTERANOMALY }; }
-  });
+  }, [settingsVersion]);
 
   const logoutColors = daltonism.enabled ? (LOGOUT_DALTONISM_COLORS[daltonism.mode] || LOGOUT_COLORS) : LOGOUT_COLORS;
 

@@ -22,6 +22,7 @@ export const SettingsManager = {
         if (typeof data === 'object') {
             if(SettingsManager.ValidateSettingsObj(data)){
                 localStorage.setItem("SETTINGS",JSON.stringify(data));
+                window.dispatchEvent(new CustomEvent('settings-changed'));
                 return true;
             }
         } 
