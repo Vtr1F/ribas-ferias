@@ -103,8 +103,8 @@
 }
 
 .user-input-container:focus-within {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  border-color: var(--clr-blue, #3498db);
+  box-shadow: 0 0 0 3px var(--clr-blue-focus, rgba(52, 152, 219, 0.2));
 }
 
 .user-search-icon {

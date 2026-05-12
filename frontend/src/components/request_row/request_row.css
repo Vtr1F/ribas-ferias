@@ -97,3 +97,7 @@
   font-weight: 700;
   font-family: 'Questrial', sans-serif;
 }
+
+.tr-row-daltonic:hover {
+  background: #fff7ed;
+}

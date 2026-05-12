@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, cache } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRoutes } from '../api/userRoutes';
@@ -6,6 +6,10 @@ import { useAuth } from '../context/auth-context';
 import UserAvatar from './user_avatar';
 import Header from './header/header';
 import './profile.css';
+
+const fetchUserCached = cache(async (id) => {
+  return UserRoutes.fetchUser(id);
+});
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -18,7 +22,7 @@ const Profile = () => {
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const user = await UserRoutes.fetchUser(userId || authUser?.sub);
+        const user = await fetchUserCached(userId || authUser?.sub);
         setProfileData(user);
       } catch (err) {
         console.error(t('profile_loading_error'), err);

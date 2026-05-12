@@ -24,3 +24,10 @@
 .tr-badge-approved .tr-badge-dot { background: #10b981; }
 .tr-badge-rejected { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
 .tr-badge-rejected .tr-badge-dot { background: #ef4444; }
+
+.tr-badge-daltonic.tr-badge-pending   { color: #1e40af; background: #dbeafe; border-color: #93c5fd; }
+.tr-badge-daltonic.tr-badge-pending   .tr-badge-dot { background: #3b82f6; }
+.tr-badge-daltonic.tr-badge-approved { color: #7c2d12; background: #ffedd5; border-color: #fdba74; }
+.tr-badge-daltonic.tr-badge-approved .tr-badge-dot { background: #f97316; }
+.tr-badge-daltonic.tr-badge-rejected { color: #4c1d95; background: #ede9fe; border-color: #c4b5fd; }
+.tr-badge-daltonic.tr-badge-rejected .tr-badge-dot { background: #8b5cf6; }

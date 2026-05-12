@@ -1,10 +1,23 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/auth-context';
 import { useNavigate } from 'react-router-dom';
+import { SettingsManager, DaltonismModes } from '../api/settingsManager';
 import './logout.css';
 
 const BASE_URL = "http://localhost:3000";
+
+const LOGOUT_COLORS = {
+  danger: '#e74c3c',
+  dangerDark: '#c0392b',
+};
+
+const LOGOUT_DALTONISM_COLORS = {
+  [DaltonismModes.DEUTERANOMALY]: { danger: '#CC79A7', dangerDark: '#B05A8A' },
+  [DaltonismModes.PROTONOMALY]: { danger: '#CC79A7', dangerDark: '#B05A8A' },
+  [DaltonismModes.DEUTERANOPIA]: { danger: '#D55E00', dangerDark: '#B04E00' },
+  [DaltonismModes.PROTANOPIA]: { danger: '#D55E00', dangerDark: '#B04E00' },
+};
 
 const Logout = () => {
   const { setUser } = useAuth();
@@ -12,6 +25,21 @@ const Logout = () => {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const [settingsVersion, setSettingsVersion] = useState(0);
+
+  useEffect(() => {
+    const handler = () => setSettingsVersion(v => v + 1);
+    window.addEventListener('settings-changed', handler);
+    return () => window.removeEventListener('settings-changed', handler);
+  }, []);
+
+  const daltonism = useMemo(() => {
+    try { return { enabled: SettingsManager.GetSetting("DALTONISM") ?? false, mode: SettingsManager.GetSetting("DALTONISM_MODE") ?? DaltonismModes.DEUTERANOMALY }; }
+    catch { return { enabled: false, mode: DaltonismModes.DEUTERANOMALY }; }
+  }, [settingsVersion]);
+
+  const logoutColors = daltonism.enabled ? (LOGOUT_DALTONISM_COLORS[daltonism.mode] || LOGOUT_COLORS) : LOGOUT_COLORS;
 
   const handleLogout = async () => {
     setShowSuccess(true);
@@ -47,7 +75,10 @@ const Logout = () => {
       </button>
       {showConfirm && (
         <div className="logout-overlay" onClick={() => setShowConfirm(false)}>
-          <div className="logout-confirm-box" onClick={(e) => e.stopPropagation()}>
+          <div className="logout-confirm-box" onClick={(e) => e.stopPropagation()} style={{
+            '--logout-danger': logoutColors.danger,
+            '--logout-danger-dark': logoutColors.dangerDark,
+          }}>
             <p className="logout-confirm-text">{t('logout_confirm')}</p>
             <div className="logout-confirm-buttons">
               <button className="logout-confirm-btn cancel" onClick={() => setShowConfirm(false)}>{t('btn_cancel')}</button>

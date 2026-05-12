@@ -46,6 +46,15 @@
 .tr-stat-red    { background: #fef2f2; border-color: #fecaca; }
 .tr-stat-red    .tr-stat-value { color: #ef4444; }
 
+.tr-daltonic .tr-stat-daltonic.tr-stat-blue   { background: #e0f2fe; border-color: #7dd3fc; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-blue   .tr-stat-value { color: #0284c7; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-yellow { background: #fef3c7; border-color: #fcd34d; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-yellow .tr-stat-value { color: #d97706; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-green  { background: #ffedd5; border-color: #fdba74; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-green  .tr-stat-value { color: #ea580c; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-red    { background: #ede9fe; border-color: #c4b5fd; }
+.tr-daltonic .tr-stat-daltonic.tr-stat-red    .tr-stat-value { color: #7c3aed; }
+
 /* ===== Filter select ===== */
 .tr-select {
   padding: 12px 16px;
@@ -123,6 +132,10 @@
 
 .tr-row-clickable:hover .tr-request-row {
   background: #f0f7ff;
+}
+
+.tr-daltonic .tr-row-clickable:hover .tr-request-row {
+  background: #fff7ed;
 }
 
 /* ===== Row cells ===== */
@@ -267,6 +280,19 @@ div[class*="confirm-modal"] {
 
 .confirm-actions .confirm-btn.btn-danger {
   background-color: #e74c3c; /* Vermelho */
+}
+
+.tr-daltonic .confirm-actions .confirm-btn.btn-success {
+  background-color: #f97316;
+}
+.tr-daltonic .confirm-actions .confirm-btn.btn-success:hover {
+  background-color: #ea580c;
+}
+.tr-daltonic .confirm-actions .confirm-btn.btn-danger {
+  background-color: #8b5cf6;
+}
+.tr-daltonic .confirm-actions .confirm-btn.btn-danger:hover {
+  background-color: #7c3aed;
 }
 
 .confirm-actions .confirm-btn.btn-danger:hover {

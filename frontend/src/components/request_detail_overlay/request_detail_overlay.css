@@ -180,3 +180,12 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.tr-daltonic .tr-btn-approve {
+  background: #f97316;
+}
+.tr-daltonic .tr-btn-approve:hover { background: #ea580c; }
+.tr-daltonic .tr-btn-reject {
+  background: #8b5cf6;
+}
+.tr-daltonic .tr-btn-reject:hover { background: #7c3aed; }
