@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/auth-context";
 import { RequestRoutes } from "../../api/requestRoutes";
 import Header from '../../components/header/header';
@@ -12,6 +13,7 @@ import RequestHistoryRow from "../../components/request_history_row";
 // --- Main Page ---
 export default function RequestHistory() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const userId = user?.sub;
 
   const [requests, setRequests] = useState([]);
@@ -77,17 +79,17 @@ export default function RequestHistory() {
       <Header /> 
       
       <div className="rh-header">
-        <h1 className="main-title">Histórico de Pedidos</h1>
-        <p className="rh-subtitle">Todos os teus pedidos de ausência numa só vista</p>
+        <h1 className="main-title">{t('request_history_title')}</h1>
+        <p className="rh-subtitle">{t('request_history_subtitle')}</p>
       </div>
 
       {/* Stats */}
       <div className="rh-stats-grid">
         {[
-          { label: "Total",      value: stats.total,    mod: "blue"   },
-          { label: "Pendentes",  value: stats.pending,  mod: "yellow" },
-          { label: "Aprovados",  value: stats.approved, mod: "green"  },
-          { label: "Rejeitados", value: stats.rejected, mod: "red"    },
+          { label: t("request_history_total"),      value: stats.total,    mod: "blue"   },
+          { label: t("legend_pending"),  value: stats.pending,  mod: "yellow" },
+          { label: t("request_history_approved"),  value: stats.approved, mod: "green"  },
+          { label: t("legend_rejected"), value: stats.rejected, mod: "red"    },
         ].map((s) => (
           <div key={s.label} className={`rh-stat-card rh-stat-${s.mod}`}>
             <span className="rh-stat-value">{loading ? "—" : s.value}</span>
@@ -103,7 +105,7 @@ export default function RequestHistory() {
           <input
             className="rh-search"
             type="text"
-            placeholder="Pesquisar por motivo ou tipo..."
+            placeholder={t('request_history_search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -114,10 +116,10 @@ export default function RequestHistory() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
-          <option value="all">Todos os estados</option>
-          <option value="Pending">Pendente</option>
-          <option value="Approved">Aprovado</option>
-          <option value="Rejected">Rejeitado</option>
+          <option value="all">{t('request_history_all_statuses')}</option>
+          <option value="Pending">{t('legend_pending')}</option>
+          <option value="Approved">{t('request_history_approved')}</option>
+          <option value="Rejected">{t('legend_rejected')}</option>
         </select>
 
         <select
@@ -125,11 +127,11 @@ export default function RequestHistory() {
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
         >
-          <option value="all">Todos os tipos</option>
-          <option value="Vacation">Férias</option>
-          <option value="SickLeave">Baixa Médica</option>
-          <option value="ParentalLeave">Licença Parental</option>
-          <option value="BereavementLeave">Luto</option>
+          <option value="all">{t('request_history_all_types')}</option>
+          <option value="Vacation">{t('type_vacation')}</option>
+          <option value="SickLeave">{t('type_sick_leave')}</option>
+          <option value="ParentalLeave">{t('type_parental_leave')}</option>
+          <option value="BereavementLeave">{t('type_bereavement_leave')}</option>
         </select>
 
         {hasFilters && (
@@ -137,7 +139,7 @@ export default function RequestHistory() {
             className="rh-clear-btn"
             onClick={() => { setStatusFilter("all"); setTypeFilter("all"); setSearch(""); }}
           >
-            Limpar filtros
+            {t('request_history_clear_filters')}
           </button>
         )}
       </div>

@@ -1,6 +1,9 @@
 import './session-expired.css'
+import { useTranslation } from 'react-i18next';
 
 function SessionExpired() {
+  const { t } = useTranslation();
+
   return (
     <div className="session-overlay">
       <div className="session-modal">
@@ -9,7 +12,7 @@ function SessionExpired() {
           <polyline points="16 17 21 12 16 7" />
           <line x1="21" y1="12" x2="9" y2="12" />
         </svg>
-        <p>A sua sessão foi terminada!</p>
+        <p>{t('session_expired')}</p>
       </div>
     </div>
   );

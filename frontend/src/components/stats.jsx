@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { RequestRoutes } from '../api/requestRoutes';
 import { useAuth } from '../context/auth-context';
 import { ROLES } from '../constants/roles';
@@ -7,6 +8,7 @@ import './stats.css';
 // 1. Remove 'async' from the component definition
 const Stats = ({ users }) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalColaboradores: 0,
     totalPedidos: 0,
@@ -49,20 +51,20 @@ const Stats = ({ users }) => {
     } finally {
       setLoading(false);
     }
-  }, [users, user]); // Dependencies: Recalculate if users list or current logged-in user changes
+  }, [users, user, t]); // Dependencies: Recalculate if users list or current logged-in user changes
 
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
 
   if (loading) {
-    return <div className="stats-loading">A carregar...</div>;
+    return <div className="stats-loading">{t('loading')}</div>;
   }
 
   return (
     <div className="stats-container">
       <div className="stat-box">
-        <div className="stat-label">Total Colaboradores</div>
+        <div className="stat-label">{t('stats_total_employees')}</div>
         <div className="stat-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -75,7 +77,7 @@ const Stats = ({ users }) => {
       </div>
 
       <div className="stat-box">
-        <div className="stat-label">Total Pedidos</div>
+        <div className="stat-label">{t('stats_total_requests')}</div>
         <div className="stat-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -89,7 +91,7 @@ const Stats = ({ users }) => {
       </div>
 
       <div className="stat-box">
-        <div className="stat-label">Férias Marcadas</div>
+        <div className="stat-label">{t('stats_scheduled_vacation')}</div>
         <div className="stat-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>

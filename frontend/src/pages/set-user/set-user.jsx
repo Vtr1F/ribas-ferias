@@ -1,5 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import LoginLayout from '../../layouts/login-layout';
 import { LoginRoute } from '../../api/loginRoute';
 import '../login.css';
@@ -7,6 +8,7 @@ import '../login.css';
 function SetUser() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const token = searchParams.get('token');
 
   const [new_password, setPassword] = useState('');
@@ -23,26 +25,25 @@ function SetUser() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
 
     if (!birth) {
-      return setError("Por favor, insira a sua data de nascimento.");
+      return setError(t('birthdate_required_error'));
     }
 
     if (/\s/.test(new_password)) {
-      return setError("A password não pode conter espaços.");
+      return setError(t('password_space_error'));
     }
 
     if (new_password !== confirmPassword) {
-      return setError("As passwords não coincidem.");
+      return setError(t('password_mismatch_error'));
     }
 
     try {
-      // Include the birth date in the update call
       await LoginRoute.updatePassword({ 
         token, 
         new_password, 
-        birth // Make sure your backend expects this field name
+        birth
       });
 
       setIsPassSet(true);
@@ -50,7 +51,7 @@ function SetUser() {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      setError("O link expirou ou é inválido.");
+      setError(t('link_expired_error'));
     }
   };
 
@@ -61,12 +62,12 @@ function SetUser() {
         
         {!isPassSent ? (
           <>
-            <h2>Finalizar Registo</h2>
-            <p className="subtitle">Defina os seus dados de acesso</p>
+            <h2>{t('set_user_title')}</h2>
+            <p className="subtitle">{t('set_user_subtitle')}</p>
             
             <form onSubmit={handleSubmit} className="login-form">
               <label className="form-label">
-                Data de Nascimento
+                {t('birthdate_label')}
                 <input 
                   type="date" 
                   className="modal-input"
@@ -78,11 +79,11 @@ function SetUser() {
               </label>
 
               <label className="form-label">
-                Nova Password
+                {t('set_user_password_label')}
                 <input 
                   type="password" 
-                  className="modal-input" // Use consistent class
-                  placeholder="Introduza a password" 
+                  className="modal-input"
+                  placeholder={t('set_user_password_placeholder')} 
                   value={new_password} 
                   onChange={(e) => setPassword(e.target.value)} 
                   required 
@@ -90,11 +91,11 @@ function SetUser() {
               </label>
 
               <label className="form-label">
-                Confirmar Password
+                {t('set_user_confirm_password_label')}
                 <input 
                   type="password" 
-                  className="modal-input" // Use consistent class
-                  placeholder="Repita a password" 
+                  className="modal-input"
+                  placeholder={t('set_user_confirm_password_placeholder')} 
                   value={confirmPassword} 
                   onChange={(e) => setConfirmPassword(e.target.value)} 
                   required 
@@ -102,7 +103,7 @@ function SetUser() {
               </label>
 
               <button type="submit" className="btn-primary-login">
-                Ativar Conta
+                {t('activate_account_btn')}
               </button>
 
               {error && <p className="error-message">{error}</p>}

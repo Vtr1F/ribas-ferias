@@ -2,12 +2,14 @@ import { UserRoutes } from '../../api/userRoutes.js';
 import { TeamRoutes } from '../../api/teamRoutes.js';
 import './create_user.css';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ROLES } from '../../constants/roles.js';
 import UserAvatar from '../user_avatar/user_avatar';
 
 const CreateUser = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [created, setCreated] = useState(false);
   const [nome, setNome] = useState('');
@@ -55,11 +57,11 @@ const CreateUser = () => {
         setSuperiors(superiorUsers);
       } else {
         console.error('Unexpected response format for users:', response);
-        setError('Erro ao buscar superiores - formato inesperado');
+        setError(t('error_fetch_superiors'));
       }
     } catch (err) {
       console.error(err);
-      setError('Erro ao buscar superiores');
+      setError(t('error_fetch_superiors'));
     } finally {
       setLoadingSuperiors(false);
     }
@@ -73,11 +75,11 @@ const CreateUser = () => {
         setTeams(response);
       } else {
         console.error('Unexpected response format for teams:', response);
-        setError('Erro ao buscar equipas - formato inesperado');
+        setError(t('error_fetch_teams'));
       }
     } catch (err) {
       console.error(err);
-      setError('Erro ao buscar equipas');
+      setError(t('error_fetch_teams'));
     } finally {
       setLoadingTeams(false);
     }
@@ -128,7 +130,7 @@ const CreateUser = () => {
 
     } catch (err) {
       console.error(err);
-      setError('Erro ao criar utilizador');
+      setError(t('error_create_user'));
     }
   };
 
@@ -142,7 +144,7 @@ const CreateUser = () => {
       {error && <div className="create-user-error">{error}</div>}
 
       <div className="form-group">
-        <label htmlFor="nome">Nome</label>
+        <label htmlFor="nome">{t('form_name_label')}</label>
         <input
           type="text"
           id="nome"

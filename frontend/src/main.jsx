@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import './lang/i18n'; // Importa a tua instância configurada
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import './index.css'

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/auth-context';
 import { useNavigate } from 'react-router-dom';
 import './edit-profile.css'
@@ -8,6 +9,7 @@ import { UserRoutes } from '../../api/userRoutes';
 function EditProfile() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [edited, setEdited] = useState(false);
     const [clicked, setClicked] = useState(false);
     const [error, setError] = useState('')
@@ -54,7 +56,7 @@ function EditProfile() {
             }
         } catch (err) {
             console.error('Erro ao carregar imagem:', err);
-            setError('Erro ao carregar imagem');
+            setError(t('error_upload_image'));
         } finally {
             setUploading(false);
         }
@@ -88,7 +90,7 @@ function EditProfile() {
 
         } catch (err) {
             console.error(err);
-            setError('Erro ao criar utilizador');
+            setError(t('error_create_user'));
         }
     }
 
@@ -97,12 +99,12 @@ function EditProfile() {
         setError();
         const rawUser = await UserRoutes.fetchUser(user.sub);
 
-        if (/\s/.test(new_password)) {
-            return setError("Password não pode conter espaços")
+        if (/\s/.test(newPass)) {
+            return setError(t('password_space_error'))
         }
 
         if (newPass != comfirmPass){
-            setError('Passwords não Coincidem');
+            setError(t('password_mismatch_error'));
             return;
         }
         const data = {
@@ -122,14 +124,14 @@ function EditProfile() {
             }
         } catch (err) {
             console.log(err);
-            setError("Password não Autorizada");
+            setError(t('password_unauthorized_error'));
         }
     }
 
     return (
     <div className="create-user-page">
             <div className="create-user-card">
-                <h2>Editar Perfil</h2>
+                <h2>{t('edit_profile_page_title')}</h2>
                 
                 <div className="avatar-upload-section">
                     <div className="avatar-preview" onClick={handleAvatarClick}>
@@ -150,12 +152,12 @@ function EditProfile() {
                         style={{ display: 'none' }}
                     />
                     <p className="avatar-hint">Clique na foto para alterar</p>
-                    {uploading && <p className="uploading-text">A carregar...</p>}
+                    {uploading && <p className="uploading-text">{t('loading')}</p>}
                 </div>
 
                 <form onSubmit={handleEditUser}>
                     <label>
-                        Nome
+                        {t('form_name_label')}
                         <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
                     </label>
 
@@ -194,7 +196,7 @@ function EditProfile() {
                                     Password Atual
                                     <input type="password" required value={pass} onChange={(e) => setPass(e.target.value)} />
                                 </label>
-                                <div className="empty-grid-space"></div> {/* Keeps layout aligned */}
+                                <div className="empty-grid-space"></div>
                                 <label>
                                     Nova Password
                                     <input type="password" required value={newPass} onChange={(e) => setNewPass(e.target.value)} />

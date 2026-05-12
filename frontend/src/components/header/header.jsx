@@ -4,6 +4,7 @@ import './Header.css';
 import { useAuth } from '../../context/auth-context';
 import { countUnreadNotifications, markNotificationRead, fetchNotifications } from '../../api/notificationRoutes';
 import UserAvatar from '../user_avatar/user_avatar';
+import LanguageSwitcher from '../language';
 
 function Header() {
   const { user } = useAuth();
@@ -107,6 +108,8 @@ function Header() {
           </div>
         )}
       </div>
+      <LanguageSwitcher />
+
       <UserAvatar userId={userId} name={user?.nome} size="small" />
     </header>
   );

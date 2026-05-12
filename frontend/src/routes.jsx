@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Sidebar from './components/sidebar';
 import ProtectedRoute from './components/protected-routes';
 import { ROLES } from './constants/roles';
@@ -18,7 +19,10 @@ import ResetPassword  from './pages/reset_password';
 import NewPassword    from './pages/new_password';
 
 
-const Loading = () => <div className="loading-spinner">Carregando...</div>;
+const Loading = () => {
+  const { t } = useTranslation();
+  return <div className="loading-spinner">{t('loading')}</div>;
+};
 
 const AppLayout = () => (
   <div style={{ display: 'flex', minHeight: '100vh' }}>

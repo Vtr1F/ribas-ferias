@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback , useRef} from 'react';
+import { useTranslation } from 'react-i18next'; 
 import MonthCard from './month_card'; 
 import { RequestRoutes } from '../api/requestRoutes'; 
 import { UserRoutes } from '../api/userRoutes';
@@ -10,6 +11,12 @@ import { translateType } from '../utils/translation.js';
 
 function Dashboard() {
   const { user } = useAuth();
+  const { t , i18n } = useTranslation();
+  console.log('Dashboard renderizou. Idioma atual:', i18n?.language);
+  console.log('Chave de teste (calendar_title):', t('calendar_title'));
+  const isInitialMount = useRef(true);
+  const lastUserId = useRef(null);
+
   const [currentYear, setCurrentYear] = useState(2026);
   const [requests, setRequests] = useState(null);
   const [vacationDays, setVacationDays] = useState(0);
@@ -37,18 +44,10 @@ function Dashboard() {
     return labels[value] || value;
   };
 
-  useEffect(() => {
-    if (user?.sub || user?.id) {
-      const userId = user.sub || user.id;
-      fetchData(userId);
-      const interval = setInterval(() => fetchData(userId), 30000);
-      return () => clearInterval(interval);
-    }
-  }, [user]);
-
-  const fetchData = async (userId) => {
+  const fetchData = useCallback(async (userId) => {
+    if (!userId) return;
     try {
-      if (!requests) setLoading(true);
+      // Só mostra loading na primeira vez para não "piscar" a UI no intervalo
       const [requestsData, userData] = await Promise.all([
         RequestRoutes.fetchUserRequest(userId),
         UserRoutes.fetchUser(userId)
@@ -60,7 +59,26 @@ function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // Dependências vazias pois as rotas são estáticas
+
+
+  useEffect(() => {
+    const userId = user?.sub || user?.id;
+    
+    if (userId && userId !== lastUserId.current) {
+    lastUserId.current = userId;
+    
+    fetchData(userId);
+      
+      const interval = setInterval(() => {
+        fetchData(userId);
+      }, 30000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [user?.sub, user?.id, fetchData]); // fetchData agora é estável
 
   const { vacationMap, usedDaysCount } = useMemo(() => {
     const map = {};
@@ -118,7 +136,7 @@ function Dashboard() {
       const date = new Date(year, month, day);
       
       // Get the month name (e.g., "fevereiro")
-      const monthName = date.toLocaleString('pt-PT', { month: 'long' });
+      const monthName = date.toLocaleString(i18n.language, { month: 'long' });
       
       if (!groups[monthName]) groups[monthName] = [];
       groups[monthName].push(day);
@@ -129,17 +147,17 @@ function Dashboard() {
         <strong className="capitalize">{month}:</strong> {days.join(', ')}
       </div>
     ));
-  }, [selectedDays]);
+  }, [selectedDays, i18n.language, t]);
 
   const handleRequestVacation = () => {
   if (selectedDays.length === 0) {
-    setError("Selecione os dias no calendário primeiro");
+    setError(t('select_days_first'));
     setTimeout(() => setError(''), 6000);
     return;
   }
 
   if (selectedDays.length > vacationDays) {
-    setError(`Limite excedido! Só tem ${vacationDays} dias disponíveis.`);
+    setError(t('error_limit_exceeded', { count: vacationDays }));
     setTimeout(() => setError(''), 4000);
     return;
   }
@@ -167,7 +185,7 @@ function Dashboard() {
       setSelectedDays([]); // Clear selection after success
   
     } catch (err) {
-      alert("Erro ao enviar pedido. Tente novamente.");
+      alert(t('error_submit_request'));
     } finally {
       setIsSubmitting(false); // Reset cooldown
 
@@ -176,7 +194,7 @@ function Dashboard() {
   const handleAbscence = () => {
     // Validação para garantir que existem dias selecionados antes de abrir o modal
     if (selectedDays.length === 0) {
-      setError("Selecione os dias no calendário primeiro");
+      setError(t('select_days_first'));
       setTimeout(() => setError(''), 4000); // Remove o erro após 4 segundos
       return;
     }
@@ -216,7 +234,7 @@ function Dashboard() {
       setSelectedDays([]);
 
     } catch (err) {
-      alert("Erro ao enviar pedido de ausência.");
+      alert(t('error_submit_absence'));
     } finally {
       setIsSubmitting(false);
     }
@@ -242,20 +260,20 @@ function Dashboard() {
       {showOverlay && (
         <div className="modal-backdrop">
           <div className="modal-content">
-            <h2>Confirmar Solicitação</h2>
-            <p>Deseja solicitar <strong>{translateType("Vacation")}</strong> para os seguintes dias?</p>
+            <h2>{t('confirm_request_title')}</h2>
+            <p dangerouslySetInnerHTML={{__html: t('request_vacation_for_days', { type: `<strong>${t("Vacation")}</strong>` })}}></p>
             
             <div className="selected-days-list">
               {formattedSelection}
             </div>
 
             <div className="modal-info">
-              Total de dias: <strong>{selectedDays.length}</strong>
+              {t('total_days')}: <strong>{selectedDays.length}</strong>
             </div>
 
             <div className="modal-actions">
-              <button className="btn-secondary" onClick={() => setShowOverlay(false)}>Cancelar</button>
-              <button className="btn-primary" onClick={confirmRequest}>{isSubmitting ? "A processar..." : "Confirmar Pedido"}</button>
+              <button className="btn-secondary" onClick={() => setShowOverlay(false)}>{t('btn_cancel')}</button>
+              <button className="btn-primary" onClick={confirmRequest}>{isSubmitting ? t('processing') : t('btn_confirm')}</button>
             </div>
           </div>
         </div>
@@ -264,20 +282,20 @@ function Dashboard() {
       {showAbsenceOverlay && (
         <div className="modal-backdrop">
           <div className="modal-content absence-modal">
-            <h2>Solicitar Ausência</h2>
-            <p>Deseja solicitar ausência para os seguintes dias?</p>
+            <h2>{t('absence_modal_title')}</h2>
+            <p>{t('request_absence_for_days')}</p>
 
             <div className="selected-days-list">
               {formattedSelection}
             </div>
 
             <div className="modal-info">
-              Total de dias: <strong>{selectedDays.length}</strong>
+              {t('total_days')}: <strong>{selectedDays.length}</strong>
             </div>
             <form onSubmit={submitAbsence}>
               
               <label className="form-label">
-                Tipo de Ausência
+                {t('absence_type_label')}
                 <select 
                   className="modal-input" 
                   value={absenceType} 
@@ -293,18 +311,18 @@ function Dashboard() {
               </label>
 
               <label className="form-label">
-                Motivo / Justificação
+                {t('reason_label')}
                 <textarea 
                   className="modal-input textarea" 
                   required 
-                  placeholder="Descreva brevemente o motivo..."
+                  placeholder={t('reason_placeholder')}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                 />
               </label>
 
               <label className="form-label">
-                  Anexar Ficheiro (Opcional)
+                  {t('attach_file_label')}
                   <div className="file-upload-container">
                     {/* 1. The hidden input */}
                     <input 
@@ -316,7 +334,7 @@ function Dashboard() {
                     
                     {/* 2. The visible "button" (actually a label) */}
                     <label htmlFor="file-upload" className="custom-file-button">
-                      <span>{file ? 'Alterar Ficheiro' : 'Selecionar Ficheiro'}</span>
+                      <span>{file ? t('change_file') : t('select_file')}</span>
                     </label>
 
                     {/* 3. Display the filename so the user has feedback */}
@@ -332,10 +350,10 @@ function Dashboard() {
 
               <div className="modal-actions">
                 <button type="button" className="btn-secondary" onClick={() => setShowAbsenceOverlay(false)}>
-                  Cancelar
+                  {t('btn_cancel')}
                 </button>
                 <button type="submit" className="btn-primary">
-                  {isSubmitting ? "A processar..." : "Confirmar Pedido"}
+                  {isSubmitting ? t('processing') : t('btn_confirm')}
                 </button>
               </div>
             </form>
@@ -346,7 +364,7 @@ function Dashboard() {
       <header className="calendar-header">
         <div className="header-left">
           <div className="title-section">
-            <h1>Calendário</h1>
+            <h1>{t('calendar_title')}</h1>
           </div>
           <div className="year-switcher">
             <button onClick={() => setCurrentYear(y => y-1)} className="year-btn">‹</button>
@@ -357,16 +375,16 @@ function Dashboard() {
 
         <div className="header-actions">
           <div className="vacation-allowance">
-            Dias Disponíveis: <strong>{vacationDays}</strong>
+            {t('available_days')}: <strong>{vacationDays}</strong>
           </div>
-          <button className="btn-request" onClick={handleRequestVacation}>+ Solicitar Ferias</button>
-          <button className="btn-request" onClick={handleAbscence}>+ Solicitar Ausencia</button>
+          <button className="btn-request" onClick={handleRequestVacation}>{t('btn_request_vacation')}</button>
+          <button className="btn-request" onClick={handleAbscence}>{t('btn_request_absence')}</button>
         </div>
       </header>
 
       <div className="calendar-main-grid">
         {loading ? (
-          <p>A carregar...</p>
+          <p>{t('loading')}</p>
         ) : (
           months.map(m => (
             <MonthCard 
@@ -383,9 +401,9 @@ function Dashboard() {
 
       <footer className="footer-legend">
         <div className="legend-group">
-          <div className="legend-pill"><span className="status-box green"></span><span>Aceite</span></div>
-          <div className="legend-pill"><span className="status-box yellow"></span><span>Pendente</span></div>
-          <div className="legend-pill"><span className="status-box red"></span><span>Rejeitado</span></div>
+          <div className="legend-pill"><span className="status-box green"></span><span>{t('legend_accepted')}</span></div>
+          <div className="legend-pill"><span className="status-box yellow"></span><span>{t('legend_pending')}</span></div>
+          <div className="legend-pill"><span className="status-box red"></span><span>{t('legend_rejected')}</span></div>
         </div>
       </footer>
     </main>
