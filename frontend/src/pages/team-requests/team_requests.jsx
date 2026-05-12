@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { RequestRoutes } from '../../api/requestRoutes';
 import { ROLES } from '../../constants/roles';
-import { SettingsManager } from '../../constants/settingsData';
+import { SettingsManager } from '../../api/settingsManager';
 import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
 import ConfirmModal from '../../components/confirm_modal'; // Ajusta o caminho se necessário

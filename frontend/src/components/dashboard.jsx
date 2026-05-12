@@ -7,7 +7,7 @@ import Header from './header/header';
 import { ABSENCE } from '../constants/requestTypes.js'
 import './dashboard.css'; 
 import { translateType } from '../utils/translation.js';
-import { SettingsManager, DaltonismModes } from '../constants/settingsData';
+import { SettingsManager, DaltonismModes } from '../api/settingsManager.js';
 
 const fetchUserCached = cache(async (id) => {
   return UserRoutes.fetchUser(id);

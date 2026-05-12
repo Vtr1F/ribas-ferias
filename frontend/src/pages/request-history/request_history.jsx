@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/auth-context";
 import { RequestRoutes } from "../../api/requestRoutes";
-import { SettingsManager } from "../../constants/settingsData";
+import { SettingsManager } from "../../api/settingsManager";
 import Header from '../../components/header/header';
 import "./request_history.css";
 import RequestDetailOverlay from '../../components/request_detail_overlay';

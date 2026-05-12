@@ -12,7 +12,7 @@ import AddToTeam from '../../components/team/add_to_team';
 import RemoveFromTeam from '../../components/team/remove_from_team';
 import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
-import { SettingsManager, DaltonismModes } from '../../constants/settingsData';
+import { SettingsManager, DaltonismModes } from '../../api/settingsManager';
 import './users.css';
 
 const TEAM_COLORS = {

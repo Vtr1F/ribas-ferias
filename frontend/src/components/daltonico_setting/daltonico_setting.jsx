@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './daltonico_setting.css';
-import { SettingsManager, DaltonismModes } from '../../constants/settingsData';
+import { SettingsManager, DaltonismModes } from '../../api/settingsManager';
 
 const COLORBLIND_OPTIONS = [
   { id: DaltonismModes.DEUTERANOMALY, label: 'Deuteranomaly' },

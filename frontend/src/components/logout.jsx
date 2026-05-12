@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/auth-context';
 import { useNavigate } from 'react-router-dom';
-import { SettingsManager, DaltonismModes } from '../constants/settingsData';
+import { SettingsManager, DaltonismModes } from '../api/settingsManager';
 import './logout.css';
 
 const BASE_URL = "http://localhost:3000";
