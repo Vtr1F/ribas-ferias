@@ -17,7 +17,7 @@
 .create-team-form label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 
 .create-team-form input,
@@ -25,9 +25,9 @@
   min-height: 48px;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1.5px solid #d8dce8;
-  background: #fbfdff;
-  color: #1f2d4d;
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -35,12 +35,12 @@
 
 .create-team-form input:focus,
 .create-team-form select:focus {
-  border-color: #f1c40f;
+  border-color: var(--yellow);
   box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
 }
 
 .create-team-form input::placeholder {
-  color: #8f9bb7;
+  color: var(--text-muted);
 }
 
 .create-team-form select {
@@ -61,24 +61,24 @@
 
 .create-team-form .cancel-btn {
   padding: 12px 24px;
-  border: 1.5px solid #d8dce8;
+  border: 1.5px solid var(--border-input);
   border-radius: 12px;
-  background: #ffffff;
-  color: #516c99;
+  color: var(--text-secondary);
   cursor: pointer;
+  background: transparent;
   transition: all 0.2s ease;
 }
 
 .create-team-form .cancel-btn:hover {
-  background: #f5f6fa;
-  border-color: #b8c0d4;
+  background: var(--bg-hover);
+  border-color: var(--border);
 }
 
 .create-team-form .submit-btn {
   padding: 12px 24px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%);
   color: #1f2d4d;
   font-weight: 500;
   cursor: pointer;
@@ -98,9 +98,9 @@
 .create-team-form .create-team-error {
   padding: 12px 16px;
   border-radius: 12px;
-  background: #fff1f0;
-  border: 1px solid #f5c2c0;
-  color: #9f1f1f;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red);
   font-size: 0.9rem;
 }
 
@@ -114,18 +114,18 @@
   min-height: 48px;
   padding: 8px 12px;
   border-radius: 12px;
-  border: 1.5px solid #d8dce8;
-  background: #fbfdff;
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .leader-input-container:focus-within {
-  border-color: #f1c40f;
+  border-color: var(--yellow);
   box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
 }
 
 .leader-search-icon {
-  color: #8f9bb7;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   margin-right: 8px;
@@ -135,7 +135,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%);
   color: #1f2d4d;
   display: flex;
   align-items: center;
@@ -151,19 +151,19 @@
   border: none;
   background: transparent;
   font-size: 0.95rem;
-  color: #1f2d4d;
+  color: var(--text-primary);
   outline: none;
 }
 
 .leader-input::placeholder {
-  color: #8f9bb7;
+  color: var(--text-muted);
 }
 
 .clear-leader {
   background: none;
   border: none;
   font-size: 1.4rem;
-  color: #8f9bb7;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
@@ -171,13 +171,13 @@
 }
 
 .clear-leader:hover {
-  color: #e74c3c;
+  color: var(--red);
 }
 
 .dropdown-toggle {
   background: none;
   border: none;
-  color: #8f9bb7;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -185,7 +185,7 @@
 }
 
 .dropdown-toggle:hover {
-  color: #516c99;
+  color: var(--text-secondary);
 }
 
 .leader-dropdown {
@@ -193,10 +193,10 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: var(--bg-modal);
   border-radius: 12px;
-  border: 1.5px solid #d8dce8;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
   z-index: 100;
   overflow: hidden;
 }
@@ -216,14 +216,14 @@
 }
 
 .leader-option:hover {
-  background: #f5f6fa;
+  background: var(--bg-hover);
 }
 
 .leader-option-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f1c40f 0%, #d4a800 100%);
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%);
   color: #1f2d4d;
   display: flex;
   align-items: center;
@@ -234,13 +234,13 @@
 }
 
 .leader-option-name {
-  color: #1f2d4d;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .leader-no-results {
   padding: 16px;
   text-align: center;
-  color: #8f9bb7;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }

@@ -1,8 +1,7 @@
 .logout-button {
   height: 55px;
   border-radius: 25px;
-  background-color: #3498db;
-  color: white;
+  background: var(--blue);
   border: none;
   cursor: pointer;
   display: flex;
@@ -15,10 +14,11 @@
   font-size: 14px;
   font-weight: 500;
   width: 100%;
+  color: white;
 }
 
 .logout-button:hover {
-  background-color: #2980b9;
+  background: var(--blue-dark);
   transform: scale(1.02);
 }
 
@@ -51,7 +51,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: var(--bg-overlay);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,7 +62,7 @@
 }
 
 .logout-confirm-box {
-  background-color: #fff;
+  background: var(--bg-modal);
   border-radius: 15px;
   padding: 30px;
   display: flex;
@@ -70,12 +70,14 @@
   align-items: center;
   gap: 25px;
   max-width: 400px;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-xl);
 }
 
 .logout-confirm-text {
   font-family: 'Questrial', sans-serif;
   font-size: 20px;
-  color: #333;
+  color: var(--text-primary);
   text-align: center;
 }
 
@@ -102,27 +104,28 @@
 }
 
 .logout-confirm-btn.cancel {
-  background-color: #e0e0e0;
-  color: #333;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .logout-confirm-btn.confirm {
-  background-color: #e74c3c;
+  background: var(--red);
   color: #fff;
 }
 
 .logout-icon-container {
   width: 100px;
   height: 100px;
-  background-color: #000;
+  background-color: var(--bg-card);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 2px solid var(--border);
 }
 
 .logout-icon-container svg {
-  stroke: #fff;
+  stroke: var(--red);
 }
 
 .logout-message {

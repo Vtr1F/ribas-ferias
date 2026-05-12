@@ -8,7 +8,7 @@
 
 .stat-box {
   flex: 1;
-  background-color: #efefef;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 25px;
   display: flex;
@@ -16,10 +16,12 @@
   align-items: center;
   text-align: center;
   gap: 15px;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-icon {
-  color: #333;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,13 +37,13 @@
 .stat-value {
   font-size: 36px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -49,5 +51,5 @@
 .stats-loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: var(--text-muted);
 }

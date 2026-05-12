@@ -1,70 +1,61 @@
 .card-header {
   display: flex;
-  justify-content: space-between; /* Pushes Month to left and Year to right */
+  justify-content: space-between;
   margin-bottom: 20px;
   font-weight: 700;
   font-size: 1.1rem;
   padding: 0 5px;
+  color: var(--text-primary);
 }
 
 .selected {
-  background-color: #6593a7 !important; /* Matches 'Disponível' */
-  color: white;
+  background-color: #6593a7 !important;
   font-weight: bold;
 }
 
-.month-label {
-  color: #1a1a1a;
+.year-label {
+  color: var(--text-muted);
 }
 
-.year-label {
-  color: #888; /* Making the year a bit more subtle like the target */
-}
-/* Vacation Status Colors */
 .day.status-green {
-  background-color: #00FF40 !important; /* Matches 'Disponível' */
-  color: white;
+  background-color: #00FF40 !important;
   font-weight: bold;
 }
 
 .day.status-yellow {
-  background-color: #FFB800 !important; /* Matches 'Pendente' */
-  color: white;
+  background-color: #FFB800 !important;
   font-weight: bold;
 }
 
 .day.status-red {
-  background-color: #FF3B30 !important; /* Matches 'Rejeitado' */
-  color: white;
+  background-color: #FF3B30 !important;
   font-weight: bold;
 }
 
 .day {
-  position: relative; 
+  position: relative;
 }
 
-
-/* Tooltip Container */
 .day-tooltip {
   visibility: hidden;
   position: absolute;
-  bottom: 130%; /* Position it above the day */
+  bottom: 130%;
   left: 50%;
   transform: translateX(-50%);
   width: 160px;
-  background-color: #1e293b; /* Dark slate background */
-  color: #ffffff;
+  background-color: var(--bg-modal);
   padding: 10px;
   border-radius: 8px;
   font-size: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   z-index: 100;
-  pointer-events: none; /* Prevents the tooltip from flickering when mouse moves over it */
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
-/* Tooltip Arrow */
 .day-tooltip::after {
   content: "";
   position: absolute;
@@ -73,10 +64,9 @@
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: #1e293b transparent transparent transparent;
+  border-color: var(--bg-modal) transparent transparent transparent;
 }
 
-/* Show on Hover */
 .day:hover .day-tooltip {
   visibility: visible;
   opacity: 1;
@@ -88,18 +78,17 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 4px;
 }
 
 .tooltip-reason {
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.2;
   font-style: italic;
   word-wrap: break-word;
 }
 
-/* Badge inside tooltip */
 .badge {
   font-size: 0.65rem;
   padding: 2px 6px;
@@ -111,7 +100,6 @@
 .badge.status-yellow { background: #a16207; color: white; }
 .badge.status-red { background: #b91c1c; color: white; }
 
-/* If it's an absence, we add a subtle stripe pattern over the status color */
 .day.type-absence {
   background-image: linear-gradient(
     45deg, 
@@ -126,7 +114,6 @@
   background-size: 10px 10px;
 }
 
-/* Small dot indicator at the bottom of the day */
 .absence-indicator {
   position: absolute;
   bottom: 4px;
@@ -134,15 +121,14 @@
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background-color: white; /* Contrast against the green/red/yellow */
   border-radius: 50%;
   box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
 
-/* Different border for absences to make them stand out further */
 .day.type-absence.status-green {
   border: 1.5px solid #3da142;
 }
+
 .day.type-absence.status-yellow {
   border: 1.5px solid #a77423;
 }

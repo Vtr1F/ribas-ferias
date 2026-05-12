@@ -1,18 +1,19 @@
 .profile-page-main {
   padding: 40px 60px;
-  background-color: #fdfaf7; 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   font-family: sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
 .main-title {
   font-size: 2.2rem;
   font-weight: 700;
   margin-bottom: 30px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -31,7 +32,7 @@
   padding: 0;
   display: flex;
   align-items: center;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .profile-header-clean {
@@ -56,7 +57,7 @@
   justify-content: center;
   font-size: 2.2rem;
   font-weight: bold;
-  color: #555;
+  color: var(--text-primary);
   overflow: hidden;
   background: transparent;
   border: none;
@@ -72,16 +73,15 @@
 
 .profile-avatar-main span {
   background: transparent;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .edit-photo-badge {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: #000;
-  color: #fff;
-  border: 2px solid #fff;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
   border-radius: 50%;
   width: 28px;
   height: 28px;
@@ -90,6 +90,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: 14px;
+  color: var(--text-primary);
 }
 
 .profile-name-edit {
@@ -100,10 +101,11 @@
 .header-text-main h2 {
   font-size: 1.8rem;
   margin: 0;
+  color: var(--text-primary);
 }
 
 .email-sub {
-  color: #888;
+  color: var(--text-muted);
   font-size: 1rem;
   font-family: 'Roboto', sans-serif;
 }
@@ -118,17 +120,21 @@
   display: flex;
   justify-content: space-between;
   padding: 15px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .info-row label {
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   font-family: 'Roboto', sans-serif;
 }
 
+.info-row span {
+  color: var(--text-secondary);
+}
+
 .vacation-count {
-  color: #4670DB;
+  color: var(--blue);
   font-weight: bold;
 }
 
@@ -144,27 +150,34 @@
   display: block;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .input-group input {
   width: 100%;
   padding: 12px 15px;
-  border: 1.5px solid #ccc;
+  border: 1.5px solid var(--border-input);
   border-radius: 10px;
   font-size: 1rem;
   box-sizing: border-box;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--blue);
 }
 
 .input-disabled {
-  background-color: #f9f9f9;
-  color: #999;
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .btn-password-inline {
-  background-color: #4670DB;
-  color: white;
+  background-color: var(--blue);
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -172,11 +185,15 @@
   cursor: pointer;
   width: fit-content;
   font-family: 'Questrial', sans-serif;
+  color: white;
+}
+
+.btn-password-inline:hover {
+  background-color: var(--blue-dark);
 }
 
 .btn-edit-main-blue, .btn-save-blue {
-  background-color: #4670DB;
-  color: white;
+  background-color: var(--blue);
   border: none;
   padding: 12px 35px;
   border-radius: 10px;
@@ -184,17 +201,26 @@
   cursor: pointer;
   transition: 0.2s;
   font-family: 'Questrial', sans-serif;
+  color: white;
+}
+
+.btn-edit-main-blue:hover, .btn-save-blue:hover {
+  background-color: var(--blue-dark);
 }
 
 .btn-cancel-outline {
   background-color: transparent;
-  color: #4670DB;
-  border: 2px solid #4670DB;
+  color: var(--blue);
+  border: 2px solid var(--blue);
   padding: 12px 35px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   font-family: 'Questrial', sans-serif;
+}
+
+.btn-cancel-outline:hover {
+  background: rgba(70, 112, 219, 0.08);
 }
 
 .form-actions {

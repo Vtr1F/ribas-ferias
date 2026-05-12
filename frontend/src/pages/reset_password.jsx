@@ -36,7 +36,7 @@ function ResetPassword() {
           <h2>Recuperar Password</h2>
           <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
           <button type="submit">Enviar Código</button>
-          {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
+          {error && <p className="error-message">{error}</p>}
         </form>
       ) : (
         <h2>Email Com Link Enviado</h2>

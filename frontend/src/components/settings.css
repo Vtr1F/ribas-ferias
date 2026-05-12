@@ -1,11 +1,12 @@
 .settings-content {
   padding: 40px;
   min-height: 100vh;
+  background: var(--bg-page);
 }
 
 .settings-content h1 {
   font-family: 'Questrial', sans-serif;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .settings-header {
