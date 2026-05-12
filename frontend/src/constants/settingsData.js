@@ -11,8 +11,7 @@ const defaultSettings = {
     DALTONISM: false,
     DALTONISM_MODE: DaltonismModes.DEUTERANOMALY,
     DARK_MODE: false,
-    LANGUAGE: "pt
-    "
+    LANGUAGE: "pt"
 };
 
 export const SettingsManager = {
