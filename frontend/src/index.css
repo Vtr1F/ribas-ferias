@@ -1,8 +1,86 @@
 @import url('https://fonts.googleapis.com/css2?family=Questrial&family=Roboto:wght@400;500;700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Questrial', 'Roboto', sans-serif;
+
+  --bg-page: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-secondary: #fbfdff;
+  --bg-tertiary: #f3f4f6;
+  --bg-hover: #f0f0f0;
+  --bg-input: #ffffff;
+  --bg-modal: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-table-header: #f9fafb;
+  --bg-table-alt: #fafafa;
+  --bg-stat: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-light: #6b7280;
+  --text-on-primary: #ffffff;
+
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-input: #d1d5db;
+  --border-card: #e5e7eb;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+  --blue: #4670DB;
+  --blue-dark: #2e5dd8;
+  --blue-light: #3b82f6;
+  --yellow: #f1c40f;
+  --yellow-dark: #d4a800;
+  --green: #10b981;
+  --green-dark: #059669;
+  --red: #ef4444;
+  --red-dark: #dc2626;
+  --orange: #f59e0b;
+}
+
+div[data="dark"] {
+  color-scheme: dark;
+
+  --bg-page: #0f1117;
+  --bg-card: #1a1d2e;
+  --bg-secondary: #161922;
+  --bg-tertiary: #1e2130;
+  --bg-hover: #252839;
+  --bg-input: #161922;
+  --bg-modal: #1a1d2e;
+  --bg-sidebar: #0f1117;
+  --bg-table-header: #1e2130;
+  --bg-table-alt: #161922;
+  --bg-stat: #1a1d2e;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  --text-primary: #e4e6f0;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-light: #8b8fa3;
+  --text-on-primary: #ffffff;
+
+  --border: #2d3148;
+  --border-light: #252839;
+  --border-input: #363b54;
+  --border-card: #2d3148;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 html, body, #root {
@@ -11,12 +89,15 @@ html, body, #root {
 
 body {
   font-family: 'Questrial', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .clickable-button {
   border: none;
   border-radius: 16px;
-  font-size:medium;
+  font-size: medium;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -25,7 +106,22 @@ body {
   transform: translateY(-1px);
 }
 
-:root {
-  font-family: 'Questrial', 'Roboto', sans-serif;
-  color-scheme: light;
+::selection {
+  background: var(--blue);
+  color: white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }

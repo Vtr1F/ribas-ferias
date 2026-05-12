@@ -94,6 +94,17 @@ function Dashboard() {
     }
   }, [user]);
 
+  const switchDarkMode = async () => {
+    const root = document.querySelector('#root > div');
+    if (localStorage.getItem("DarkMode") == "light") {
+      localStorage.setItem("DarkMode", "dark");
+      root?.setAttribute('data', 'dark');
+    } else {
+      localStorage.setItem("DarkMode", "light");
+      root?.setAttribute('data', 'light');
+    }
+  }
+
   const fetchData = async (userId) => {
     try {
       if (!requests) setLoading(true);

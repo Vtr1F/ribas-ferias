@@ -2,6 +2,8 @@
   padding: 40px;
   min-height: 100vh;
   font-family: 'Questrial', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
 .page-header {
@@ -12,10 +14,12 @@
 }
 
 .users-container {
-  background-color: #efefef;
+  background: var(--bg-card);
   border-radius: 45px;
   padding: 30px;
   margin-right: 40px;
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
 }
 
 .users-header {
@@ -33,7 +37,7 @@
 .search-icon {
   position: absolute;
   left: 15px;
-  color: #999;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   pointer-events: none;
@@ -41,17 +45,24 @@
 
 .users-search {
   padding: 12px 20px 12px 45px;
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 25px;
   font-size: 16px;
   min-width: 300px;
   font-family: 'Questrial', sans-serif;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .users-search:focus {
   outline: none;
+  border-color: var(--blue);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.users-search::placeholder {
+  color: var(--text-muted);
 }
 
 .users-list {
@@ -63,33 +74,16 @@
   padding-right: 10px;
 }
 
-.users-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.users-list::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 4px;
-}
-
-.users-list::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-.users-list::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
-
 .user-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
   padding: 15px 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
   text-align: left;
+  border: 1px solid var(--border);
 }
 
 .user-info {
@@ -104,7 +98,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background-color: #333;
+  background-color: var(--blue);
   color: #fff;
   display: flex;
   align-items: center;
@@ -132,12 +126,12 @@
 .user-name {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .user-email {
   font-size: 14px;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .user-tabs {
@@ -156,7 +150,7 @@
 
 .tab-label {
   font-size: 11px;
-  color: #999;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
@@ -186,12 +180,12 @@
 
 .role-name {
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .team-value {
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .user-settings-btn {
@@ -201,10 +195,11 @@
   padding: 10px;
   border-radius: 8px;
   transition: background-color 0.2s;
+  color: var(--text-secondary);
 }
 
 .user-settings-btn:hover {
-  background-color: #f0f0f0;
+  background-color: var(--bg-hover);
 }
 
 .gear-icon {
@@ -216,7 +211,7 @@
 .users-error,
 .users-no-results {
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   padding: 40px;
 }
 
@@ -229,7 +224,7 @@
 }
 
 .team-group + .team-group {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border);
   padding-top: 20px;
 }
 
@@ -238,9 +233,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background-color: #e8e8e8;
+  background: var(--bg-secondary);
   border-radius: 12px;
   margin-bottom: 15px;
+  border: 1px solid var(--border);
 }
 
 .team-header-left {
@@ -266,33 +262,33 @@
 
 .team-toggle {
   font-size: 12px;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .team-name {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .team-description {
   font-size: 14px;
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }
 
 .team-member-count {
   font-size: 14px;
-  color: #888;
-  background-color: #fff;
+  color: var(--text-muted);
   padding: 4px 12px;
   border-radius: 15px;
+  background: var(--bg-tertiary);
 }
 
 .team-edit-btn {
   background: none;
   border: none;
-  color: #516c99;
+  color: var(--yellow);
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -319,6 +315,7 @@
   font-size: 12px;
   font-family: 'Questrial', sans-serif;
   cursor: pointer;
+  color: white;
   transition: all 0.2s ease;
 }
 
@@ -339,6 +336,7 @@
   font-size: 13px;
   font-family: 'Questrial', sans-serif;
   cursor: pointer;
+  color: white;
   transition: all 0.2s ease;
 }
 
@@ -355,14 +353,14 @@
 
 .users-header {
   display: flex;
-  justify-content: space-between; /* Pushes search to left and button to right */
+  justify-content: space-between;
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
 }
 
 .search-wrapper {
-  flex: 1; /* Allows search bar to take up available space */
+  flex: 1;
   position: relative;
 }
 
@@ -416,33 +414,30 @@
   margin-bottom: 0.1rem;
 }
 
-/* src/pages/users/users.css */
-
-/* The dark background */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  background-color: var(--bg-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it stays above everything */
-  backdrop-filter: blur(4px); /* Modern blur effect */
+  z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
-/* The white box containing the form */
 .modal-content {
-  background: white;
+  background: var(--bg-modal);
   padding: 2rem;
   border-radius: 12px;
   width: 100%;
   max-width: 1000px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
   position: relative;
   animation: modalIn 0.3s ease-out;
+  border: 1px solid var(--border-card);
 }
 
 .modal-header {
@@ -450,7 +445,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
   padding-bottom: 10px;
 }
 
@@ -459,15 +454,15 @@
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted);
   line-height: 1;
+  transition: color 0.2s;
 }
 
 .close-modal:hover {
   color: var(--clr-danger, #e74c3c);
 }
 
-/* Smooth fade-in animation */
 @keyframes modalIn {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -483,39 +478,40 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 25px;
   font-size: 14px;
   font-family: 'Questrial', sans-serif;
-  background: #fff;
-  color: #555;
+  color: var(--text-primary);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s;
 }
 
 .team-filter-btn:hover {
-  background: #f8f8f8;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  background: var(--bg-hover);
+  box-shadow: var(--shadow-md);
 }
 
 .team-filter-btn.active {
-  background: #4a90d9;
+  background: var(--blue);
   color: #fff;
+  border-color: var(--blue);
 }
 
 .filter-count {
-  background: #fff;
-  color: #4a90d9;
+  color: var(--blue);
   font-size: 11px;
   font-weight: bold;
   padding: 2px 6px;
   border-radius: 10px;
+  background: var(--bg-secondary);
 }
 
 .team-filter-btn.active .filter-count {
-  background: #fff;
-  color: #4a90d9;
+  color: var(--blue);
+  background: rgba(255,255,255,0.2);
 }
 
 .team-filter-dropdown {
@@ -523,9 +519,10 @@
   top: 100%;
   left: 0;
   margin-top: 8px;
-  background: #fff;
+  background: var(--bg-modal);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
   z-index: 100;
   min-width: 220px;
   animation: filterDropIn 0.2s ease;
@@ -553,28 +550,28 @@
 }
 
 .team-filter-option:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }
 
 .team-filter-option input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #4a90d9;
+  accent-color: var(--blue);
   cursor: pointer;
 }
 
 .team-filter-option span {
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .clear-filters-btn {
   width: 100%;
   padding: 10px;
   border: none;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-light);
   background: none;
-  color: #4a90d9;
+  color: var(--blue);
   font-size: 13px;
   font-family: 'Questrial', sans-serif;
   cursor: pointer;
@@ -582,5 +579,5 @@
 }
 
 .clear-filters-btn:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }

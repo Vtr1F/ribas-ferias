@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,25 +12,26 @@
 }
 
 .confirm-modal {
-  background-color: #fff;
+  background: var(--bg-modal);
   border-radius: 20px;
   padding: 30px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-xl);
   text-align: center;
+  border: 1px solid var(--border-card);
 }
 
 .confirm-modal h2 {
   margin: 0 0 15px 0;
   font-size: 20px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .confirm-modal p {
   margin: 0 0 25px 0;
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .confirm-actions {
@@ -50,24 +51,24 @@
 }
 
 .confirm-actions .cancel-btn {
-  background-color: #f5f5f5;
-  color: #333;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .confirm-actions .cancel-btn:hover {
-  background-color: #e0e0e0;
+  background: var(--bg-hover);
 }
 
 .confirm-actions .confirm-btn {
-  background-color: #e74c3c;
+  background: var(--red);
   color: #fff;
 }
 
 .confirm-actions .confirm-btn:hover {
-  background-color: #c0392b;
+  background: var(--red-dark);
 }
 
 .confirm-actions button:disabled {
-  background-color: #999;
+  background: var(--text-muted);
   cursor: not-allowed;
 }

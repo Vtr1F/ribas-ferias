@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--bg-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,15 +13,16 @@
 }
 
 .remove-from-team-modal {
-  background: #ffffff;
+  background: var(--bg-modal);
   border-radius: 20px;
   width: 100%;
   max-width: 480px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-xl);
   animation: modalIn 0.3s ease-out;
+  border: 1px solid var(--border-card);
 }
 
 @keyframes modalIn {
@@ -34,20 +35,20 @@
   align-items: center;
   gap: 12px;
   padding: 20px 24px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 .remove-from-team-header h2 {
   margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 
 .back-btn {
   background: none;
   border: none;
-  color: #516c99;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
@@ -58,8 +59,8 @@
 }
 
 .back-btn:hover {
-  background: #f5f6fa;
-  color: #1f2d4d;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .remove-from-team-content {
@@ -71,22 +72,22 @@
 .remove-from-team-error {
   padding: 12px 16px;
   border-radius: 12px;
-  background: #fff1f0;
-  border: 1px solid #f5c2c0;
-  color: #9f1f1f;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red);
   font-size: 0.9rem;
   margin-bottom: 16px;
 }
 
 .remove-instructions {
   margin: 0 0 16px;
-  color: #516c99;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .no-users {
   text-align: center;
-  color: #8f9bb7;
+  color: var(--text-muted);
   padding: 40px 0;
 }
 
@@ -108,19 +109,19 @@
 }
 
 .user-item:hover {
-  background: #f5f6fa;
+  background: var(--bg-hover);
 }
 
 .user-item.selected {
-  background: #fff1f0;
-  border-color: #e74c3c;
+  background: rgba(239,68,68,0.08);
+  border-color: var(--red);
 }
 
 .user-checkbox {
   width: 24px;
   height: 24px;
   border-radius: 6px;
-  border: 2px solid #d8dce8;
+  border: 2px solid var(--border-input);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,23 +130,22 @@
 }
 
 .user-item.selected .user-checkbox {
-  background: #e74c3c;
-  border-color: #e74c3c;
-  color: white;
+  background: var(--red);
+  border-color: var(--red);
 }
 
 .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 1rem;
   flex-shrink: 0;
+  color: white;
 }
 
 .user-info {
@@ -156,7 +156,7 @@
 }
 
 .user-name {
-  color: #1f2d4d;
+  color: var(--text-primary);
   font-size: 0.95rem;
   font-weight: 500;
   white-space: nowrap;
@@ -165,7 +165,7 @@
 }
 
 .user-email {
-  color: #8f9bb7;
+  color: var(--text-muted);
   font-size: 0.8rem;
   white-space: nowrap;
   overflow: hidden;
@@ -173,7 +173,7 @@
 }
 
 .user-role {
-  color: #f1c40f;
+  color: var(--yellow);
   font-size: 0.75rem;
   font-weight: 500;
   margin-top: 2px;
@@ -184,32 +184,32 @@
   gap: 12px;
   justify-content: flex-end;
   padding: 20px 24px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
 }
 
 .remove-from-team-footer .cancel-btn {
   padding: 12px 24px;
-  border: 1.5px solid #d8dce8;
+  border: 1.5px solid var(--border-input);
   border-radius: 12px;
-  background: #ffffff;
-  color: #516c99;
+  color: var(--text-secondary);
   cursor: pointer;
+  background: transparent;
   transition: all 0.2s ease;
 }
 
 .remove-from-team-footer .cancel-btn:hover {
-  background: #f5f6fa;
-  border-color: #b8c0d4;
+  background: var(--bg-hover);
+  border-color: var(--border);
 }
 
 .remove-from-team-footer .remove-btn {
   padding: 12px 24px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
   font-weight: 500;
   cursor: pointer;
+  color: white;
   transition: all 0.2s ease;
 }
 

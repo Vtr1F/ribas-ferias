@@ -1,13 +1,12 @@
-/* 1. Global Layout */
 .dashboard-container {
-  background-color: white; /* Light grey background from the target */
   min-height: 10vh;
   padding: 30px 50px;
   flex: 1;
   font-family: 'Questrial', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
 }
 
-/* 2. Top Header & Buttons */
 .calendar-header {
   margin-bottom: 30px;
 }
@@ -23,7 +22,6 @@
 .title-section h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
   font-family: 'Questrial', sans-serif;
 }
 
@@ -33,50 +31,43 @@
   align-items: center;
 }
 
-.vacation-allowance{
+.vacation-allowance {
   padding-top: 0.7rem;
 }
 
 .btn-request {
-  background: white;
-  border: 1px solid #eef0f2;
   padding: 10px 20px;
-  border-radius: 12px; /* Smooth rounded corners */
+  border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
 
 .btn-request:hover {
-  background-color: #fcfcfc;
   transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-md);
 }
 
-/* 3. Calendar Grid Layout */
 .calendar-main-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
-  margin-bottom: 100px; /* Space for the footer legend */
+  margin-bottom: 100px;
 }
 
-/* 4. Individual Calendar Card */
 .calendar-card {
-  background: white;
   border-radius: 25px;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-  border: whitesmoke ;
-  border-style:solid;
-  border-width: 3px;
-
-  
-  /* Add a maximum width so the cards stay small */
-  max-width: 320px; 
+  background: var(--bg-card);
+  box-shadow: var(--shadow-lg);
+  max-width: 320px;
   width: 100%;
+  border: 1px solid var(--border-card);
 }
 
 .card-header {
@@ -87,52 +78,51 @@
   font-family: 'Questrial', sans-serif;
 }
 
-/* Select styling to match the "bubbly" look */
 .month-select, .year-select {
-  border: 1px solid #f0f0f0;
   border-radius: 10px;
   padding: 5px 12px;
-  background-color: #fff;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
 }
 
 .weekdays-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Forces 7 equal columns */
+  grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: 0.8rem;
-  color: #adb5bd;
   margin-bottom: 15px;
-  gap: 5px; /* Match the gap of the days grid */
+  gap: 5px;
+  color: var(--text-muted);
 }
 
 .days-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); /* Keeps exactly 7 columns */
-  gap: 5px; /* Small space between days */
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
 }
 
-/* 5. Day Circles & Statuses */
 .day {
-  aspect-ratio: 1 / 1; /* Keeps the days perfectly square */
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   border-radius: 12px;
-
+  color: var(--text-primary);
 }
 
 .day:hover:not(.empty) {
-  background-color: #f1f3f5;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .footer-legend {
   position: fixed;
   bottom: 30px;
   left: 50%;
-  transform: translateX(-50%); /* Centers the footer */
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 20px;
@@ -144,21 +134,19 @@
   gap: 15px;
 }
 
-/* Individual Pill Styling */
 .legend-pill, .search-pill {
-  background: white;
+  background: var(--bg-card);
   padding: 8px 20px;
   border-radius: 50px;
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Soft shadow */
-  border: 1px solid #f0f0f0;
+  box-shadow: var(--shadow-md);
   font-size: 0.85rem;
-  color: #555;
+  color: var(--text-primary);
+  border: 1px solid var(--border-card);
 }
 
-/* Status Boxes inside pills */
 .status-box {
   width: 14px;
   height: 14px;
@@ -169,31 +157,33 @@
 .status-box.yellow { background-color: #FFB800; }
 .status-box.red { background-color: #FF3B30; }
 
-/* Search Bar Pill */
 .search-pill {
-  background: #f1f3f5; /* Slightly darker grey for search */
   padding: 8px 15px;
   min-width: 200px;
 }
 
 .search-pill input {
   border: none;
-  background: transparent;
   outline: none;
   width: 100%;
   font-size: 0.9rem;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.search-pill input::placeholder {
+  color: var(--text-muted);
 }
 
 .search-icon, .mic-icon {
-  color: #999;
   font-size: 1rem;
+  color: var(--text-muted);
 }
+
 .day.empty {
   cursor: default;
 }
 
-/* 6. User Profile (Top Right) */
-/* Assuming you put this in your Dashboard component */
 .user-profile-nav {
   position: absolute;
   top: 30px;
@@ -208,34 +198,31 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 5px;
 }
 
 .user-name {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
 }
 
-
-/*button switch year*/
 .header-left {
   display: flex;
   align-items: center;
-  gap: 30px; /* Space between title and switcher */
+  gap: 30px;
 }
 
 .year-switcher {
   display: flex;
   align-items: center;
-  background: white;
   padding: 5px 15px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
   margin-bottom: 25px;
+  border: 1px solid var(--border-card);
   font-family: 'Questrial', sans-serif;
 }
 
@@ -245,22 +232,22 @@
   margin: 0 15px;
   min-width: 50px;
   text-align: center;
-  color: #333;
   font-family: 'Questrial', sans-serif;
+  color: var(--text-primary);
 }
 
 .year-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #888;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0 5px;
   transition: color 0.2s, transform 0.1s;
 }
 
 .year-btn:hover {
-  color: #007bff; /* Or your primary blue color */
+  color: var(--blue);
 }
 
 .year-btn:active {
@@ -274,7 +261,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -282,16 +269,16 @@
   backdrop-filter: blur(4px);
 }
 
-/* Modal Box */
 .modal-content {
-  background: white;
+  background: var(--bg-modal);
   padding: 30px;
   border-radius: 20px;
   width: 90%;
   font-family: 'Questrial', sans-serif;
   max-width: 500px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-xl);
   animation: slideIn 0.3s ease-out;
+  border: 1px solid var(--border-card);
 }
 
 @keyframes slideIn {
@@ -301,39 +288,37 @@
 
 .modal-content h2 {
   margin-top: 0;
-  color: #121f3f;
+  color: var(--text-primary);
   font-size: 1.5rem;
 }
 
-/* List of days inside the modal */
 .selected-days-list {
-  background: #f8faff;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 15px;
   margin: 20px 0;
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #e0e6ed;
-    font-family: 'Questrial', sans-serif;
-
+  border: 1px solid var(--border);
+  font-family: 'Questrial', sans-serif;
+  color: var(--text-primary);
 }
 
 .overlay-month-group {
   margin-bottom: 8px;
   font-size: 0.95rem;
-  color: #444;
-    font-family: 'Questrial', sans-serif;
+  color: var(--text-secondary);
+  font-family: 'Questrial', sans-serif;
 }
 
 .modal-info {
   margin-bottom: 25px;
   font-size: 1rem;
+  color: var(--text-secondary);
 }
 
-/* Modal Buttons */
 .modal-actions {
-    font-family: 'Questrial', sans-serif;
-
+  font-family: 'Questrial', sans-serif;
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -351,28 +336,27 @@
 
 .btn-secondary {
   font-family: 'Questrial', sans-serif;
-  background: #f1f3f9;
-  color: #555;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
 }
 
 .btn-secondary:hover {
-  background: #e2e6f0;
+  background: var(--bg-hover);
   font-family: 'Questrial', sans-serif;
 }
 
 .btn-primary {
-  background: #3b6dff;
+  background: var(--blue);
   font-family: 'Questrial', sans-serif;
   color: white;
 }
 
 .btn-primary:hover {
   font-family: 'Questrial', sans-serif;
-  background: #1d53d7;
+  background: var(--blue-dark);
   transform: translateY(-1px);
 }
 
-/* Absence Modal specific adjustments */
 .absence-modal {
   max-width: 550px;
 }
@@ -383,7 +367,7 @@
   gap: 8px;
   margin-bottom: 20px;
   font-weight: 500;
-  color: #121f3f;
+  color: var(--text-primary);
   font-size: 0.95rem;
   text-align: left;
 }
@@ -392,16 +376,21 @@
   width: 100%;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1.5px solid #d8dce8;
-  background: #fbfdff;
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
   font-size: 1rem;
   outline: none;
   transition: all 0.2s;
 }
 
 .modal-input:focus {
-  border-color: #4f7cff;
+  border-color: var(--blue);
   box-shadow: 0 0 0 4px rgba(79, 124, 255, 0.1);
+}
+
+.modal-input::placeholder {
+  color: var(--text-muted);
 }
 
 .textarea {
@@ -412,8 +401,7 @@
 
 .file-input-wrapper {
   padding: 10px;
-  background: #f8faff;
-  border: 1px dashed #cbd2e0;
+  border: 1px dashed var(--border);
   border-radius: 12px;
 }
 
@@ -422,24 +410,20 @@
   cursor: pointer;
 }
 
-/* Ensure the modal content aligns its header */
 .modal-content h2 {
-    text-align: left;
-    margin-bottom: 25px;
+  text-align: left;
+  margin-bottom: 25px;
 }
 
-/* Completely hide the default browser button */
 .hidden-file-input {
   display: none;
 }
 
-/* Style the label to look like your existing primary buttons */
 .custom-file-button {
   display: inline-block;
   padding: 12px 20px;
-  background: #f1f3f9; /* Start with a neutral look */
-  color: #3b6dff;
-  border: 1.8px solid #3b6dff;
+  color: var(--blue);
+  border: 1.8px solid var(--blue);
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -449,39 +433,37 @@
 }
 
 .custom-file-button:hover {
-  background: #3b6dff;
+  background: var(--blue);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
-/* Style the filename feedback area */
 .file-name-badge {
   margin-top: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 14px;
-  background: #eef2ff;
   border-radius: 8px;
-  color: #1d53d7;
+  color: var(--blue-dark);
   font-size: 0.9rem;
   width: fit-content;
+  background: var(--bg-secondary);
 }
 
 .remove-file {
   background: none;
   border: none;
-  color: #ff5a6e;
+  color: var(--red);
   cursor: pointer;
   font-weight: bold;
   padding: 0 4px;
 }
 
 .remove-file:hover {
-  color: #d43f52;
+  color: var(--red-dark);
 }
 
-/* Contentor do Pop-up */
 .error-popup-container {
   position: fixed;
   top: 20px;
@@ -491,7 +473,7 @@
   color: white;
   padding: 16px 24px;
   border-radius: 8px;
-  z-index: 9999; /* Corrigido de zindex para z-index */
+  z-index: 9999;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
@@ -500,7 +482,6 @@
   animation: slideDown 0.3s ease-out;
 }
 
-/* Botão de fechar dentro do pop-up */
 .error-popup-close {
   background: none;
   border: none;
@@ -517,7 +498,6 @@
   opacity: 0.7;
 }
 
-/* Animação para o pop-up deslizar suavemente */
 @keyframes slideDown {
   from {
     top: -50px;
@@ -527,4 +507,8 @@
     top: 20px;
     opacity: 1;
   }
+}
+
+.year-label {
+  color: var(--text-muted);
 }

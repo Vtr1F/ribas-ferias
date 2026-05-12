@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--bg-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,12 +12,13 @@
 }
 
 .alter-user-modal {
-  background-color: #fff;
+  background: var(--bg-modal);
   border-radius: 20px;
   padding: 30px;
   width: 100%;
   max-width: 700px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-card);
 }
 
 .alter-user-header {
@@ -30,8 +31,8 @@
 .alter-user-header h2 {
   margin: 0;
   font-size: 24px;
-  color: #333;
   flex: 1;
+  color: var(--text-primary);
 }
 
 .trash-btn {
@@ -43,16 +44,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e74c3c;
+  color: var(--red);
   transition: background-color 0.2s;
 }
 
 .trash-btn:hover {
-  background-color: #ffebee;
+  background-color: rgba(239,68,68,0.1);
 }
 
 .trash-btn:disabled {
-  color: #999;
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
@@ -83,12 +84,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: var(--text-primary);
   transition: background-color 0.2s;
 }
 
 .back-btn:hover {
-  background-color: #f0f0f0;
+  background-color: var(--bg-hover);
 }
 
 .alter-user-form {
@@ -98,11 +99,11 @@
 }
 
 .alter-user-error {
-  background-color: #ffebee;
-  color: #c62828;
+  color: var(--red);
   padding: 12px;
   border-radius: 8px;
   font-size: 14px;
+  background: rgba(239,68,68,0.1);
 }
 
 .form-row {
@@ -123,22 +124,25 @@
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .form-group input,
 .form-group select {
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-input);
   border-radius: 8px;
   font-size: 16px;
   font-family: 'Questrial', sans-serif;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #333;
+  border-color: var(--blue);
 }
 
 .role-select-wrapper {
@@ -176,23 +180,24 @@
 .cancel-btn {
   flex: 1;
   padding: 14px;
-  background-color: #f5f5f5;
+  background: var(--bg-tertiary);
   border: none;
   border-radius: 10px;
   font-size: 16px;
   cursor: pointer;
   font-family: 'Questrial', sans-serif;
   transition: background-color 0.2s;
+  color: var(--text-primary);
 }
 
 .cancel-btn:hover {
-  background-color: #e0e0e0;
+  background: var(--bg-hover);
 }
 
 .save-btn {
   flex: 1;
   padding: 14px;
-  background-color: #333;
+  background: var(--blue);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -203,10 +208,10 @@
 }
 
 .save-btn:hover {
-  background-color: #555;
+  background: var(--blue-dark);
 }
 
 .save-btn:disabled {
-  background-color: #999;
+  background: var(--text-muted);
   cursor: not-allowed;
 }

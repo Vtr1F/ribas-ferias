@@ -187,7 +187,7 @@ const Users = () => {
       [ROLES.TEAM_LEADER]: teamColors.accent,
       [ROLES.USER]: teamColors.green
     };
-    return <span className="role-ball" style={{ backgroundColor: colors[role] || '#999' }}></span>;
+    return <span className="role-ball" style={{ backgroundColor: colors[role] || 'var(--text-muted)' }}></span>;
   };
 
   const getRoleLabel = (role) => {
