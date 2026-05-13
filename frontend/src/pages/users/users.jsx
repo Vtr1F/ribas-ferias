@@ -12,7 +12,65 @@ import AddToTeam from '../../components/team/add_to_team';
 import RemoveFromTeam from '../../components/team/remove_from_team';
 import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
+import { SettingsManager, DaltonismModes } from '../../api/settingsManager';
 import './users.css';
+
+const TEAM_COLORS = {
+  accent: '#f1c40f',
+  accentDark: '#d4a800',
+  accentShadow: 'rgba(241, 196, 15, 0.4)',
+  accentFocus: 'rgba(241, 196, 15, 0.2)',
+  danger: '#e74c3c',
+  dangerDark: '#c0392b',
+  dangerShadow: 'rgba(231, 76, 60, 0.4)',
+  green: '#2ecc71',
+  greenDark: '#27ae60',
+  blue: '#3498db',
+  blueDark: '#2980b9',
+  blueShadow: 'rgba(52, 152, 219, 0.4)',
+  blueFocus: 'rgba(52, 152, 219, 0.2)',
+  errorBg: '#fff1f0',
+  errorBorder: '#f5c2c0',
+  errorText: '#9f1f1f',
+  successBg: '#f1f8f0',
+  successBorder: '#c8e6c0',
+  successText: '#2d6a2f',
+};
+
+const DALTONISM_TEAM_COLORS = {
+  [DaltonismModes.DEUTERANOMALY]: {
+    ...TEAM_COLORS,
+    accent: '#E69F00', accentDark: '#D48900', accentShadow: 'rgba(230, 159, 0, 0.4)', accentFocus: 'rgba(230, 159, 0, 0.2)',
+    danger: '#CC79A7', dangerDark: '#B05A8A', dangerShadow: 'rgba(204, 121, 167, 0.4)',
+    green: '#0072B2', greenDark: '#005C99',
+    errorBg: '#fce4ec', errorBorder: '#f48fb1', errorText: '#c2185b',
+    successBg: '#eef2ff', successBorder: '#c7d7f0', successText: '#1d53d7',
+  },
+  [DaltonismModes.PROTONOMALY]: {
+    ...TEAM_COLORS,
+    accent: '#E69F00', accentDark: '#D48900', accentShadow: 'rgba(230, 159, 0, 0.4)', accentFocus: 'rgba(230, 159, 0, 0.2)',
+    danger: '#CC79A7', dangerDark: '#B05A8A', dangerShadow: 'rgba(204, 121, 167, 0.4)',
+    green: '#0072B2', greenDark: '#005C99',
+    errorBg: '#fce4ec', errorBorder: '#f48fb1', errorText: '#c2185b',
+    successBg: '#eef2ff', successBorder: '#c7d7f0', successText: '#1d53d7',
+  },
+  [DaltonismModes.DEUTERANOPIA]: {
+    ...TEAM_COLORS,
+    accent: '#0072B2', accentDark: '#005C99', accentShadow: 'rgba(0, 114, 178, 0.4)', accentFocus: 'rgba(0, 114, 178, 0.2)',
+    danger: '#D55E00', dangerDark: '#B04E00', dangerShadow: 'rgba(213, 94, 0, 0.4)',
+    green: '#0072B2', greenDark: '#005C99',
+    errorBg: '#fff3e0', errorBorder: '#ffb74d', errorText: '#e65100',
+    successBg: '#eef2ff', successBorder: '#c7d7f0', successText: '#1d53d7',
+  },
+  [DaltonismModes.PROTANOPIA]: {
+    ...TEAM_COLORS,
+    accent: '#0072B2', accentDark: '#005C99', accentShadow: 'rgba(0, 114, 178, 0.4)', accentFocus: 'rgba(0, 114, 178, 0.2)',
+    danger: '#D55E00', dangerDark: '#B04E00', dangerShadow: 'rgba(213, 94, 0, 0.4)',
+    green: '#0072B2', greenDark: '#005C99',
+    errorBg: '#fff3e0', errorBorder: '#ffb74d', errorText: '#e65100',
+    successBg: '#eef2ff', successBorder: '#c7d7f0', successText: '#1d53d7',
+  },
+};
 
 const Users = () => {
   const { user: currentUser } = useAuth();
@@ -30,6 +88,16 @@ const Users = () => {
   const [removeFromTeam, setRemoveFromTeam] = useState(null);
   const [showTeamFilter, setShowTeamFilter] = useState(false);
   const [selectedTeamFilters, setSelectedTeamFilters] = useState([]);
+
+  const [daltonism] = useState(() => {
+    try { return { enabled: SettingsManager.GetSetting("DALTONISM") ?? false, mode: SettingsManager.GetSetting("DALTONISM_MODE") ?? DaltonismModes.DEUTERANOMALY }; }
+    catch { return { enabled: false, mode: DaltonismModes.DEUTERANOMALY }; }
+  });
+
+  const teamColors = useMemo(() => {
+    if (!daltonism.enabled) return TEAM_COLORS;
+    return DALTONISM_TEAM_COLORS[daltonism.mode] || TEAM_COLORS;
+  }, [daltonism]);
 
   useEffect(() => {
     fetchData();
@@ -115,9 +183,9 @@ const Users = () => {
 
   const getRoleBall = (role) => {
     const colors = {
-      [ROLES.ADMIN]: '#e74c3c',
-      [ROLES.TEAM_LEADER]: '#f1c40f',
-      [ROLES.USER]: '#2ecc71'
+      [ROLES.ADMIN]: teamColors.danger,
+      [ROLES.TEAM_LEADER]: teamColors.accent,
+      [ROLES.USER]: teamColors.green
     };
     return <span className="role-ball" style={{ backgroundColor: colors[role] || 'var(--text-muted)' }}></span>;
   };
@@ -157,7 +225,27 @@ const Users = () => {
   );
 
   return (
-    <div className="users-page">
+    <div className="users-page" style={{
+      '--clr-accent': teamColors.accent,
+      '--clr-accent-dark': teamColors.accentDark,
+      '--clr-accent-shadow': teamColors.accentShadow,
+      '--clr-accent-focus': teamColors.accentFocus,
+      '--clr-danger': teamColors.danger,
+      '--clr-danger-dark': teamColors.dangerDark,
+      '--clr-danger-shadow': teamColors.dangerShadow,
+      '--clr-green': teamColors.green,
+      '--clr-green-dark': teamColors.greenDark,
+      '--clr-blue': teamColors.blue,
+      '--clr-blue-dark': teamColors.blueDark,
+      '--clr-blue-shadow': teamColors.blueShadow,
+      '--clr-blue-focus': teamColors.blueFocus,
+      '--clr-error-bg': teamColors.errorBg,
+      '--clr-error-border': teamColors.errorBorder,
+      '--clr-error-text': teamColors.errorText,
+      '--clr-success-bg': teamColors.successBg,
+      '--clr-success-border': teamColors.successBorder,
+      '--clr-success-text': teamColors.successText,
+    }}>
       <Header />
       {selectedUser && (
         <AlterUser

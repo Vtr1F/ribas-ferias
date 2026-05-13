@@ -83,18 +83,18 @@
 .create-user-form .create-user-error {
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(239,68,68,0.1);
-  border: 1px solid rgba(239,68,68,0.2);
-  color: var(--red);
+  background: var(--clr-error-bg, #fff1f0);
+  border: 1px solid var(--clr-error-border, #f5c2c0);
+  color: var(--clr-error-text, #9f1f1f);
   font-size: 0.9rem;
 }
 
 .create-user-form .create-user-success {
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.2);
-  color: var(--green);
+  background: var(--clr-success-bg, #f1f8f0);
+  border: 1px solid var(--clr-success-border, #c8e6c0);
+  color: var(--clr-success-text, #2d6a2f);
   font-size: 0.9rem;
 }
 
@@ -180,7 +180,7 @@
 }
 
 .clear-superior:hover {
-  color: var(--red);
+  color: var(--clr-danger, #e74c3c);
 }
 
 .superior-dropdown {

@@ -216,7 +216,7 @@
 }
 
 .users-error {
-  color: var(--red);
+  color: var(--clr-danger, #d32f2f);
 }
 
 .team-group {
@@ -299,8 +299,8 @@
 }
 
 .team-edit-btn:hover {
-  background-color: var(--bg-hover);
-  color: var(--yellow-dark);
+  background-color: var(--clr-accent, #f1c40f);
+  color: #1f2d4d;
 }
 
 .add-to-team-btn {
@@ -308,7 +308,8 @@
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  background-color: var(--blue);
+  background-color: var(--clr-blue, #3498db);
+  color: white;
   border: none;
   border-radius: 12px;
   font-size: 12px;
@@ -319,7 +320,7 @@
 }
 
 .add-to-team-btn:hover {
-  background-color: var(--blue-dark);
+  background-color: var(--clr-blue-dark, #2980b9);
   transform: translateY(-1px);
 }
 
@@ -328,7 +329,8 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background-color: var(--red);
+  background-color: var(--clr-danger, #e74c3c);
+  color: white;
   border: none;
   border-radius: 15px;
   font-size: 13px;
@@ -339,7 +341,7 @@
 }
 
 .remove-from-team-btn:hover {
-  background-color: var(--red-dark);
+  background-color: var(--clr-danger-dark, #c0392b);
   transform: translateY(-1px);
 }
 
@@ -367,7 +369,8 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: var(--blue);
+  background-color: var(--clr-blue, #3498db);
+  color: white;
   border: none;
   font-family: 'Questrial', sans-serif;
   font-size: 1.2rem;
@@ -376,11 +379,10 @@
   border-radius: 25px;
   transition: background 0.2s;
   white-space: nowrap;
-  color: white;
 }
 
 .add-user-btn:hover {
-  background-color: var(--blue-dark);
+  background-color: var(--clr-blue-dark, #2980b9)
 }
 
 .add-team-btn {
@@ -388,7 +390,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background-color: var(--yellow);
+  background-color: var(--clr-accent, #f1c40f);
   color: #1f2d4d;
   border: none;
   font-family: 'Questrial', sans-serif;
@@ -401,9 +403,9 @@
 }
 
 .add-team-btn:hover {
-  background-color: var(--yellow-dark);
+  background-color: var(--clr-accent-dark, #d4a800);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(241, 196, 15, 0.4);
+  box-shadow: 0 4px 12px var(--clr-accent-shadow, rgba(241, 196, 15, 0.4));
 }
 
 .plus-icon {
@@ -458,7 +460,7 @@
 }
 
 .close-modal:hover {
-  color: var(--red);
+  color: var(--clr-danger, #e74c3c);
 }
 
 @keyframes modalIn {

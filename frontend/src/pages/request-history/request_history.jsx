@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../context/auth-context";
 import { RequestRoutes } from "../../api/requestRoutes";
+import { SettingsManager } from "../../api/settingsManager";
 import Header from '../../components/header/header';
 import "./request_history.css";
 import RequestDetailOverlay from '../../components/request_detail_overlay';
@@ -13,6 +14,10 @@ import RequestHistoryRow from "../../components/request_history_row";
 export default function RequestHistory() {
   const { user } = useAuth();
   const userId = user?.sub;
+  const daltonic = (() => {
+    try { return SettingsManager.GetSetting("DALTONISM") ?? false; }
+    catch { return false; }
+  })();
 
   const [requests, setRequests] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -73,7 +78,7 @@ export default function RequestHistory() {
   const hasFilters = statusFilter !== "all" || typeFilter !== "all" || !!search;
 
   return (
-    <div className="rh-page">
+    <div className={`rh-page${daltonic ? ' rh-daltonic' : ''}`}>
       <Header /> 
       
       <div className="rh-header">
@@ -89,7 +94,7 @@ export default function RequestHistory() {
           { label: "Aprovados",  value: stats.approved, mod: "green"  },
           { label: "Rejeitados", value: stats.rejected, mod: "red"    },
         ].map((s) => (
-          <div key={s.label} className={`rh-stat-card rh-stat-${s.mod}`}>
+          <div key={s.label} className={`rh-stat-card rh-stat-${s.mod}${daltonic ? ' rh-stat-daltonic' : ''}`}>
             <span className="rh-stat-value">{loading ? "—" : s.value}</span>
             <span className="rh-stat-label">{s.label}</span>
           </div>
@@ -187,6 +192,7 @@ export default function RequestHistory() {
                   <RequestHistoryRow
                     req={req}
                     requestNumber={requestNumberMap[req.id] || idx + 1}
+                    daltonic={daltonic}
                   />
                 </div>
               ))
@@ -202,6 +208,7 @@ export default function RequestHistory() {
           member={user}
           onClose={() => setSelectedRequest(null)}
           showUserInfo={false}
+          daltonic={daltonic}
         />
       )}
 

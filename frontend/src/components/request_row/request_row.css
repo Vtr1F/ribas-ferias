@@ -96,6 +96,6 @@
   font-family: 'Questrial', sans-serif;
 }
 
-.tr-expand-btn:hover {
-  background: var(--bg-hover);
+.tr-row-daltonic:hover {
+  background: #fff7ed;
 }

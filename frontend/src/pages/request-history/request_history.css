@@ -59,11 +59,16 @@
 .rh-stat-red    { background: #fef2f2; border-color: #fecaca; }
 .rh-stat-red    .rh-stat-value { color: #ef4444; }
 
-div[data="dark"] .rh-stat-blue   { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); }
-div[data="dark"] .rh-stat-yellow { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); }
-div[data="dark"] .rh-stat-green  { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); }
-div[data="dark"] .rh-stat-red    { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); }
+.rh-stat-daltonic.rh-stat-blue   { background: #e0f2fe; border-color: #7dd3fc; }
+.rh-stat-daltonic.rh-stat-blue   .rh-stat-value { color: #0284c7; }
+.rh-stat-daltonic.rh-stat-yellow { background: #fef3c7; border-color: #fcd34d; }
+.rh-stat-daltonic.rh-stat-yellow .rh-stat-value { color: #d97706; }
+.rh-stat-daltonic.rh-stat-green  { background: #ffedd5; border-color: #fdba74; }
+.rh-stat-daltonic.rh-stat-green  .rh-stat-value { color: #ea580c; }
+.rh-stat-daltonic.rh-stat-red    { background: #ede9fe; border-color: #c4b5fd; }
+.rh-stat-daltonic.rh-stat-red    .rh-stat-value { color: #7c3aed; }
 
+/* ===== Filters ===== */
 .rh-filters {
   display: flex;
   flex-wrap: wrap;
@@ -360,6 +365,11 @@ div[data="dark"] .badge-rejected  { color: #f87171; background: rgba(239,68,68,0
   background-color: var(--bg-hover) !important; 
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+
+.rh-daltonic .rh-row-clickable:hover {
+  background-color: #fff7ed !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
 }
 
 .tr-modal-overlay {

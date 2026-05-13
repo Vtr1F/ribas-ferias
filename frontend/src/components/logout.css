@@ -109,8 +109,12 @@
 }
 
 .logout-confirm-btn.confirm {
-  background: var(--red);
+  background-color: var(--logout-danger, #e74c3c);
   color: #fff;
+}
+
+.logout-confirm-btn.confirm:hover {
+  background-color: var(--logout-danger-dark, #c0392b);
 }
 
 .logout-icon-container {
