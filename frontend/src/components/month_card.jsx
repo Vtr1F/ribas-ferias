@@ -1,5 +1,6 @@
 import './month_card.css';
 import { translateStatus, getStatusClass, translateType } from '../utils/translation.js';
+import { useTranslation } from 'react-i18next';
 
 const MonthCard = ({ 
   monthIndex, 
@@ -8,8 +9,15 @@ const MonthCard = ({
   selectedDays = [], // Array of YYYYMMDD strings already selected
   onDateClick        // Function passed from parent to handle the click
 }) => { 
-  const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-  const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  const { i18n } = useTranslation();
+
+  const monthLabel = new Date(year, monthIndex, 1).toLocaleString(i18n.language, { month: 'short' });
+
+  const weekDays = Array.from({ length: 7 }).map((_, i) => {
+    // Use a fixed week that starts on Sunday (2021-08-01 is a Sunday)
+    const d = new Date(2021, 7, 1 + i);
+    return d.toLocaleString(i18n.language, { weekday: 'short' });
+  });
 
   const firstDayIndex = new Date(year, monthIndex, 1).getDay();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
@@ -66,7 +74,7 @@ const MonthCard = ({
   return (
     <div className="calendar-card">
       <div className="card-header">
-        <span className="month-label">{monthNames[monthIndex]}</span>
+        <span className="month-label">{monthLabel}</span>
         <span className="year-label">{year}</span>
       </div>
       <div className="weekdays-header">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './Header.css';
 import { useAuth } from '../../context/auth-context';
@@ -13,6 +14,7 @@ function Header() {
   const [notifCount, setNotifCount] = useState(0);
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const { t, i18n } = useTranslation();
 
   const userId = user?.sub || user?.id;
 
@@ -74,11 +76,11 @@ function Header() {
         {showNotifs && (
           <div className="notification-dropdown">
             <div className="notification-header">
-              <h4>Notificações</h4>
+              <h4>{t('notifications_title')}</h4>
             </div>
             <div className="notification-list">
               {notifications.length === 0 ? (
-                <p className="no-notifications">Sem notificações</p>
+                <p className="no-notifications">{t('no_notifications')}</p>
               ) : (
                 notifications.map(notif => (
                   <div
@@ -97,7 +99,7 @@ function Header() {
                       <div className="notification-text">
                         <p>{notif.mensagem}</p>
                         <span className="notification-date">
-                          {new Date(notif.created_at).toLocaleDateString('pt-PT')}
+                          {new Date(notif.created_at).toLocaleDateString(i18n.language)}
                         </span>
                       </div>
                     </div>

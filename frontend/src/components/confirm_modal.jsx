@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './confirm_modal.css';
 
 const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmClass }) => {
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -19,7 +22,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmClas
         <p>{message}</p>
         <div className="confirm-actions">
           <button className="cancel-btn" onClick={onCancel} disabled={loading}>
-            Cancelar
+            {t('cancel')}
           </button>
           <button 
             /* Aqui usamos a classe dinâmica que vem do TeamRequests */
@@ -27,7 +30,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmClas
             onClick={handleConfirm} 
             disabled={loading}
           >
-            {loading ? 'A processar...' : 'Confirmar'}
+            {loading ? t('processing') : t('confirm')}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import UserAvatar from '../user_avatar';
 import StatusBadge from '../status_badge';
-import { TYPE_ICONS, TYPE_LABELS } from '../../constants/requestConstants';
+import { TYPE_ICONS } from '../../constants/requestConstants';
+import { translateType } from '../../utils/translation';
 import { formatDate } from '../../utils/formatters';
 import DaysList from '../request_row/days_list';
 import './request_history_row.css';
@@ -14,7 +15,7 @@ const RequestHistoryRow = ({ req, requestNumber, daltonic }) => {
       </div>
       <div className="rhr-type">
         <span className="rhr-type-icon">{TYPE_ICONS[req.request_type] || '📋'}</span>
-        <span>{TYPE_LABELS[req.request_type] || req.request_type}</span>
+        <span>{translateType(req.request_type) || req.request_type}</span>
       </div>
       <StatusBadge status={req.status} daltonic={daltonic} />
       <DaysList days={req.days} />

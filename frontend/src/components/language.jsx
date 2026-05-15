@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './language.css';
-import '../lang/i18n'; // Força o carregamento da config aqui também
-
+import '../lang/i18n'; 
+import {SettingsManager} from '../api/settingsManager.js'
 const Language = () => {
   const { i18n } = useTranslation();
 
   // Nome da chave que o teu colega usa (ajusta se necessário)
-  const STORAGE_KEY = 'settings_lang'; 
+  const STORAGE_KEY = SettingsManager.GetSetting("LANGUAGE"); 
 
   const handleLanguageChange = (event) => {
     const newLang = event.target.value;
@@ -16,7 +16,8 @@ const Language = () => {
     i18n.changeLanguage(newLang);
     
     // 2. Guarda no localStorage para o código do teu colega e persistência
-    localStorage.setItem(STORAGE_KEY, newLang);
+    SettingsManager.SaveSetting("LANGUAGE",newLang);
+    
   };
 
   return (

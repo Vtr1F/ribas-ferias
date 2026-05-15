@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/auth-context';
 import { useSearchParams } from 'react-router-dom';
 import { TeamRoutes } from '../../api/teamRoutes';
@@ -9,7 +10,8 @@ import Header from '../../components/header/header';
 import UserAvatar from '../../components/user_avatar';
 import ConfirmModal from '../../components/confirm_modal'; // Ajusta o caminho se necessário
 import './team_requests.css';
-import { TYPE_LABELS,TYPE_ICONS } from '../../constants/requestConstants';
+import { TYPE_ICONS } from '../../constants/requestConstants';
+import { translateType } from '../../utils/translation';
 import RequestDetailOverlay from '../../components/request_detail_overlay';
 import { STATUS_CONFIG } from '../../constants/requestConstants';
 import RequestRow from '../../components/request_row';
@@ -17,6 +19,7 @@ import RequestRow from '../../components/request_row';
 // --- Main Page ---
 export default function TeamRequests() {
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdmin  = currentUser?.role === ROLES.ADMIN;
   const isLeader = currentUser?.role === ROLES.TEAM_LEADER;
@@ -69,7 +72,7 @@ export default function TeamRequests() {
     if (!pendingDecision) return;
     
     const { id, type } = pendingDecision;
-    const actionText = type === 'accept' ? 'aprovar' : 'rejeitar';
+    const actionText = type === 'accept' ? t('btn_approve') : t('btn_reject');
     
     setIsActionLoading(true);
     setShowConfirm(false);
@@ -84,7 +87,7 @@ export default function TeamRequests() {
       await fetchAllRequests(teams); 
       setSelectedRequest(null);
     } catch (err) {
-      alert(`Erro ao ${actionText} o pedido. Por favor, tente novamente.`);
+      alert(t('error_action_request', { action: actionText }));
       console.error(err);
     } finally {
       setIsActionLoading(false);
@@ -171,7 +174,7 @@ export default function TeamRequests() {
         return (
           member?.nome?.toLowerCase().includes(q) ||
           r.reason?.toLowerCase().includes(q) ||
-          TYPE_LABELS[r.request_type]?.toLowerCase().includes(q)
+          translateType(r.request_type)?.toLowerCase().includes(q)
         );
       })
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -184,15 +187,15 @@ export default function TeamRequests() {
       <Header />
 
       <div className="page-header">
-        <h1>Pedidos por Equipa</h1>
+        <h1>{t('team_requests_title')}</h1>
       </div>
 
       <div className="tr-stats-grid">
         {[
-          { label: 'Total',      value: stats.total,    mod: 'blue'   },
-          { label: 'Pendentes',  value: stats.pending,  mod: 'yellow' },
-          { label: 'Aprovados',  value: stats.approved, mod: 'green'  },
-          { label: 'Rejeitados', value: stats.rejected, mod: 'red'    },
+          { label: t('team_requests_total'),      value: stats.total,    mod: 'blue'   },
+          { label: t('legend_pending'),  value: stats.pending,  mod: 'yellow' },
+          { label: t('team_requests_approved'),  value: stats.approved, mod: 'green'  },
+          { label: t('legend_rejected'), value: stats.rejected, mod: 'red'    },
         ].map((s) => (
           <div key={s.label} className={`tr-stat-card tr-stat-${s.mod}${daltonic ? ' tr-stat-daltonic' : ''}`}>
             <span className="tr-stat-value">{loading ? '—' : s.value}</span>
@@ -212,7 +215,7 @@ export default function TeamRequests() {
             <input
               type="text"
               className="users-search"
-              placeholder="Pesquisar por colaborador, motivo ou tipo..."
+              placeholder={t('team_requests_search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -223,10 +226,10 @@ export default function TeamRequests() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">Todos os estados</option>
-            <option value="Pending">Pendente</option>
-            <option value="Approved">Aprovado</option>
-            <option value="Rejected">Rejeitado</option>
+            <option value="all">{t('all_statuses')}</option>
+            <option value="Pending">{t('legend_pending')}</option>
+            <option value="Approved">{t('team_requests_approved')}</option>
+            <option value="Rejected">{t('legend_rejected')}</option>
           </select>
 
           {(statusFilter !== 'all' || search) && (
@@ -234,7 +237,7 @@ export default function TeamRequests() {
               className="tr-clear-btn"
               onClick={() => { setStatusFilter('all'); setSearch(''); }}
             >
-              Limpar
+              {t('clear')}
             </button>
           )}
         </div>
@@ -243,12 +246,12 @@ export default function TeamRequests() {
           {loading && !teams.length ? (
             <div className="tr-state-center">
               <div className="tr-spinner" />
-              <p>A carregar pedidos...</p>
+              <p>{t('loading')}</p>
             </div>
           ) : error ? (
             <p className="users-error">⚠️ {error}</p>
           ) : teams.length === 0 ? (
-            <p className="users-no-results">Nenhuma equipa encontrada.</p>
+            <p className="users-no-results">{t('no_teams_found')}</p>
           ) : (
             teams.map((team) => {
               const filtered = getFilteredReqs(team.id);
@@ -268,9 +271,9 @@ export default function TeamRequests() {
                     </div>
                     <div className="team-header-right">
                       {pending > 0 && (
-                        <span className="tr-pending-pill">{pending} pendente{pending !== 1 ? 's' : ''}</span>
+                        <span className="tr-pending-pill">{pending} {t('pending_plural', { count: pending })}</span>
                       )}
-                      <span className="team-member-count">{total} pedido{total !== 1 ? 's' : ''}</span>
+                      <span className="team-member-count">{total} {t('requests_plural', { count: total })}</span>
                     </div>
                   </div>
 
@@ -278,21 +281,21 @@ export default function TeamRequests() {
                     <div className="tr-requests-container">
                       {filtered.length > 0 && (
                         <div className="tr-table-head">
-                          <span>Colaborador</span>
-                          <span>Tipo</span>
-                          <span>Estado</span>
-                          <span>Dias</span>
-                          <span>Nº</span>
-                          <span>Data</span>
-                          <span>Motivo</span>
+                          <span>{t('table_collaborator')}</span>
+                          <span>{t('table_type')}</span>
+                          <span>{t('table_status')}</span>
+                          <span>{t('table_days')}</span>
+                          <span>{t('table_number')}</span>
+                          <span>{t('table_date')}</span>
+                          <span>{t('table_reason')}</span>
                         </div>
                       )}
 
                       {filtered.length === 0 ? (
                         <div className="tr-empty">
                           {(requestsByTeam[team.id] || []).length === 0
-                            ? '📭 Sem pedidos nesta equipa'
-                            : '🔍 Nenhum pedido corresponde aos filtros'}
+                            ? `${t('no_requests_in_team')}`
+                            : `${t('no_request_matches_filters')}`}
                         </div>
                       ) : (
                         filtered.map((req) => (
@@ -332,8 +335,8 @@ export default function TeamRequests() {
 
       <ConfirmModal
         isOpen={showConfirm}
-        title={pendingDecision?.type === 'accept' ? "Aprovar Pedido" : "Rejeitar Pedido"}
-        message={`Tem a certeza que deseja ${pendingDecision?.type === 'accept' ? 'aprovar' : 'rejeitar'} este pedido?`}
+        title={pendingDecision?.type === 'accept' ? t('confirm_approve_request_title') : t('confirm_reject_request_title')}
+        message={pendingDecision?.type === 'accept' ? t('confirm_approve_request_message') : t('confirm_reject_request_message')}
         onConfirm={handleConfirmDecision}
         onCancel={() => {
           setShowConfirm(false);

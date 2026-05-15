@@ -84,10 +84,10 @@ function Dashboard() {
 
   const getAbsenceLabel = (value) => {
     const labels = {
-      [ABSENCE.SICK]: "Baixa Médica / Doença",
-      [ABSENCE.PAR]: "Licença Parental",
-      [ABSENCE.BER]: "Dias de Nojo",
-      [ABSENCE.OTR]: "Outro"
+      [ABSENCE.SICK]: t('type_sick_leave'),
+      [ABSENCE.PAR]: t('type_parental_leave'),
+      [ABSENCE.BER]: t('type_bereavement_leave'),
+      [ABSENCE.OTR]: t('type_other')
     };
     return labels[value] || value;
   };
@@ -168,7 +168,7 @@ function Dashboard() {
 
     // --- LOGIC TO FORMAT DATES FOR THE MODAL ---
     const formattedSelection = useMemo(() => {
-    if (selectedDays.length === 0) return "Nenhum dia selecionado.";
+    if (selectedDays.length === 0) return t('no_days_selected');
 
     const groups = {};
 
@@ -309,7 +309,7 @@ function Dashboard() {
         <div className="modal-backdrop">
           <div className="modal-content">
             <h2>{t('confirm_request_title')}</h2>
-            <p dangerouslySetInnerHTML={{__html: t('request_vacation_for_days', { type: `<strong>${t("Vacation")}</strong>` })}}></p>
+            <p dangerouslySetInnerHTML={{__html: t('request_vacation_for_days', { type: `<strong>${t('type_vacation')}</strong>` })}}></p>
             
             <div className="selected-days-list">
               {formattedSelection}
@@ -459,9 +459,9 @@ function Dashboard() {
 
       <footer className="footer-legend">
         <div className="legend-group">
-          <div className="legend-pill"><span className="status-box green"></span><span>Aceite</span></div>
-          <div className="legend-pill"><span className="status-box yellow"></span><span>Pendente</span></div>
-          <div className="legend-pill"><span className="status-box red"></span><span>Rejeitado</span></div>
+          <div className="legend-pill"><span className="status-box green"></span><span>{t('legend_accepted')}</span></div>
+          <div className="legend-pill"><span className="status-box yellow"></span><span>{t('legend_pending')}</span></div>
+          <div className="legend-pill"><span className="status-box red"></span><span>{t('legend_rejected')}</span></div>
         </div>
       </footer>
     </main>

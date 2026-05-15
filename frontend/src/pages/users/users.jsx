@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TeamRoutes } from '../../api/teamRoutes';
 import { useAuth } from '../../context/auth-context';
 import { ROLES } from '../../constants/roles';
@@ -74,6 +75,7 @@ const DALTONISM_TEAM_COLORS = {
 
 const Users = () => {
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [teams, setTeams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -191,9 +193,9 @@ const Users = () => {
   };
 
   const getRoleLabel = (role) => {
-    if (role === ROLES.ADMIN) return 'Administrador';
-    if (role === ROLES.TEAM_LEADER) return 'Responsável';
-    return 'Colaborador';
+    if (role === ROLES.ADMIN) return t('role_admin');
+    if (role === ROLES.TEAM_LEADER) return t('role_team_leader');
+    return t('role_user');
   };
 
   const renderUserCard = (u) => (
@@ -216,7 +218,7 @@ const Users = () => {
           </div>
         </div>
         {isAdmin && (
-          <button className="user-settings-btn" title="Definições" onClick={() => setSelectedUser(u)}>
+          <button className="user-settings-btn" title={t('sidebar_settings')} onClick={() => setSelectedUser(u)}>
             <span className="gear-icon">⚙</span>
           </button>
         )}
@@ -255,7 +257,7 @@ const Users = () => {
         />
       )}
       <div className="page-header">
-        <h1>Gestão de Utilizadores</h1>
+        <h1>{t('users_page_title')}</h1>
       </div>
       
       {(isAdmin || isLeader) && <Stats users={allUsers} />}
@@ -271,7 +273,7 @@ const Users = () => {
             </span>
             <input
               type="text"
-              placeholder="Pesquisar por nome, email ou equipa..."
+              placeholder={t('users_search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="users-search"
@@ -286,7 +288,7 @@ const Users = () => {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                 </svg>
-                Filtrar Equipas
+                {t('filter_teams')}
                 {selectedTeamFilters.length > 0 && (
                   <span className="filter-count">{selectedTeamFilters.length}</span>
                 )}
@@ -316,7 +318,7 @@ const Users = () => {
                       className="clear-filters-btn"
                       onClick={() => setSelectedTeamFilters([])}
                     >
-                      Limpar Filtros
+                      {t('clear_filters')}
                     </button>
                   )}
                 </div>
@@ -329,13 +331,13 @@ const Users = () => {
                 className="add-user-btn" 
                 onClick={() => setClicked(true)}
               >
-                <span className="plus-icon">+</span> Novo Utilizador
+                <span className="plus-icon">+</span> {t('create_user_title')}
               </button>
               <button 
                 className="add-team-btn" 
                 onClick={() => setShowCreateTeam(true)}
               >
-                <span className="plus-icon">+</span> Criar Equipa
+                <span className="plus-icon">+</span> {t('create_team_title')}
               </button>
             </>
           )}
@@ -345,7 +347,7 @@ const Users = () => {
             <div className="modal-overlay" onClick={() => setClicked(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                  <h2>Criar Novo Utilizador</h2>
+                  <h2>{t('create_user_title')}</h2>
                   <button className="close-modal" onClick={() => setClicked(false)}>&times;</button>
                 </div>
                 <CreateUser onSuccess={() => {
@@ -360,7 +362,7 @@ const Users = () => {
             <div className="modal-overlay" onClick={() => setShowCreateTeam(false)}>
               <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                  <h2>Criar Nova Equipa</h2>
+                  <h2>{t('create_team_title')}</h2>
                   <button className="close-modal" onClick={() => setShowCreateTeam(false)}>&times;</button>
                 </div>
                 <CreateTeam onSuccess={() => {
@@ -415,7 +417,7 @@ const Users = () => {
                       <button 
                         className="add-to-team-btn" 
                         onClick={(e) => { e.stopPropagation(); setAddToTeam(group); }}
-                        title="Adicionar a Equipa"
+                        title={t('add_to_team')}
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -423,14 +425,14 @@ const Users = () => {
                           <line x1="19" y1="8" x2="19" y2="14"/>
                           <line x1="22" y1="11" x2="16" y2="11"/>
                         </svg>
-                        Adicionar
+                        {t('btn_add')}
                       </button>
                     )}
                     {isAdmin && group.id !== 'no-team' && (
                       <button 
                         className="team-edit-btn" 
                         onClick={(e) => { e.stopPropagation(); setSelectedTeam(group); }}
-                        title="Editar Equipa"
+                        title={t('edit_team')}
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -440,19 +442,19 @@ const Users = () => {
                     )}
                   </div>
                   <div className="team-header-right">
-                    <span className="team-member-count">{group.users.length} membros</span>
+                    <span className="team-member-count">{group.users.length} {t('members')}</span>
                     {isAdmin && group.id !== 'no-team' && group.id !== 1 && (
                       <button 
                         className="remove-from-team-btn" 
                         onClick={(e) => { e.stopPropagation(); setRemoveFromTeam(group); }}
-                        title="Remover da Equipa"
+                        title={t('remove_from_team')}
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                           <circle cx="9" cy="7" r="4"/>
                           <line x1="22" y1="11" x2="16" y2="11"/>
                         </svg>
-                        Remover
+                        {t('btn_remove')}
                       </button>
                     )}
                   </div>

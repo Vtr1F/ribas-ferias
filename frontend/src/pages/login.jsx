@@ -3,11 +3,13 @@ import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
 import { useAuth } from '../context/auth-context';
+import { useTranslation } from 'react-i18next';
 import './login.css'
 
 function Login() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,26 +38,26 @@ function Login() {
           <div className="login-container">
             <form onSubmit={handleLogin}>
               <div className="form-group">
-                <label>Email</label>
-                <input type="email" 
-                value= {email} onChange={(e) => setEmail(e.target.value)} 
-                placeholder="Email" required />
+                    <label>{t('profile_email')}</label>
+                    <input type="email" 
+                    value= {email} onChange={(e) => setEmail(e.target.value)} 
+                    placeholder={t('profile_email')} required />
               </div>
               <div className="form-group">
-                <label>Password</label>
-                <input type="password" 
-                value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password" required />
+                    <label>{t('password_label')}</label>
+                    <input type="password" 
+                    value={password} onChange={(e) => setPassword(e.target.value)}
+                    placeholder={t('password_label')} required />
               </div>
-              <button type="submit">Login</button>
+                  <button type="submit">{t('login_btn')}</button>
             </form>
-            {error && <p className="error">{error}</p>}
+                {error && <p className="error">{error}</p>}
             {/* Botão de Esqueci a Senha */}
             <button 
               className="forgot-password-btn" 
               onClick={() => navigate('/forgot-password')}
             >
-              Esqueceu-se da palavra-passe?
+                  {t('forgot_password')}
             </button>
             
           </div>

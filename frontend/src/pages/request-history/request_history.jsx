@@ -155,7 +155,7 @@ export default function RequestHistory() {
         {loading ? (
           <div className="rh-state-center">
             <div className="rh-spinner" />
-            <p>A carregar pedidos...</p>
+            <p>{t('loading')}</p>
           </div>
         ) : error ? (
           <div className="rh-state-center rh-error">⚠️ {error}</div>
@@ -164,13 +164,13 @@ export default function RequestHistory() {
             {/* Table head */}
             <div className="rh-table-head">
               <span>#</span>
-              <span>Avatar</span>
-              <span>Tipo</span>
-              <span>Estado</span>
-              <span>Dias</span>
-              <span>Nº</span>
-              <span>Data</span>
-              <span>Motivo</span>
+              <span>{t('table_avatar')}</span>
+              <span>{t('table_type')}</span>
+              <span>{t('table_status')}</span>
+              <span>{t('table_days')}</span>
+              <span>{t('table_number')}</span>
+              <span>{t('table_date')}</span>
+              <span>{t('table_reason')}</span>
             </div>
 
             {/* Rows */}
@@ -178,10 +178,10 @@ export default function RequestHistory() {
               <div className="rh-state-center">
                 <span className="rh-empty-icon">{hasFilters ? "🔍" : "📭"}</span>
                 <p className="rh-empty-title">
-                  {hasFilters ? "Nenhum pedido encontrado" : "Sem pedidos ainda"}
+                  {hasFilters ? t('no_requests_found') : t('no_requests_yet')}
                 </p>
                 <p className="rh-empty-sub">
-                  {hasFilters ? "Tenta ajustar os filtros" : "Os teus pedidos aparecerão aqui"}
+                  {hasFilters ? t('try_adjust_filters') : t('your_requests_will_appear_here')}
                 </p>
               </div>
             ) : (
@@ -217,7 +217,7 @@ export default function RequestHistory() {
       {/* Footer count */}
       {!loading && !error && filtered.length > 0 && (
         <p className="rh-footer-count">
-          A mostrar {filtered.length} de {requests.length} pedido{requests.length !== 1 ? "s" : ""}
+          {t('footer_showing_requests', { shown: filtered.length, total: requests.length })}
         </p>
       )}
     </div>

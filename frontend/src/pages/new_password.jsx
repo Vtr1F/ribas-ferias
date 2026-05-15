@@ -4,11 +4,13 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './login.css'
 
 function NewPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const token = searchParams.get('token');
 
@@ -27,10 +29,10 @@ function NewPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (/\s/.test(new_password)) {
-      return setError("Password não pode conter espaços")
+      return setError(t('password_no_spaces'))
     }
     if (new_password !== confirmPassword) {
-      return setError("As passwords não coincidem");
+      return setError(t('passwords_do_not_match'));
     }
 
     try {
@@ -41,7 +43,7 @@ function NewPassword() {
           navigate('/login');
          }, 1000); // ms
     } catch (err) {
-      setError("O link expirou ou é inválido.");
+      setError(t('link_expired_error'));
     }
   };
 
@@ -51,30 +53,30 @@ function NewPassword() {
         <button className="back-arrow" onClick={() => navigate('/login')}>←</button>
         {!isPassSent ? (
           <>
-            <h2>Nova Password</h2>
+            <h2>{t('new_password_title')}</h2>
             <form onSubmit={handleSubmit}>
               <input 
                 type="password" 
-                placeholder="Nova Password" 
+                placeholder={t('new_password_placeholder')} 
                 value={new_password} 
                 onChange={(e) => setPassword(e.target.value)} 
                 required 
               />
               <input 
                 type="password" 
-                placeholder="Confirmar Password" 
+                placeholder={t('confirm_password_placeholder')} 
                 value={confirmPassword} 
                 onChange={(e) => setConfirmPassword(e.target.value)} 
                 required 
               />
-              <button type="submit">Atualizar Password</button>
+              <button type="submit">{t('update_password')}</button>
             </form>
             {error && <p style={{color: 'red'}}>{error}</p>}
           </>
         ) : (
           <>
-            <h2>Password Alterada com Sucesso</h2>
-            <p>Redirecionando ao Login...</p>
+            <h2>{t('password_changed_success')}</h2>
+            <p>{t('redirecting_to_login')}</p>
           </>
         )}
       </div>

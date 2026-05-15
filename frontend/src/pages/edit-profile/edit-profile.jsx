@@ -151,7 +151,7 @@ function EditProfile() {
                         onChange={handleAvatarChange}
                         style={{ display: 'none' }}
                     />
-                    <p className="avatar-hint">Clique na foto para alterar</p>
+                    <p className="avatar-hint">{t('click_photo_to_change')}</p>
                     {uploading && <p className="uploading-text">{t('loading')}</p>}
                 </div>
 
@@ -162,52 +162,52 @@ function EditProfile() {
                     </label>
 
                     <label>
-                        Telemovel
+                        {t('profile_phone')}
                         <input type="text" value={telemovel} onChange={(e) => setTelemovel(e.target.value)} />
                     </label>
                     
                     <label className="full-width">
-                        Localidade
+                        {t('profile_city')}
                         <input type="text" value={localidade} onChange={(e) => setLocalidade(e.target.value)} />
                     </label>
                 
                     <div className="actions">
-                        <button type="submit" className="primary">Salvar Alterações</button>
+                        <button type="submit" className="primary">{t('save_changes')}</button>
                     </div>
                 </form>
                     
-                {edited && <p className="success-message">Informações Editadas com Sucesso</p>}
+                {edited && <p className="success-message">{t('edit_success')}</p>}
 
                 <hr className="section-divider" />
 
                 <div className="password-section">
-                    {!clicked ? (
+                        {!clicked ? (
                     <>
-                        <h2>Segurança</h2>
+                        <h2>{t('security')}</h2>
                         <div className="actions">
-                            <button className="primary" onClick={handleButton}>Alterar Password</button>
+                            <button className="primary" onClick={handleButton}>{t('change_password')}</button>
                         </div>
                     </>
                     ) : (
                         <>
-                            <h3>Alterar Password</h3>
+                            <h3>{t('change_password')}</h3>
                             <form onSubmit={handlePasswordChange}>
                                 <label>
-                                    Password Atual
+                                    {t('current_password')}
                                     <input type="password" required value={pass} onChange={(e) => setPass(e.target.value)} />
                                 </label>
                                 <div className="empty-grid-space"></div>
                                 <label>
-                                    Nova Password
+                                    {t('new_password')}
                                     <input type="password" required value={newPass} onChange={(e) => setNewPass(e.target.value)} />
                                 </label>
                                 <label>
-                                    Confirmar Nova Password
+                                    {t('confirm_new_password')}
                                     <input type="password" required value={comfirmPass} onChange={(e) => setComfirmPass(e.target.value)} />
                                 </label>
                                 {error && <p className="error">{error}</p>}
                                 <div className="actions">
-                                    <button type="submit" className="primary">Atualizar Password</button>
+                                    <button type="submit" className="primary">{t('update_password')}</button>
                                 </div>
                                 
                             </form>

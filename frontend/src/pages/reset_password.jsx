@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginLayout from '../layouts/login-layout';
 import { LoginRoute } from '../api/loginRoute';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './login.css'
 
 function timeout(delay) {
@@ -10,6 +11,7 @@ function timeout(delay) {
 
 function ResetPassword() {
   const navigate = useNavigate(); // Criamos a função de navegação
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState('');
   const [isCodeSent, setIsCodeSent] = useState(false);
@@ -23,7 +25,7 @@ function ResetPassword() {
         setIsCodeSent(true);
     } catch(err) {
         console.error(err);
-        setError('Email Não Encontrado');
+      setError(t('email_not_found'));
     }
   };
 
@@ -33,13 +35,13 @@ function ResetPassword() {
         <button className="back-arrow" onClick={() => navigate('/login')}>←</button>
       {!isCodeSent ? (
         <form onSubmit={handleReset}>
-          <h2>Recuperar Password</h2>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-          <button type="submit">Enviar Código</button>
+          <h2>{t('recover_password')}</h2>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('profile_email')} />
+          <button type="submit">{t('send_code')}</button>
           {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
         </form>
       ) : (
-        <h2>Email Com Link Enviado</h2>
+        <h2>{t('email_with_link_sent')}</h2>
       )}
       </div>
     </LoginLayout>
